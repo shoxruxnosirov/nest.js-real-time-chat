@@ -9,8 +9,8 @@ export class UsersController {
         private readonly userService: UsersService,
     ) {};
 
-    @Post('sigin')
-    async sigin(@Body() body: CreateAccountDto): Promise<ISean | Error> {
+    @Post('signup')
+    async signup(@Body() body: CreateAccountDto): Promise<ISean | Error> {
         return this.userService.createAccount(body);
     }
 

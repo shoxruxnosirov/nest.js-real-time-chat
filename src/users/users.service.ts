@@ -5,7 +5,6 @@ import * as bcrypt from 'bcryptjs';
 import { IAccount } from './interfaces/account.interface';
 import { ISean } from './interfaces/sean.interface';
 import { CreateAccountDto, CreateSeanDto } from './dto/account.dto';
-// import { CreateChatDto } from './dto/chat.dto';
 import { JwtService } from '@nestjs/jwt';
 
 
