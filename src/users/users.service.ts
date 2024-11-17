@@ -44,7 +44,7 @@ export class UsersService {
         }    
     };
 
-    async createChat(createAccountDto: CreateSeanDto): Promise<ISean> {
+    async createSean(createAccountDto: CreateSeanDto): Promise<ISean> {
         try {
             const account = await this.accountModel.findOne({ email: createAccountDto.email }).exec();
             if(account && await bcrypt.compare(createAccountDto.password, account.password)) {
@@ -72,5 +72,10 @@ export class UsersService {
     async deleteAccount(id: string): Promise<any> {
         await this.seanModel.deleteMany({ account_id: id });
         return this.accountModel.findByIdAndDelete(id).exec();
+    }
+
+    async searchId(id: string): Promise<IAccount[]> {
+        const accounts = await this.accountModel.find();
+        return accounts.filter(acc => acc.id.startsWith(id));
     }
 }

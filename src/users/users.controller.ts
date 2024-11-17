@@ -1,22 +1,36 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { UsersService } from './users.service';
 import { CreateAccountDto, CreateSeanDto } from './dto/account.dto';
 import { ISean } from './interfaces/sean.interface';
+import { ChatsService } from 'src/chats/chats.service';
+import { IChat } from 'src/chats/interfaces/chat.interface';
+
+type ChatsAndSean = {
+    rooms: IChat[];
+    sean: ISean;
+  }
 
 @Controller('auth')
 export class UsersController {
     constructor(
         private readonly userService: UsersService,
+        private readonly roomsService: ChatsService,
     ) {};
 
     @Post('signup')
-    async signup(@Body() body: CreateAccountDto): Promise<ISean | Error> {
-        return this.userService.createAccount(body);
+    async signup(@Body() body: CreateAccountDto): Promise< ISean > {
+        const userSean: ISean = await this.userService.createAccount(body);
+        return userSean;
+        // res.redirect(301, "http://localhost:3000/chat");
     }
 
     @Post('login')
-    async login(@Body() body: CreateSeanDto): Promise<ISean | Error> {
-        return this.userService.createChat(body);
+    async login(@Body() body: CreateSeanDto): Promise< ISean > {
+        // console.log("keldi: ", body);
+        const userSean: ISean =  await this.userService.createSean(body);
+        // const rooms: IChat[] = await this.roomsService.findUserChats(userSean.account_id);
+        return userSean;
     }
 
     @Post('logout')

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma'lumotlarni qabul qilish</title>
+  <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#container {
+    display: flex;
+    height: 100vh;
+}
+
+#listContainer {
+    width: 30%; /* Chap qism */
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+}
+
+#detailContainer {
+    width: 70%; /* O'ng qism */
+    padding: 20px;
+    background-color: #e1e1e1;
+    display: none; /* Boshlang'ichda yashirin */
+}
+
+#detailContainer.active {
+    display: block;
+}
+
+div {
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #d3d3d3;
+    border-radius: 5px;
+}
+
+div:hover {
+    background-color: #a9a9a9;
+}
+
+
+body {
+      font-family: Arial, sans-serif;
+    }
+    #messages {
+      height: 85%;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+    #input {
+      width: 90%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+/* 
+        .item {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .item:hover {
+            background-color: #e0e0e0;
+        } */
+</style>
+</head>
+<body>
+  <h1>Ma'lumotlar:</h1>
+
+  <div id="container">
+
+    <div id="listContainer">
+
+      <div class="input-group">
+        <label for="groupOrAccountId">Guruh ID</label>
+        <input type="text" id="groupOrAccountId" placeholder="Guruh yoki foydalanuvchi ID kiriting" required />
+        <button id="joinButton">Guruhga Qo'shish</button>
+      </div>
+      <div id="resultSearch" class="hidden"></div>
+
+    </div>
+
+    <div id="detailContainer" class="hidden">
+      <h3 id="chatOrGroupName"></h3>
+        <div id="messages"></div>
+        <input type="text" id="input" placeholder="Type a message...">
+    </div>
+  </div>
+
+
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+  <script>
+
+      
+
+    let listContainer = document.getElementById('listContainer');
+    let detailContainer = document.getElementById('detailContainer');
+    let chatId;
+    let account_id;
+
+    // URL parametrlarini olish
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sean = JSON.parse(urlParams.get('sean'));
+      console.log("rooms: ", sean);
+      account_id = sean.account_id;
+      
+      const socket = io('http://localhost:3001' , {
+        extraHeaders: {
+          transports: ['websocket'],
+          Authorization: `Bearer ${sean.token}`, // Authorization sarlavhasi orqali token yuborish
+          customAccountId: sean.account_id
+        }
+      });
+
+      // socket.id = sean.account_id;
+
+      document.getElementById('joinButton').addEventListener('click', function() {
+      const searchId = document.getElementById('groupOrAccountId').value;
+
+      // Guruhga qo'shish uchun serverga so'rov yuborish
+        socket.emit('searchId', searchId, function(response) {
+          console.log("searchResponse", response);
+        });
+
+      });
+
+      socket.on("addChatUser", (chat) => {
+        let div = document.createElement('div');
+        // let div = listContainer.children[0]
+        console.log("chat: ", chat);
+        div.textContent = chat.participant_ids.join(" and ");
+        chatId = chat._id; 
+        console.log("addchatUserda chat", chat); 
+        const chatOrGroupName = document.getElementById("chatOrGroupName");
+        chatOrGroupName.textContent = div.textContent;
+        document.getElementById('container').style.display = 'flex';
+        detailContainer.classList.add('active');
+        // listContainer.appendChild(div);
+        listContainer.insertBefore(div, listContainer.children[0]);
+      });
+
+      socket.on('searchId', (userOrGroups) => {
+        const resultSearch = document.getElementById("groupOrAccountId");
+        console.log("search userOrGroup: ", userOrGroups);
+
+        userOrGroups.forEach(item => {
+          let div = document.createElement("div");
+          // div.textContent = item.participant_ids.join(" and ");
+          div.textContent = item.name;
+
+          div.onclick = async function() {
+            const chatOrGroupName = document.getElementById("chatOrGroupName");
+            chatOrGroupName.textContent = div.textContent;
+            await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id}, () =>{
+              div.remove();
+            });
+            console.log("xato bundan keyin");
+            // document.getElementById('container').style.display = 'flex';
+            // detailContainer.classList.add('active');
+          }
+          listContainer.insertBefore(div, listContainer.children[0]);
+        })
+        // console.log("search acc: ", chats);
+      })
+    
+
+
+      socket.on('takeAllData', (chats) => {
+        console.log("chats: ", chats);
+
+        chats.forEach(item => {
+          let div = document.createElement('div');
+          div.textContent = item.participant_ids.join(" and ");
+          console.log(item._id);
+
+          // let divichki = document.createElement('div');
+          // divichki.id = item.participant_ids.join(" and ");
+
+
+          div.onclick = function() {
+            console.log(item._id);
+            chatId = item._id;
+            const chatOrGroupName = document.getElementById("chatOrGroupName");
+            chatOrGroupName.textContent = div.textContent;
+
+
+            document.getElementById('container').style.display = 'flex';
+            detailContainer.classList.add('active'); 
+
+          };
+    
+          listContainer.appendChild(div);
+        });
+
+      });
+
+
+
+      // Yangi xabarni ekranda ko'rsatish
+    socket.on('message', function(messageObj) {
+      console.log("client: ", messageObj.client);
+      const messagesDiv = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      if(messageObj.writer) {
+        messageDiv.style.textAlign = 'right';
+        messageDiv.style.width = '60%';
+        messageDiv.style.paddingRight = '10px';
+        messageDiv.textContent = messageObj.message;
+      } else {
+        messageDiv.style.width = '60%';
+        messageDiv.textContent = messageObj.client +'\n' + messageObj.message;
+        // if(seanAndChatId.chatType === "lich") {
+        //   messageDiv.textContent = messageObj.message;
+        // }
+        messageDiv.style.textAlign = 'left';
+      }
+      messagesDiv.appendChild(messageDiv);
+    });
+
+
+    const inputField = document.getElementById('input');
+    inputField.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter' && inputField.value.trim() !== '') {
+        socket.emit('message', {
+          message: inputField.value,
+          chatId,
+        });
+        inputField.value = ''; // Inputni tozalash
+      }
+    });
+
+    }
+
+  </script>
+
+</body>
+</html>
+

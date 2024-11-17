@@ -7,17 +7,30 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtMiddleware } from './jwt.middleware';
 import { FilesModule } from './files/files.module';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
+import { ChatGateway } from './chat/chat.gateway'
+import { MessagesModule } from './messages/messages.module';
+import { ChatsModule } from './chats/chats.module';
+
+
 
 @Module({
-  imports: [ 
+  imports: [  
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../..', 'public'), // 'public' papkasidan fayllar uzatiladi
+    }),
     MongooseModule.forRoot('mongodb://localhost:27017/nestauth'),
     UsersModule, 
-    FilesModule
+    FilesModule,
+    MessagesModule,
+    ChatsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService, JwtService, ChatGateway],
 })
-export class AppModule implements NestModule {
+export class AppModule {// implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware) 
