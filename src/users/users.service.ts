@@ -76,6 +76,7 @@ export class UsersService {
 
     async searchId(id: string): Promise<IAccount[]> {
         const accounts = await this.accountModel.find();
-        return accounts.filter(acc => acc.id.startsWith(id));
+        // return accounts.filter(acc => acc.id.startsWith(id));
+        return accounts.filter(acc => acc.username.startsWith(id));
     }
 }
