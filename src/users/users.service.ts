@@ -77,6 +77,13 @@ export class UsersService {
     async searchId(id: string): Promise<IAccount[]> {
         const accounts = await this.accountModel.find();
         // return accounts.filter(acc => acc.id.startsWith(id));
-        return accounts.filter(acc => acc.username.startsWith(id));
+        return accounts.filter(acc => acc.username.toLocaleLowerCase().startsWith(id.toLocaleLowerCase()));
+        // return this.accountModel.find({
+        //     username: { $regex: new RegExp(id, 'i') }, // 'i' flag - case-insensitive
+        // });
+    }
+
+    async getById(id: string): Promise<IAccount> {
+        return this.accountModel.findById(id);
     }
 }

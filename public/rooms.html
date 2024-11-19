@@ -6,6 +6,84 @@
   <title>Ma'lumotlarni qabul qilish</title>
   <style>
 
+    /* Umumiy stil */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f1f1f1;
+}
+
+.chat-container {
+  width: 400px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.messages {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: scroll;
+  background-color: #e5e5e5;
+  border-radius: 8px 8px 0 0;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 75%;
+  word-wrap: break-word;
+  font-size: 16px;
+}
+
+.received {
+  background-color: #e4e6eb;
+  align-self: flex-start;
+}
+
+.sent {
+  background-color: #0084ff;
+  color: white;
+  align-self: flex-end;
+}
+
+.input-container {
+  display: flex;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 0 0 8px 8px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  border-color: #0084ff;
+}
+
+button {
+  padding: 10px 15px;
+  margin-left: 10px;
+  background-color: #0084ff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0073e6;
+}
+
+
 * {
     margin: 0;
     padding: 0;
@@ -23,17 +101,17 @@
     overflow-y: auto;
     background-color: #f4f4f4;
 }
-
+/* 
 #detailContainer {
-    width: 70%; /* O'ng qism */
+    width: 100%;  //O'ng qism 
     padding: 20px;
     background-color: #e1e1e1;
-    display: none; /* Boshlang'ichda yashirin */
-}
+    display: none; // Boshlang'ichda yashirin 
+} */
 
-#detailContainer.active {
+/* #detailContainer.active {
     display: block;
-}
+} */
 
 div {
     margin-bottom: 10px;
@@ -48,10 +126,7 @@ div:hover {
 }
 
 
-body {
-      font-family: Arial, sans-serif;
-    }
-    #messages {
+    /* #messages {
       height: 85%;
       overflow-y: auto;
       border: 1px solid #ccc;
@@ -63,7 +138,7 @@ body {
       padding: 10px;
       font-size: 16px;
       border: 1px solid #ccc;
-    }
+    } */
 /* 
         .item {
             margin: 5px;
@@ -86,7 +161,7 @@ body {
 
       <div class="input-group">
         <label for="groupOrAccountId">username</label>
-        <input type="text" id="groupOrAccountId" placeholder="Guruh yoki foydalanuvchi username kiriting" required />
+        <input type="text" id="groupOrAccountId" placeholder="search" required />
         <button id="searchButton">search</button>
       </div>
 
@@ -95,7 +170,6 @@ body {
     </div>
 
     <div id="messageContainer"></div>
-
 
   </div>
 
@@ -126,53 +200,60 @@ body {
         }
       });
 
-      function handleChat(chat) {
-      let divMs = document.createElement('div');
+      function handleChat({chat, user}) {
 
-      const chatOrGroupName = document.createElement('h3');
-      chatOrGroupName.textContent = chat.participant_ids.join(" and ");
+        console.log("handleChat user: ", user);
 
-      const messages = document.createElement('div');
-      messages.id = 'messages';
+        if(chatIdAnd_ListAndMsDiv.has(chat._id)) {
+          return;
+        }
 
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = 'input';
-      input.placeholder = 'Type a message...';
+        const divMs = document.createElement('div');
 
-      input.addEventListener('keypress', function(event) {
+        const chatOrGroupName = document.createElement('h3');
+        chatOrGroupName.textContent = user.name;
+
+        const messages = document.createElement('div');
+        // messages.id = 'messages';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        // input.id = 'input';
+        input.placeholder = 'Type a message...';
+
+        input.addEventListener('keypress', function(event) {
           if (event.key === 'Enter' && input.value.trim() !== '') {
             socket.emit('message', {
               message: input.value,
               chatId,
+              account_id,
             });
             input.value = ''; // Inputni tozalash
           }
         });
 
-      divMs.appendChild(chatOrGroupName);
-      divMs.appendChild(messages);
-      divMs.appendChild(input);
-      divMs.style.display = 'none'
+        const divList = document.createElement('div');
+        divList.textContent = user.name;
 
-      messageContainer.appendChild(divMs);
+        divList.onclick = function() {
+          chatId = chat._id;
+          if(divforMsTemp) {
+            divforMsTemp.style.display = 'none';
+          }
+          divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
+          divforMsTemp.style.display = 'inline';
+        };
 
-      let divList = document.createElement('div');
-      divList.textContent = chat.participant_ids.join(" and ");
+        divMs.appendChild(chatOrGroupName);
+        divMs.appendChild(messages);
+        divMs.appendChild(input);
+        divMs.style.display = 'none'
 
-      divList.onclick = function() {
-        chatId = chat._id;
-        if(divforMsTemp) {
-          divforMsTemp.style.display = 'none';
-        }
-        divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
-        divforMsTemp.style.display = 'inline';
-      };
-      if(!chatIdAnd_ListAndMsDiv.has(chat._id)) {
+        messageContainer.appendChild(divMs);
+
         listContainer.appendChild(divList);
         chatIdAnd_ListAndMsDiv.set(chat._id, [divList, divMs]);
       }
-    }
 
 
       document.getElementById('searchButton').addEventListener('click', function() {
@@ -190,15 +271,17 @@ body {
       socket.on('searchId', (userOrGroups) => {
         // const resultSearch = document.getElementById("groupOrAccountId");
         console.log("search userOrGroup: ", userOrGroups);
-
+        const divsFor_userOrGroups = [];
         userOrGroups.forEach(item => {
           let div = document.createElement("div");
+          divsFor_userOrGroups.push(div);
           div.textContent = item.name;
           div.onclick = async function() {
-            await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id}, () =>{
+            await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
+            for (const div of divsFor_userOrGroups) {
               div.remove();
-            });
-          }
+            }
+          };
           listContainer.insertBefore(div, listContainer.children[0]);
         })
       });
@@ -212,18 +295,23 @@ body {
 
       // Yangi xabarni ekranda ko'rsatish
     socket.on('message', function(messageObj) {
-      console.log("client: ", messageObj.s);
+
+      const divforMsTemp = chatIdAnd_ListAndMsDiv.get(messageObj.chatId)[1];
       messagesDiv = divforMsTemp.children[1];
       const messageDiv = document.createElement('div');
       if(messageObj.writer) {
-        messageDiv.style.textAlign = 'right';
-        messageDiv.style.width = '60%';
-        messageDiv.style.paddingRight = '10px';
-        messageDiv.textContent = messageObj.message;
+        // messageDiv.style.textAlign = 'right';
+        // messageDiv.style.width = '60%';
+        // messageDiv.style.paddingRight = '10px';
+        // messageDiv.textContent = messageObj.message;
+        messageDiv.classList.add('message', 'sent');
+        messageDiv.innerHTML = `<span class="user">You:</span> ${messageObj.message}`;
       } else {
-        messageDiv.style.width = '60%';
-        messageDiv.textContent = messageObj.client +'\n' + messageObj.message;
-        messageDiv.style.textAlign = 'left';
+        // messageDiv.style.width = '60%';
+        // messageDiv.textContent = messageObj.client +'\n' + messageObj.message;
+        // messageDiv.style.textAlign = 'left';
+        messageDiv.classList.add('message', 'received');
+        messageDiv.innerHTML = `<span class="user">${messageObj.client}:</span> ${messageObj.message}`;
       }
       messagesDiv.appendChild(messageDiv);
     });

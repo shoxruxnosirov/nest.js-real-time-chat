@@ -6,11 +6,6 @@ import { ISean } from './interfaces/sean.interface';
 import { ChatsService } from 'src/chats/chats.service';
 import { IChat } from 'src/chats/interfaces/chat.interface';
 
-type ChatsAndSean = {
-    rooms: IChat[];
-    sean: ISean;
-  }
-
 @Controller('auth')
 export class UsersController {
     constructor(
