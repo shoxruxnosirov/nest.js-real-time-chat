@@ -9,6 +9,9 @@ import { ChatsService } from 'src/chats/chats.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { UsersService } from 'src/users/users.service';
 import { IAccount } from 'src/users/interfaces/account.interface';
+import { MessageDto } from 'src/messages/dto/message.dto';
+import { IMessage } from 'src/messages/interfaces/message.interface';
+import { Message } from 'src/messages/schemas/messages.schema';
 
 
 @WebSocketGateway(3001, {
@@ -42,14 +45,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const chats2 = chats.map((chat) => {
       const userId = chat.participant_ids.find(accId => accId !== accountId);
+      // if(this.accountAndSocketArr.has(accountId)) {
+        this.accountAndSocketArr.get(userId)?.forEach(socketId => {
+          this.sockets.get(socketId).emit("userStatus", { chatId: chat.id, status: "online" });
+        });
+      // }
       return {chat, userId };
     });
     
-    const chats3: {chat: IChat, user: IAccount} [] = [];
+    const chats3: {chat: IChat, user: IAccount, messages: Message[], status: boolean } [] = [];
 
-    const chats2_lang:number = chats2.length;
+    const chats2_lang: number = chats2.length;
     for (let i = 0; i < chats2_lang; i++) {
-      chats3[i] = { chat: chats2[i].chat, user: await this.userService.getById(chats2[i].userId)};
+      chats3[i] = { 
+        chat: chats2[i].chat,
+        user: await this.userService.getById(chats2[i].userId),
+        messages: await this.messagesService.findAllByChatId(chats2[i].chat.id),
+        status: this.accountAndSocketArr.has(chats2[i].userId)
+      };
     }
     console.log("takeAllData chats: ", chats3);
     client.emit( "takeAllData", chats3);
@@ -59,6 +72,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.accountAndSocketArr.get(accountId).push(client.id);
     } else {
      this.accountAndSocketArr.set(accountId, [client.id]);
+    //  const chats = await this.chatService.findUserChats(accountId);
+    //  chats.forEach(chat => {})
    }
   }
 
@@ -66,6 +81,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+    this.sockets.delete(client.id);
+    this.accountAndSocketArr.forEach(async (socketIds: string[], accountId: string) => {
+
+      if(socketIds.includes(client.id)) {
+        const socketArr = this.accountAndSocketArr.get(accountId);
+        for (let i = socketArr.length - 1; i >= 0; i--) {
+          if (socketArr[i] === client.id) {
+            socketArr.splice(i, 1);
+          }
+        }
+        if(socketArr.length === 0) {
+          const chats = await this.chatService.findUserChats(accountId);
+          chats.forEach((chat) => {
+            const userId = chat.participant_ids.find(accId => accId !== accountId);
+              this.accountAndSocketArr.get(userId)?.forEach(socketId => {
+                this.sockets.get(socketId).emit("userStatus", { chatId: chat.id, status: 'offline' });
+              });
+          });
+        }
+      }
+
+    })
   }
 
   @SubscribeMessage('addChatUser')
@@ -75,15 +112,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if(!existChat) {
       existChat = await (await this.chatService.create({ type: "lich", participant_ids: [data.clientAccId, data.searchUserId]})).save();
       console.log("yangi chat hosil qilindi: ", existChat);
+
+      const userSearchUser = await this.userService.getById(data.searchUserId);
+      this.accountAndSocketArr.get(data.clientAccId)?.forEach(socketId => {
+        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userSearchUser});
+      });
+      const userClient = await this.userService.getById(data.clientAccId);
+      this.accountAndSocketArr.get(data.searchUserId)?.forEach(socketId => {
+        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userClient});
+      });
     } 
-    const userSearchUser = await this.userService.getById(data.searchUserId);
-    this.accountAndSocketArr.get(data.clientAccId)?.forEach(socketId => {
-      this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userSearchUser});
-    });
-    const userClient = await this.userService.getById(data.clientAccId);
-    this.accountAndSocketArr.get(data.searchUserId)?.forEach(socketId => {
-      this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userClient});
-    });
   }
 
   @SubscribeMessage('searchId')
@@ -92,53 +130,40 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.emit("searchId", accounts);
   }
 
-
-  @SubscribeMessage('findUser')
-  handleFindUser(@MessageBody() data: { username: string }, client: Socket): WsResponse<any> {
-    // this.users.set(data.username, client.id); // foydalanuvchining socketId'sini saqlash
-    return { event: 'userFound', data: `Foydalanuvchi ${data.username} topildi` };
-  }
-
   // Clientdan xabar olish
   @SubscribeMessage('message') //sendMessage
   async handleMessage(client: Socket, messageObj: {chatId: string, message: string, account_id: string}) {
     console.log(`Received message from ${client.id}: ${messageObj.message}`);
     // this.server.emit('message', {client: client.id, message});  // Barcha clientlarga xabar yuborish
+
+    const messageDto: MessageDto = {
+      chat_id: messageObj.chatId,
+      sender_id: messageObj.account_id,
+      content: messageObj.message,
+      timestamp: new Date()
+    };
+    const message = await this.messagesService.create(messageDto);
+    console.log("message: ", message);
+
     const chat = await this.chatService.findOne(messageObj.chatId);
-    console.log(chat);
-    const clientAcc: IAccount = await this.userService.getById(messageObj.account_id); //   keraksiz bo'lishi mumkin buuu agar chaqirish krak bulmasa
     chat.participant_ids.forEach( async accountId => {
       const sockets = this.accountAndSocketArr.get(accountId);
       if(sockets) {
         const writer = sockets.includes(client.id);
         sockets.forEach(socketId => {
-          this.sockets.get(socketId).emit("message", { client: clientAcc.name, message: messageObj.message, writer, chatId: messageObj.chatId });
+          this.sockets.get(socketId).emit("message", { writer, message: messageObj.message, chatId: messageObj.chatId });
         });
       }
     });
   }
 
-  @SubscribeMessage('joinGroup')
-  async joinGroup(@MessageBody() { accountId, chatId }: { accountId: string, chatId: string }, client: Socket) {//: Promise<string> {
-    // const user = await this.userModel.findById(userId);
-    // const group = await this.groupModel.findById(groupId);
+  // @SubscribeMessage('joinGroup')
+  // async joinGroup(@MessageBody() { accountId, chatId }: { accountId: string, chatId: string }, client: Socket) { //: Promise<string> {
+  //   const chat = await this.chatService.findOne(chatId);
 
-    // if (!user || !group) {
-    //   return 'User or Group not found';
-    // }
-
-    // Foydalanuvchini guruhga qo'shish
-    const chat = await this.chatService.findOne(chatId);
-    
-
-    if (!chat.participant_ids.includes(accountId) || chat.type === "group") {
-      chat.participant_ids.push(accountId);
-      await chat.save();
-    }
-
-    // Klientni o'ziga xos ID bilan ro'yxatga olish
-    // this.users.set(client.id, client);
-
-    // return `Foydalanuvchi ${chat.name} guruhiga qo'shildi`;
-  }
+  //   if (!chat.participant_ids.includes(accountId) && chat.type === "group") {
+  //     chat.participant_ids.push(accountId);
+  //     await chat.save();
+  //   }
+  // }
 }

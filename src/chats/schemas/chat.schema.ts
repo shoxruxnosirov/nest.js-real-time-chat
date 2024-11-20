@@ -10,6 +10,6 @@ export const ChatSchema = new Schema<IChat>({
   type: { type: String, required: true },
   participant_ids: { type: [String], required: false},
   chatname: { type: String, required: false},
-    changeGroupData: { type: [Boolean], required: false },
-    removeMessage: { type: [Boolean], required: false }
+  changeGroupData: { type: [Boolean], required: false },
+  removeMessage: { type: [Boolean], required: false }
 });

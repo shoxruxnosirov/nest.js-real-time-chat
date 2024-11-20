@@ -3,173 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ma'lumotlarni qabul qilish</title>
-  <style>
+  <!-- <title>Ma'lumotlarni qabul qilish</title> -->
+  <title>Telegram Clone</title>
+  <link rel="stylesheet" href="styles4.css">
 
-    /* Umumiy stil */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f1f1f1;
-}
-
-.chat-container {
-  width: 400px;
-  margin: 20px auto;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.messages {
-  padding: 10px;
-  max-height: 400px;
-  overflow-y: scroll;
-  background-color: #e5e5e5;
-  border-radius: 8px 8px 0 0;
-}
-
-.message {
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 75%;
-  word-wrap: break-word;
-  font-size: 16px;
-}
-
-.received {
-  background-color: #e4e6eb;
-  align-self: flex-start;
-}
-
-.sent {
-  background-color: #0084ff;
-  color: white;
-  align-self: flex-end;
-}
-
-.input-container {
-  display: flex;
-  padding: 10px;
-  background-color: #f8f8f8;
-  border-radius: 0 0 8px 8px;
-}
-
-input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  outline: none;
-}
-
-input[type="text"]:focus {
-  border-color: #0084ff;
-}
-
-button {
-  padding: 10px 15px;
-  margin-left: 10px;
-  background-color: #0084ff;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0073e6;
-}
-
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-#container {
-    display: flex;
-    height: 100vh;
-}
-
-#listContainer {
-    width: 30%; /* Chap qism */
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #f4f4f4;
-}
-/* 
-#detailContainer {
-    width: 100%;  //O'ng qism 
-    padding: 20px;
-    background-color: #e1e1e1;
-    display: none; // Boshlang'ichda yashirin 
-} */
-
-/* #detailContainer.active {
-    display: block;
-} */
-
-div {
-    margin-bottom: 10px;
-    padding: 10px;
-    cursor: pointer;
-    background-color: #d3d3d3;
-    border-radius: 5px;
-}
-
-div:hover {
-    background-color: #a9a9a9;
-}
-
-
-    /* #messages {
-      height: 85%;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 5px;
-    }
-    #input {
-      width: 90%;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-    } */
-/* 
-        .item {
-            margin: 5px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-        .item:hover {
-            background-color: #e0e0e0;
-        } */
-</style>
 </head>
 <body>
-  <h1>Ma'lumotlar:</h1>
+  <div id="container" class="container">
 
-  <div id="container">
+    <div id="listContainer" class="sidebar">
 
-    <div id="listContainer">
-
-      <div class="input-group">
-        <label for="groupOrAccountId">username</label>
-        <input type="text" id="groupOrAccountId" placeholder="search" required />
-        <button id="searchButton">search</button>
+      <div class="search-bar">
+        <input type="text" id="groupOrAccount_Name" placeholder="Search" required />
+        <!-- <button id="searchButton">search</button> -->
       </div>
-
-      <!-- <div id="resultSearch" class="hidden"></div> -->
-
+      <ul class="chat-list" id="search-chats-list"></ul>
+      <ul class="chat-list" id="chats-list"></ul>
     </div>
-
-    <div id="messageContainer"></div>
+    
+    <div id="messageContainer" class="chat-window"></div>
 
   </div>
 
@@ -177,7 +29,9 @@ div:hover {
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
   <script>
 
-    
+    const chatsList = document.getElementById("chats-list");
+    const searchChatsList = document.getElementById('search-chats-list');
+    searchChatsList.style.display = 'none';
     const chatIdAnd_ListAndMsDiv = new Map();
     let divforMsTemp;
     let listContainer = document.getElementById('listContainer');
@@ -200,27 +54,86 @@ div:hover {
         }
       });
 
-      function handleChat({chat, user}) {
+      socket.account_id = account_id;
 
-        console.log("handleChat user: ", user);
+      console.log("socket: ", socket);
+
+      function handleChat({chat, user, messages, status}) {
+
+        chatId = chat._id;
 
         if(chatIdAnd_ListAndMsDiv.has(chat._id)) {
           return;
         }
 
+        const li = document.createElement('li');
+        li.classList.add('chat-item');
+        const div1 = document.createElement('div');
+        div1.classList.add('icon', 'deleted');
+
+        const div2 = document.createElement('div');
+        div2.classList.add('info');
+        const p = document.createElement('p');
+        p.textContent = user.name;
+        const span = document.createElement('span');
+
+        if(messages && messages.length > 0){
+          const lastMessage = messages[messages.length-1];
+          if(lastMessage.sender_id === account_id) {
+            span.textContent = lastMessage.content + "\nYou:"+ getDateLikeHHMM(lastMessage.timestamp);
+          } else {
+            span.textContent = lastMessage.content + "\n" + user.name + ":"+ getDateLikeHHMM(lastMessage.timestamp);
+          }
+        }
+
+        div2.appendChild(p);
+        div2.appendChild(span);
+        li.appendChild(div1);
+        li.appendChild(div2);
+        li.onclick = function() {
+          chatId = chat._id;
+          if(divforMsTemp) {
+            divforMsTemp.style.display = 'none';
+          }
+          divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
+          divforMsTemp.style.display = 'inline';
+        }; 
+
+
         const divMs = document.createElement('div');
+        // divMs.classList.add('chat-window');
+        const divHeader = document.createElement('div');
+        divMs.appendChild(divHeader);
+        divHeader.classList.add('chat-header');
+        const p2 = document.createElement('p');
+        divHeader.appendChild(p2);
+        p2.textContent = user.name;
+        const span2 = document.createElement('span');
+        divHeader.appendChild(span2);
+        span2.textContent = status? "online": "offline";
+        const divChatBody = document.createElement('div');
+        divChatBody.classList.add('chat-body');
+        divMs.appendChild(divChatBody);
 
-        const chatOrGroupName = document.createElement('h3');
-        chatOrGroupName.textContent = user.name;
-
-        const messages = document.createElement('div');
-        // messages.id = 'messages';
-
+        if(messages && messages.length && messages.length > 0)
+        for(let i = 0; i < messages.length; i++) {
+          const div = document.createElement('div');
+          if(messages[i].sender_id === account_id) {
+            div.classList.add('message', 'outgoing');
+          } else {
+            div.classList.add('message', 'incoming');
+          }
+          div.innerHTML = `<p>${messages[i].content}</p><span>${getDateLikeHHMM(messages[i].timestamp)}</span>`;
+          divChatBody.appendChild(div);
+        }
+        
+        const divInput = document.createElement('div');
+        divMs.appendChild(divInput);
+        divInput.classList.add('chat-input');
+        
         const input = document.createElement('input');
         input.type = 'text';
-        // input.id = 'input';
         input.placeholder = 'Type a message...';
-
         input.addEventListener('keypress', function(event) {
           if (event.key === 'Enter' && input.value.trim() !== '') {
             socket.emit('message', {
@@ -231,59 +144,66 @@ div:hover {
             input.value = ''; // Inputni tozalash
           }
         });
+        divInput.appendChild(input);
+        const button = document.createElement('button');
+        button.textContent = "Send";
+        divInput.appendChild(button);
 
-        const divList = document.createElement('div');
-        divList.textContent = user.name;
-
-        divList.onclick = function() {
-          chatId = chat._id;
-          if(divforMsTemp) {
-            divforMsTemp.style.display = 'none';
-          }
-          divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
-          divforMsTemp.style.display = 'inline';
-        };
-
-        divMs.appendChild(chatOrGroupName);
-        divMs.appendChild(messages);
-        divMs.appendChild(input);
         divMs.style.display = 'none'
 
         messageContainer.appendChild(divMs);
-
-        listContainer.appendChild(divList);
-        chatIdAnd_ListAndMsDiv.set(chat._id, [divList, divMs]);
+        chatsList.appendChild(li);
+        chatIdAnd_ListAndMsDiv.set(chat._id, [li, divMs]);
       }
 
-
-      document.getElementById('searchButton').addEventListener('click', function() {
-      const searchId = document.getElementById('groupOrAccountId').value;
-
-      // Guruhga qo'shish uchun serverga so'rov yuborish
-        socket.emit('searchId', searchId, function(response) {
-          console.log("searchResponse", response);
-        });
-
+      
+      const searchUser = document.getElementById('groupOrAccount_Name');
+      searchUser.addEventListener('input', function () {
+        searchChatsList.innerHTML = "";
+        if(searchUser.value.length > 2) {
+          socket.emit('searchId', searchUser.value);
+        } else {
+          searchChatsList.style.display = 'none';
+          chatsList.style.display = 'inline';
+        }
       });
 
       socket.on("addChatUser", handleChat);
+
+      socket.on("userStatus", ({chatId, status}) => {
+        chatIdAnd_ListAndMsDiv.get(chatId)[1].children[0].children[1].textContent = status;
+      });
       
       socket.on('searchId', (userOrGroups) => {
-        // const resultSearch = document.getElementById("groupOrAccountId");
         console.log("search userOrGroup: ", userOrGroups);
-        const divsFor_userOrGroups = [];
+        searchChatsList.style.display = 'inline';
+        chatsList.style.display = 'none';
+
         userOrGroups.forEach(item => {
-          let div = document.createElement("div");
-          divsFor_userOrGroups.push(div);
-          div.textContent = item.name;
-          div.onclick = async function() {
+
+          const li = document.createElement('li');
+          li.classList.add('chat-item');
+          const div1 = document.createElement('div');
+          div1.classList.add('icon', 'deleted');
+          const div2 = document.createElement('div');
+          div2.classList.add('info');
+          const p = document.createElement('p');
+          p.textContent = item.name;
+          const span = document.createElement('span');
+          span.textContent = getDateLikeHHMM();
+          div2.appendChild(p);
+          div2.appendChild(span);
+          li.appendChild(div1);
+          li.appendChild(div2);
+          li.onclick = async function() {
             await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
-            for (const div of divsFor_userOrGroups) {
-              div.remove();
-            }
+            searchChatsList.innerHTML ='';
+            searchChatsList.style.display = 'none';
+            chatsList.style.display = 'inline';
           };
-          listContainer.insertBefore(div, listContainer.children[0]);
-        })
+          searchChatsList.appendChild(li);
+
+        });
       });
 
       socket.on('takeAllData', (chats) => {
@@ -299,23 +219,28 @@ div:hover {
       const divforMsTemp = chatIdAnd_ListAndMsDiv.get(messageObj.chatId)[1];
       messagesDiv = divforMsTemp.children[1];
       const messageDiv = document.createElement('div');
+      messageDiv.innerHTML = `<p>${messageObj.message}</p><span>${getDateLikeHHMM()}</span>`;
       if(messageObj.writer) {
-        // messageDiv.style.textAlign = 'right';
-        // messageDiv.style.width = '60%';
-        // messageDiv.style.paddingRight = '10px';
-        // messageDiv.textContent = messageObj.message;
-        messageDiv.classList.add('message', 'sent');
-        messageDiv.innerHTML = `<span class="user">You:</span> ${messageObj.message}`;
+        messageDiv.classList.add('message', 'outgoing');
       } else {
-        // messageDiv.style.width = '60%';
-        // messageDiv.textContent = messageObj.client +'\n' + messageObj.message;
-        // messageDiv.style.textAlign = 'left';
-        messageDiv.classList.add('message', 'received');
-        messageDiv.innerHTML = `<span class="user">${messageObj.client}:</span> ${messageObj.message}`;
+        messageDiv.classList.add('message', 'incoming');
       }
       messagesDiv.appendChild(messageDiv);
     });
 
+    }
+
+    function getDateLikeHHMM(time) {
+      if (time) {
+        time = new Date(time);
+      } else {
+        time = new Date();
+      }
+      let hours = time.getHours();   
+      let minutes = time.getMinutes(); 
+      hours = hours < 10 ? '0' + hours : hours;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+        return `${hours}:${minutes}`;
     }
 
   </script>

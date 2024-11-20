@@ -1,7 +1,7 @@
 export class MessageDto {
     readonly chat_id: string;
     readonly sender_id: string;
-    readonly receiver_id: string;
+    // readonly receiver_id: string;
     readonly content: string;
     readonly timestamp: Date;
 }
