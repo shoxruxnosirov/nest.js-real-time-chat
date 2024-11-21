@@ -12,6 +12,7 @@ import { IAccount } from 'src/users/interfaces/account.interface';
 import { MessageDto } from 'src/messages/dto/message.dto';
 import { IMessage } from 'src/messages/interfaces/message.interface';
 import { Message } from 'src/messages/schemas/messages.schema';
+import { start } from 'repl';
 
 
 @WebSocketGateway(3001, {
@@ -112,14 +113,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if(!existChat) {
       existChat = await (await this.chatService.create({ type: "lich", participant_ids: [data.clientAccId, data.searchUserId]})).save();
       console.log("yangi chat hosil qilindi: ", existChat);
-
+    
+      const searchUserStatus = this.accountAndSocketArr.has(data.searchUserId);
       const userSearchUser = await this.userService.getById(data.searchUserId);
+      
       this.accountAndSocketArr.get(data.clientAccId)?.forEach(socketId => {
-        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userSearchUser});
+        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userSearchUser, messages:[], status: searchUserStatus});
       });
       const userClient = await this.userService.getById(data.clientAccId);
       this.accountAndSocketArr.get(data.searchUserId)?.forEach(socketId => {
-        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userClient});
+        this.sockets.get(socketId).emit("addChatUser", {chat: existChat, user: userClient, messages:[], status: true});
       });
     } 
   }
