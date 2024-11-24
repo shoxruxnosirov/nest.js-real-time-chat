@@ -1,6 +1,6 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { IAccount } from './interfaces/account.interface';
 import { ISean } from './interfaces/sean.interface';
@@ -69,21 +69,21 @@ export class UsersService {
     } 
 
     // bu ustida ham o'ylab ko'rish kerak
-    async deleteAccount(id: string): Promise<any> {
+    async deleteAccount(id: string | Types.ObjectId): Promise<any> {
         await this.seanModel.deleteMany({ account_id: id });
         return this.accountModel.findByIdAndDelete(id).exec();
     }
 
-    async searchId(id: string): Promise<IAccount[]> {
+    async searchUsername(username: string): Promise<IAccount[]> {
         const accounts = await this.accountModel.find();
         // return accounts.filter(acc => acc.id.startsWith(id));
-        return accounts.filter(acc => acc.username.toLocaleLowerCase().startsWith(id.toLocaleLowerCase()));
+        return accounts.filter(acc => acc.username.toLocaleLowerCase().startsWith(username.toLocaleLowerCase()));
         // return this.accountModel.find({
         //     username: { $regex: new RegExp(id, 'i') }, // 'i' flag - case-insensitive
         // });
     }
 
-    async getById(id: string): Promise<IAccount> {
+    async getById(id: Types.ObjectId): Promise<IAccount> {
         return this.accountModel.findById(id);
     }
 }

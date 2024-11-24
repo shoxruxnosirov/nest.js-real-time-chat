@@ -1,40 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Message, MessageDocument } from './schemas/messages.schema';
+import { Model, Types } from 'mongoose';
+// import { Message, MessageDocument } from './schemas/messages.schema';
 import { MessageDto } from './dto/message.dto';
+import { IMessage } from './interfaces/message.interface';
 
 @Injectable()
 export class MessagesService {
   constructor(
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel("Message") private messageModel: Model<IMessage>,
+    
   ) {}
 
   // Create a new message
-  async create(MessageDto: MessageDto): Promise<Message> {
+  async create(MessageDto: MessageDto): Promise<IMessage> {
     const newMessage = new this.messageModel(MessageDto);
     return newMessage.save();
   }
 
   // Get all messages by chat_id
-  async findAllByChatId(chat_id: string): Promise<Message[]> {
+  async findAllByChatId(chat_id: string | Types.ObjectId): Promise<IMessage[]> {
     return this.messageModel.find({ chat_id }).exec();
   }
 
   // Get a specific message by message_id
-  async findOneByMessageId(message_id: string): Promise<Message> {
-    return this.messageModel.findOne({ message_id }).exec();
+  async findOneByMessageId(_id: string | Types.ObjectId): Promise<IMessage> {
+    return this.messageModel.findById(_id).exec();
   }
 
   // Update a message by message_id
-  async updateMessage(message_id: string, updateMessageDto: MessageDto): Promise<Message> {
-    return this.messageModel.findOneAndUpdate({ message_id }, updateMessageDto, { new: true }).exec();
+  async updateMessage(_id: string | Types.ObjectId, updateMessageDto: MessageDto): Promise<IMessage> {
+    return this.messageModel.findOneAndUpdate({ _id }, updateMessageDto, { new: true }).exec();
   }
 
   // Delete a message by message_id
-  async deleteMessage(message_id: string): Promise<{ deleted: boolean }> {
-    const result = await this.messageModel.deleteOne({ message_id }).exec();
-    return { deleted: result.deletedCount > 0 };
+  async deleteMessage(_id: string | Types.ObjectId): Promise<any> {
+    return this.messageModel.findByIdAndDelete(_id).exec();
   }
   
 }

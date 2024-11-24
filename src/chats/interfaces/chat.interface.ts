@@ -1,10 +1,11 @@
 import { Document } from 'mongoose';
+import { Types } from 'mongoose';
 
 export interface IChat extends Document {
-  readonly id: string;
+  readonly id: string | Types.ObjectId;
   readonly type: string;
   chatname?: string;
-  participant_ids: string[];
+  participant_ids: Types.ObjectId[];
   changeGroupData?: boolean[];
   removeMessage?: boolean[];
 }

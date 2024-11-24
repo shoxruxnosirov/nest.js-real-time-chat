@@ -8,7 +8,9 @@ import { IChat } from '../interfaces/chat.interface';
 
 export const ChatSchema = new Schema<IChat>({
   type: { type: String, required: true },
-  participant_ids: { type: [String], required: false},
+  // participant_ids: { type: [String], required: false},
+  // participant_ids: { type: [Schema.Types.ObjectId], ref: 'Account', required: false},
+  participant_ids: [{ type: Schema.Types.ObjectId, ref: 'Account' }],
   chatname: { type: String, required: false},
   changeGroupData: { type: [Boolean], required: false },
   removeMessage: { type: [Boolean], required: false }

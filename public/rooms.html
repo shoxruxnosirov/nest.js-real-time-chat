@@ -6,12 +6,33 @@
   <!-- <title>Ma'lumotlarni qabul qilish</title> -->
   <title>Telegram Clone</title>
   <link rel="stylesheet" href="styles4.css">
+  <style>
+        .context-menu {
+            position: absolute;
+            display: none;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .context-menu li {
+            list-style: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .context-menu li:hover {
+            background-color: #f0f0f0;
+        }
+  </style>
 
 </head>
 <body>
   <div id="container" class="container">
 
     <div id="listContainer" class="sidebar">
+      <ul class="chat-list" id="owner-of-the-account"></ul>
 
       <div class="search-bar">
         <input type="text" id="groupOrAccount_Name" placeholder="Search" required />
@@ -21,7 +42,17 @@
       <ul class="chat-list" id="chats-list"></ul>
     </div>
     
-    <div id="messageContainer" class="chat-window"></div>
+    <div id="messageContainer" class="chat-window">
+      <ul class="context-menu" id="contextMenu">
+        <li onclick="handleAction('reply')">Reply</li>
+        <li onclick="handleAction('edit')">Edit</li>
+        <li onclick="handleAction('copy')">Copy Text</li>
+        <!-- <li onclick="handleAction('pin')">Pin</li> -->
+        <!-- <li onclick="handleAction('forward')">Forward</li> -->
+        <!-- <li onclick="handleAction('select')">Select</li> -->
+        <li onclick="handleAction('delete')">Delete</li>
+    </ul>
+    </div>
 
   </div>
 
@@ -29,6 +60,7 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
   <script>
 
+    let handleAction;
     const chatsList = document.getElementById("chats-list");
     const searchChatsList = document.getElementById('search-chats-list');
     searchChatsList.style.display = 'none';
@@ -36,6 +68,8 @@
     let divforMsTemp;
     let listContainer = document.getElementById('listContainer');
     let messageContainer = document.getElementById('messageContainer');
+    const contextMenu = document.getElementById("contextMenu");
+    let currentMessage = null;
     let chatId;
     let account_id;
 
@@ -57,6 +91,49 @@
       socket.account_id = account_id;
 
       console.log("socket: ", socket);
+
+      document.addEventListener("click", () => {
+        contextMenu.style.display = "none";
+      });
+
+      handleAction = function (action) {
+        // console.log("action: ", action, "\ncurrentMessage: ", currentMessage);
+        if (action === "delete" && currentMessage) {
+          // currentMessage.innerHTML = '';
+          console.log([currentMessage], " o'chirildi");
+          socket.emit("deleteMessage", {chatId, messageId: currentMessage.id});
+        } else if (action === "reply" && currentMessage) {
+          alert(`Replying to: "${currentMessage.innerText}"`);
+        }
+        contextMenu.style.display = "none"; // Menyuni yashirish
+      }
+
+      function ownerOfAccFunc (ownerOfThisAcc) {
+        const ownerOAcc = document.getElementById('owner-of-the-account');
+
+        ownerOAcc.innerHTML = `<li class="chat-item">
+            <div class="icon deleted"></div>
+            <div class="info">
+              <p>${ownerOfThisAcc.name}</p>
+              <span>@${ownerOfThisAcc.username}</span>
+            </div>
+          </li>`
+        // const li = document.createElement('li');
+        // li.classList.add('chat-item');
+        // ownerOAcc.appendChild(li);
+        // const div1 = document.createElement('div');
+        // div1.classList.add('icon', 'deleted');
+        // const div2 = document.createElement('div');
+        // div2.classList.add('info');
+        // const p = document.createElement('p');
+        // p.textContent = ownerOfThisAcc.name;
+        // const span = document.createElement('span');
+        // span.textContent = "@" + ownerOfThisAcc.username;
+        // div2.appendChild(p);
+        // div2.appendChild(span);
+        // li.appendChild(div1);
+        // li.appendChild(div2);
+      }
 
       function handleChat({chat, user, messages, status}) {
 
@@ -80,9 +157,9 @@
         if(messages && messages.length > 0){
           const lastMessage = messages[messages.length-1];
           if(lastMessage.sender_id === account_id) {
-            span.textContent = lastMessage.content + "\nYou:"+ getDateLikeHHMM(lastMessage.timestamp);
+            span.textContent = '[' + lastMessage.content + "\n[You: "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
           } else {
-            span.textContent = lastMessage.content + "\n" + user.name + ":"+ getDateLikeHHMM(lastMessage.timestamp);
+            span.textContent = '[' + lastMessage.content + "\n[ "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
           }
         }
 
@@ -118,6 +195,34 @@
         if(messages && messages.length && messages.length > 0)
         for(let i = 0; i < messages.length; i++) {
           const div = document.createElement('div');
+          div.id = messages[i]._id;
+          // console.log("message :", messages[i]);
+          div.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+
+            const closestMessage = event.target.closest(".message");
+            if (closestMessage) {
+              currentMessage = closestMessage;
+
+              // Kontekst menyuni sichqoncha joylashgan joyda ko'rsatish
+              contextMenu.style.top = `${event.clientY}px`;
+              contextMenu.style.left = `${event.clientX}px`;
+              contextMenu.style.display = "block";
+            }
+
+            // currentMessage = event.target;
+            // console.log("currentMessage: ", currentMessage);
+
+            // // Position the menu
+            // contextMenu.style.top = `${event.clientY}px`;
+            // contextMenu.style.left = `${event.clientX}px`;
+            // contextMenu.style.display = "block";
+          });
+
+          // document.addEventListener("click", () => {
+          //   contextMenu.style.display = "none";
+          // });
+
           if(messages[i].sender_id === account_id) {
             div.classList.add('message', 'outgoing');
           } else {
@@ -161,7 +266,7 @@
       searchUser.addEventListener('input', function () {
         searchChatsList.innerHTML = "";
         if(searchUser.value.length > 2) {
-          socket.emit('searchId', searchUser.value);
+          socket.emit('searchUsername', searchUser.value);
         } else {
           searchChatsList.style.display = 'none';
           chatsList.style.display = 'inline';
@@ -174,8 +279,8 @@
         chatIdAnd_ListAndMsDiv.get(chatId)[1].children[0].children[1].textContent = status;
       });
       
-      socket.on('searchId', (userOrGroups) => {
-        console.log("search userOrGroup: ", userOrGroups);
+      socket.on('searchUsername', (userOrGroups) => {
+        // console.log("search userOrGroup: ", userOrGroups);
         searchChatsList.style.display = 'inline';
         chatsList.style.display = 'none';
 
@@ -190,7 +295,7 @@
           const p = document.createElement('p');
           p.textContent = item.name;
           const span = document.createElement('span');
-          span.textContent = getDateLikeHHMM();
+          span.textContent = "@" + item.username;                           // hozircha shunday bo'lib tursin
           div2.appendChild(p);
           div2.appendChild(span);
           li.appendChild(div1);
@@ -202,31 +307,59 @@
             chatsList.style.display = 'inline';
           };
           searchChatsList.appendChild(li);
-
         });
       });
 
-      socket.on('takeAllData', (chats) => {
-        console.log("chats: ", chats);
+      socket.on('takeAllData', ({chats, ownerUser}) => {
+        ownerOfAccFunc(ownerUser);
+        // console.log("chats: ", chats);
         chats.forEach(handleChat);
       });
 
+      socket.on('message', function(messageObj) {
 
-
-      // Yangi xabarni ekranda ko'rsatish
-    socket.on('message', function(messageObj) {
-
-      const divforMsTemp = chatIdAnd_ListAndMsDiv.get(messageObj.chatId)[1];
-      messagesDiv = divforMsTemp.children[1];
+      const liListAndMsDiv = chatIdAnd_ListAndMsDiv.get(messageObj.chatId);
+      const liList = liListAndMsDiv[0];
+      chatsList.removeChild(liList);
+      chatsList.insertBefore(liList, chatsList.children[0]);
+      const messagesDiv = liListAndMsDiv[1].children[1];
       const messageDiv = document.createElement('div');
-      messageDiv.innerHTML = `<p>${messageObj.message}</p><span>${getDateLikeHHMM()}</span>`;
+      // console.log("message: ", [messageObj.message]);
+      messageDiv.id = messageObj.message._id;
+
+      messageDiv.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        const closestMessage = event.target.closest(".message");
+            if (closestMessage) {
+              currentMessage = closestMessage;
+
+              // Kontekst menyuni sichqoncha joylashgan joyda ko'rsatish
+              contextMenu.style.top = `${event.clientY}px`;
+              contextMenu.style.left = `${event.clientX}px`;
+              contextMenu.style.display = "block";
+            }
+            // currentMessage = event.target;
+            // contextMenu.style.top = `${event.clientY}px`;
+            // contextMenu.style.left = `${event.clientX}px`;
+            // contextMenu.style.display = "block";
+      });
+      messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
       if(messageObj.writer) {
+        liList.children[1].children[1].textContent = '[' + messageObj.message + "\n[You: "+ getDateLikeHHMM() + ']]';
         messageDiv.classList.add('message', 'outgoing');
       } else {
+        liList.children[1].children[1].textContent = '[' + messageObj.message + " \n[ "+ getDateLikeHHMM()+ ']]';
         messageDiv.classList.add('message', 'incoming');
       }
       messagesDiv.appendChild(messageDiv);
     });
+
+      socket.on('deleteMessage', function(data) {     // {chatId, messageId}
+        // console.log('deleteMesageid data: ', data);
+        // console.log("id:", data.messageId);
+        // console.log(document.getElementById(data.messageId));
+        document.getElementById(data.messageId).remove();
+      });
 
     }
 

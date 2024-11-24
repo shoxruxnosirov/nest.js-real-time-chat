@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { IChat } from './interfaces/chat.interface';
 import { ChatDto } from './dto/chat.dto';
 import { resourceUsage } from 'process';
@@ -19,19 +19,19 @@ export class ChatsService {
         return this.chatModel.find().exec();
       }
     
-      async findOne(id: string): Promise<IChat> {
+      async findOne(id: string | Types.ObjectId): Promise<IChat> {
         return this.chatModel.findById(id).exec();
       }
     
-      async update(id: string, chatDto: ChatDto): Promise<IChat> {
+      async update(id: string | Types.ObjectId, chatDto: ChatDto): Promise<IChat> {
         return this.chatModel.findByIdAndUpdate(id, chatDto, { new: true }).exec();
       }
     
-      async delete(id: string): Promise<any> {
+      async delete(id: string | Types.ObjectId): Promise<any> {
         return this.chatModel.findByIdAndDelete(id).exec();
       }
 
-      async findUserChats(id: string): Promise<IChat[]> {
+      async findUserChats(id: string | Types.ObjectId): Promise<IChat[]> {
         try {
           return this.chatModel.find({
             participant_ids: {$in: id}

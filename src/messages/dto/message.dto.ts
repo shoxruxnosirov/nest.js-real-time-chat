@@ -1,6 +1,8 @@
+import { Types } from "mongoose";
+
 export class MessageDto {
-    readonly chat_id: string;
-    readonly sender_id: string;
+    readonly chat_id: Types.ObjectId;
+    readonly sender_id: Types.ObjectId;
     // readonly receiver_id: string;
     readonly content: string;
     readonly timestamp: Date;
