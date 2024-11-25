@@ -130,16 +130,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('message') 
-  async handleMessage(client: Socket, messageObj: {chatId: string, message: string, account_id: string}) {
+  async handleMessage(client: Socket, messageObj: {chatId: string, message: string, account_id: string, reply: string}) {
     console.log(`Received message from ${client.id}: ${messageObj.message}`);
     // this.server.emit('message', {client: client.id, message});  // Barcha clientlarga xabar yuborish
 
-    const messageDto: MessageDto = {
-      chat_id: new Types.ObjectId(messageObj.chatId),
-      sender_id: new Types.ObjectId(messageObj.account_id),
-      content: messageObj.message,
-      timestamp: new Date()
-    };
+    let messageDto: MessageDto; 
+    if(messageObj.reply) {
+      messageDto = {
+        chat_id: new Types.ObjectId(messageObj.chatId),
+        sender_id: new Types.ObjectId(messageObj.account_id),
+        content: messageObj.message,
+        timestamp: new Date(),
+        reply: new Types.ObjectId(messageObj.reply)
+      };
+    } else {
+      messageDto = {
+        chat_id: new Types.ObjectId(messageObj.chatId),
+        sender_id: new Types.ObjectId(messageObj.account_id),
+        content: messageObj.message,
+        timestamp: new Date(),
+      };
+    }
     const message = await this.messagesService.create(messageDto);
     // console.log("message: ", message);
 
@@ -149,7 +160,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if(sockets) {
         const writer = sockets.includes(client.id);
         sockets.forEach(socketId => {
-          this.sockets.get(socketId).emit("message", { writer, message, chatId: messageObj.chatId });
+          this.sockets.get(socketId).emit("message", { writer, message, chatId: messageObj.chatId, reply: messageObj.reply });
         });
       }
     });

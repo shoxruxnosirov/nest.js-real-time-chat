@@ -40,6 +40,30 @@
 .add-button:hover {
   background-color: #218838; /* Hover paytida quyuq yashil */
 }
+
+.reply-box {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.reply-box span {
+  font-size: 14px;
+  color: #555;
+}
+
+.reply-box button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #ff0000;
+}
+
   </style>
 
 </head>
@@ -59,7 +83,7 @@
     
     <div id="messageContainer" class="chat-window">
       <ul class="context-menu" id="contextMenu">
-        <!-- <li onclick="handleAction('reply')">Reply</li> -->
+        <li onclick="handleAction('reply')">Reply</li>
         <li onclick="handleAction('edit')" class="edit-option">Edit</li>
         <li onclick="handleAction('copy')">Copy</li>
         <!-- <li onclick="handleAction('pin')">Pin</li> -->
@@ -116,21 +140,36 @@
         // console.log("action: ", action, "\ncurrentMessage: ", currentMessage);
         if (action === "delete" && currentMessage) {
           socket.emit("deleteMessage", {chatId, messageId: currentMessage.id});
+          currentMessage = null;
         } else if (action === "edit" && currentMessage) {
           console.log("edit uchun bosildi");
           divforMsTemp.children[2].style.display = "none";
           divforMsTemp.children[3].style.display = 'flex';
           divforMsTemp.children[3].children[0].value = currentMessage.children[0].textContent;
+          // currentMessage = null;
         } else if(action === "copy" && currentMessage) {
           const messageContent = currentMessage.children[0].textContent.trim(); // Kontentni olish
           navigator.clipboard.writeText(messageContent) // Kontentni clipboardga nusxalash
           .then(() => {
             console.log("Message copied:", messageContent);
+            currentMessage = null;
           })
           .catch((err) => {
             console.error("Failed to copy:", err);
+            currentMessage = null;
           });
+        } else if(action === "reply" && currentMessage) {
+          const replyBox = document.getElementById("replyBox" + chatId);
+          const replyText = document.getElementById("replyText" + chatId);
+          // const cancelReply = document.getElementById("cancelReply");
+            replyText.textContent = `Replying to: "${currentMessage.children[0].textContent.trim()}"`;
+            replyBox.style.display = "block";
+            divforMsTemp.children[3].children[1].focus()
+            // messageInput.focus();
+          // contextMenu.style.display = "none"; // ContextMenu'ni yopish
+          // currentMessage = null;
         }
+
         contextMenu.style.display = "none"; // Menyuni yashirish
       }
 
@@ -246,6 +285,24 @@
         
         const divInput = document.createElement('div');
         divMs.appendChild(divInput);
+        const divReplyBox = document.createElement('div');
+        divInput.appendChild(divReplyBox);
+        divReplyBox.classList.add('reply-box');
+        divReplyBox.id = 'replyBox' + chat._id;
+        divReplyBox.style.display = 'none';
+        // divReplyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+        const spanReply = document.createElement('span');
+        divReplyBox.appendChild(spanReply);
+        spanReply.id = 'replyText' + chat._id;
+        const concelReply = document.createElement('button');
+        divReplyBox.appendChild(concelReply);
+        concelReply.id = 'concelReply' + chat._id;
+        concelReply.textContent = "Concel";
+        concelReply.addEventListener('click', function () {
+          divReplyBox.style.display = "none";
+          spanReply.textContent = "";
+          currentMessage = null;
+        });
         const input = document.createElement('input');
         divInput.appendChild(input);
         const button = document.createElement('button');
@@ -263,6 +320,7 @@
                 message: input.value,
                 chatId,
                 account_id,
+                reply: currentMessage?.id
               });
               input.value = ''; 
             }
@@ -274,6 +332,7 @@
                 message: input.value,
                 chatId,
                 account_id,
+                reply: currentMessage?.id
               });
               input.value = ''; 
           }
@@ -302,6 +361,7 @@
                 chatId,
                 content: divforMsTemp.children[3].children[0].value,
               });
+              currentMessage = null;
               divInput.style.display = 'flex';
               divInput2.style.display = 'none';
               // input2.value = ''; 
@@ -315,6 +375,7 @@
                 chatId,
                 content: divforMsTemp.children[3].children[0].value,
               });
+              currentMessage = null;
               divInput.style.display = 'flex';
               divInput2.style.display = 'none';
               // input2.value = ''; 
@@ -455,7 +516,9 @@
       const liList = liListAndMsDiv[0];
       chatsList.removeChild(liList);
       chatsList.insertBefore(liList, chatsList.children[0]);
+
       const messagesDiv = liListAndMsDiv[1].children[1];
+      
       const messageDiv = document.createElement('div');
       // console.log("message: ", [messageObj.message]);
       messageDiv.id = messageObj.message._id;
@@ -465,12 +528,30 @@
         const closestMessage = event.target.closest(".message");
             if (closestMessage) {
               currentMessage = closestMessage;
+              const isIncoming = closestMessage.classList.contains("incoming");
+              const editOption = contextMenu.querySelector(".edit-option");
+              if (isIncoming) {
+                editOption.style.display = "none";
+              } else {
+                editOption.style.display = "block";
+              }
               contextMenu.style.top = `${event.clientY}px`;
               contextMenu.style.left = `${event.clientX}px`;
               contextMenu.style.display = "block";
             }
       });
-      messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
+      if(messageObj.reply) {
+        const replyedMessage = document.getElementById(messageObj.reply).children[0].textContent.trim();
+        messageDiv.innerHTML = `<div class="reply-context">
+        <small>Replying to: "${replyedMessage}"</small>
+      </div>
+      <p>${messageObj.message.content}</p>
+      <span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
+      } else {
+        messageDiv.innerHTML = `<p>${messageObj.message.content}</p>
+      <span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
+      }
+      // messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
       if(messageObj.writer) {
         // liList.children[1].children[1].textContent = '[' + messageObj.message.content + "\n[You: "+ getDateLikeHHMM(messageObj.message.timestamp) + ']]';
         messageDiv.classList.add('message', 'outgoing');

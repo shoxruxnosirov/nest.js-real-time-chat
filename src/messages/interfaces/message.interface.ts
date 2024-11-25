@@ -7,4 +7,5 @@ export interface IMessage extends Document {
   // readonly receiver_id: string;
   content: string;
   readonly timestamp: Date;
+  readonly reply?: Types.ObjectId;
 }

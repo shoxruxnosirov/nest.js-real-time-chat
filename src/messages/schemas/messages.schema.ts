@@ -4,6 +4,7 @@ import { Schema } from 'mongoose';
 export const MessageSchema = new Schema({
   chat_id: { type: Schema.Types.ObjectId, ref: 'Chats', required: true },
   sender_id: { type: Schema.Types.ObjectId, ref: 'Account', required: true },
+  reply: { type: Schema.Types.ObjectId, ref: 'Message', required: false },
   // receiver_id: { type: String, required: true },
   content: { type: String, required: true },
   timestamp: { type: Date, required: true },
