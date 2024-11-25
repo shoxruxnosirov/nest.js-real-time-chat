@@ -9,6 +9,7 @@ export class ChatDto {
     changeGroupData?: boolean[];
     removeMessage?: boolean[];
     // admins?: IAdmin[];
+    readonly timestamp?: Date;
   }
 
   // export class AdminDto {

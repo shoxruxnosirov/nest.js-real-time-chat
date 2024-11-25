@@ -40,7 +40,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const chats: IChat[] = await this.chatService.findUserChats(accountId);
 
     const chats2: {chat: IChat, userId: Types.ObjectId}[] = chats.map((chat: IChat): {chat: IChat, userId: Types.ObjectId} => {
-      const userId = chat.participant_ids.find(accId => accId !== new Types.ObjectId(accountId));
+      const userId = chat.participant_ids.find(accId => accId.toString() !== accountId);
       // if(this.accountAndSocketArr.has(accountId)) {
         this.accountAndSocketArr.get(userId.toString())?.forEach(socketId => {
           this.sockets.get(socketId).emit("userStatus", { chatId: chat.id, status: "online" });
@@ -74,8 +74,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
    }
   }
 
-
-
   handleDisconnect(client: Socket) {
     // console.log(`Client disconnected: ${client.id}`);
     this.sockets.delete(client.id);
@@ -91,7 +89,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         if(socketArr.length === 0) {
           const chats = await this.chatService.findUserChats(accountId);
           chats.forEach((chat) => {
-            const userId = chat.participant_ids.find(accId => accId !== new Types.ObjectId(accountId));
+            const userId = chat.participant_ids.find(accId => accId.toString() !== accountId);
               this.accountAndSocketArr.get(userId.toString())?.forEach(socketId => {
                 this.sockets.get(socketId).emit("userStatus", { chatId: chat.id, status: 'offline' });
               });
@@ -106,6 +104,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async addChatUser(client: Socket, data: {clientAccId: string, searchUserId: string}) {
     const availableChats = await this.chatService.findUserChats(data.clientAccId);
     let existChat: IChat = availableChats.find(chat => chat.type === "lich" && chat.participant_ids.includes(new Types.ObjectId(data.searchUserId)));
+    // let existChat: IChat = availableChats.find(chat => chat.type === "lich" && this.includes(chat.participant_ids, new Types.ObjectId(data.searchUserId)));
     if(!existChat) {
       existChat = await (await this.chatService.create({ type: "lich", participant_ids: [new Types.ObjectId(data.clientAccId), new Types.ObjectId(data.searchUserId)]})).save();
       console.log("yangi chat hosil qilindi: ", existChat);
@@ -130,8 +129,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.emit("searchUsername", accounts);
   }
 
-  // Clientdan xabar olish
-  @SubscribeMessage('message') //sendMessage
+  @SubscribeMessage('message') 
   async handleMessage(client: Socket, messageObj: {chatId: string, message: string, account_id: string}) {
     console.log(`Received message from ${client.id}: ${messageObj.message}`);
     // this.server.emit('message', {client: client.id, message});  // Barcha clientlarga xabar yuborish
@@ -169,6 +167,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     })
   }
 
+  @SubscribeMessage('editMessage')
+  async handleEditMessage(client: Socket, data: {chatId: string, messageId: string, content: string}) {
+    console.log("edit messageId=",data.messageId,"  ", await this.messagesService.findOneByMessageId(data.messageId));
+    await this.messagesService.updateMessage(data.messageId, data.content);
+    const chat = await this.chatService.findOne(data.chatId);
+    chat.participant_ids.forEach(accountId => {
+      this.accountAndSocketArr.get(accountId.toString())?.forEach(socketId => {
+        this.sockets.get(socketId).emit("editMessage", data);
+      });
+    })
+  }
+
   // @SubscribeMessage('joinGroup')
   // async joinGroup(@MessageBody() { accountId, chatId }: { accountId: string, chatId: string }, client: Socket) { //: Promise<string> {
   //   const chat = await this.chatService.findOne(chatId);
@@ -178,4 +188,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   //     await chat.save();
   //   }
   // }
+
+  includes(arrObjId: Types.ObjectId[], objId: Types.ObjectId): boolean {
+    const length = arrObjId.length;
+    for(let i = 0; i < length; i++) {
+      if(arrObjId[i].toString() === objId.toString()) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

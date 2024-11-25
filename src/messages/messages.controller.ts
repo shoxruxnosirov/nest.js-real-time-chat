@@ -23,13 +23,13 @@ export class MessagesController {
     return this.messagesService.findOneByMessageId(id);
   }
 
-  @Put(':message_id')
-  async update(
-    @Param('message_id') id: string | Types.ObjectId,
-    @Body() updateMessageDto: MessageDto,
-  ): Promise<IMessage> {
-    return this.messagesService.updateMessage(id, updateMessageDto);
-  }
+  // @Put(':message_id')
+  // async update(
+  //   @Param('message_id') id: string | Types.ObjectId,
+  //   @Body() updateMessageDto: MessageDto,
+  // ): Promise<IMessage> {
+  //   return this.messagesService.updateMessage(id, updateMessageDto);
+  // }
 
   @Delete(':message_id')
   async delete(@Param('message_id') id: string | Types.ObjectId): Promise<{ deleted: boolean }> {

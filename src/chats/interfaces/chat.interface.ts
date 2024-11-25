@@ -8,6 +8,7 @@ export interface IChat extends Document {
   participant_ids: Types.ObjectId[];
   changeGroupData?: boolean[];
   removeMessage?: boolean[];
+  readonly timestamp?: Date;
 }
 
 

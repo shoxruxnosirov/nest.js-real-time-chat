@@ -75,6 +75,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    height: 100vh; /* Ekran balandligi */
     background-color: #f5f5f5;
 }
 
@@ -96,15 +97,20 @@ body {
 .chat-body {
     flex: 1;
     padding: 15px;
+    display: flex;          /*keyin qo'shildi*/
+    /* flex-direction: column-reverse; */ /* Pastdan yuqoriga joylashish */
+    height: calc(100vh - 100px);
+    flex-direction: column;
     overflow-y: auto;
     background-color: #f5f5f5;
 }
 
 .message {
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
+    margin-bottom: 25px; /* Pastdan masofa */
     padding: 10px 15px;
     border-radius: 10px;
-    max-width: 70%;
+    max-width: 65%;
 }
 
 .message.outgoing {
@@ -128,6 +134,9 @@ body {
 
 /* Xabar yuborish qismi */
 .chat-input {
+    position: fixed;  /* keyin qo'shildi */
+    bottom: 0;          /*  keyin qo'shildi */
+    width: 70%;        /*  keyin qo'shildi */
     display: flex;
     align-items: center;
     padding: 10px;
@@ -136,9 +145,11 @@ body {
 }
 
 .chat-input input {
+    
     flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc;  */
+    border: 1px solid #aaa;
     border-radius: 5px;
     margin-right: 10px;
     font-size: 14px;

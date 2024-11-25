@@ -25,6 +25,21 @@
         .context-menu li:hover {
             background-color: #f0f0f0;
         }
+
+.add-button {
+  margin-left: 10px; /* Divdan masofa */
+  padding: 8px 12px;
+  background-color: #28a745; /* Yashil rang */
+  color: white; /* Oq matn */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-button:hover {
+  background-color: #218838; /* Hover paytida quyuq yashil */
+}
   </style>
 
 </head>
@@ -44,9 +59,9 @@
     
     <div id="messageContainer" class="chat-window">
       <ul class="context-menu" id="contextMenu">
-        <li onclick="handleAction('reply')">Reply</li>
-        <li onclick="handleAction('edit')">Edit</li>
-        <li onclick="handleAction('copy')">Copy Text</li>
+        <!-- <li onclick="handleAction('reply')">Reply</li> -->
+        <li onclick="handleAction('edit')" class="edit-option">Edit</li>
+        <li onclick="handleAction('copy')">Copy</li>
         <!-- <li onclick="handleAction('pin')">Pin</li> -->
         <!-- <li onclick="handleAction('forward')">Forward</li> -->
         <!-- <li onclick="handleAction('select')">Select</li> -->
@@ -65,6 +80,7 @@
     const searchChatsList = document.getElementById('search-chats-list');
     searchChatsList.style.display = 'none';
     const chatIdAnd_ListAndMsDiv = new Map();
+    const userId_and_chatId = new Map();
     let divforMsTemp;
     let listContainer = document.getElementById('listContainer');
     let messageContainer = document.getElementById('messageContainer');
@@ -74,7 +90,7 @@
     let account_id;
 
     // URL parametrlarini olish
-    window.onload = function() {
+  window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const sean = JSON.parse(urlParams.get('sean'));
       console.log("rooms: ", sean);
@@ -99,11 +115,21 @@
       handleAction = function (action) {
         // console.log("action: ", action, "\ncurrentMessage: ", currentMessage);
         if (action === "delete" && currentMessage) {
-          // currentMessage.innerHTML = '';
-          console.log([currentMessage], " o'chirildi");
           socket.emit("deleteMessage", {chatId, messageId: currentMessage.id});
-        } else if (action === "reply" && currentMessage) {
-          alert(`Replying to: "${currentMessage.innerText}"`);
+        } else if (action === "edit" && currentMessage) {
+          console.log("edit uchun bosildi");
+          divforMsTemp.children[2].style.display = "none";
+          divforMsTemp.children[3].style.display = 'flex';
+          divforMsTemp.children[3].children[0].value = currentMessage.children[0].textContent;
+        } else if(action === "copy" && currentMessage) {
+          const messageContent = currentMessage.children[0].textContent.trim(); // Kontentni olish
+          navigator.clipboard.writeText(messageContent) // Kontentni clipboardga nusxalash
+          .then(() => {
+            console.log("Message copied:", messageContent);
+          })
+          .catch((err) => {
+            console.error("Failed to copy:", err);
+          });
         }
         contextMenu.style.display = "none"; // Menyuni yashirish
       }
@@ -118,25 +144,14 @@
               <span>@${ownerOfThisAcc.username}</span>
             </div>
           </li>`
-        // const li = document.createElement('li');
-        // li.classList.add('chat-item');
-        // ownerOAcc.appendChild(li);
-        // const div1 = document.createElement('div');
-        // div1.classList.add('icon', 'deleted');
-        // const div2 = document.createElement('div');
-        // div2.classList.add('info');
-        // const p = document.createElement('p');
-        // p.textContent = ownerOfThisAcc.name;
-        // const span = document.createElement('span');
-        // span.textContent = "@" + ownerOfThisAcc.username;
-        // div2.appendChild(p);
-        // div2.appendChild(span);
-        // li.appendChild(div1);
-        // li.appendChild(div2);
       }
 
       function handleChat({chat, user, messages, status}) {
+        console.log("chat: ", chat," \n user: ", user);
 
+        if(!userId_and_chatId.has(user._id)) {
+          userId_and_chatId.set(user._id, chat._id);
+        }
         chatId = chat._id;
 
         if(chatIdAnd_ListAndMsDiv.has(chat._id)) {
@@ -153,15 +168,16 @@
         const p = document.createElement('p');
         p.textContent = user.name;
         const span = document.createElement('span');
-
-        if(messages && messages.length > 0){
-          const lastMessage = messages[messages.length-1];
-          if(lastMessage.sender_id === account_id) {
-            span.textContent = '[' + lastMessage.content + "\n[You: "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
-          } else {
-            span.textContent = '[' + lastMessage.content + "\n[ "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
-          }
-        }
+        
+        span.textContent = "@" + user.username;
+        // if(messages && messages.length > 0){
+        //   const lastMessage = messages[messages.length-1];
+        //   if(lastMessage.sender_id === account_id) {
+        //     span.textContent = '[' + lastMessage.content + "\n[You: "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
+        //   } else {
+        //     span.textContent = '[' + lastMessage.content + "\n[ "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
+        //   }
+        // }
 
         div2.appendChild(p);
         div2.appendChild(span);
@@ -175,7 +191,6 @@
           divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
           divforMsTemp.style.display = 'inline';
         }; 
-
 
         const divMs = document.createElement('div');
         // divMs.classList.add('chat-window');
@@ -203,20 +218,17 @@
             const closestMessage = event.target.closest(".message");
             if (closestMessage) {
               currentMessage = closestMessage;
-
-              // Kontekst menyuni sichqoncha joylashgan joyda ko'rsatish
+              const isIncoming = closestMessage.classList.contains("incoming");
+              const editOption = contextMenu.querySelector(".edit-option");
+              if (isIncoming) {
+                editOption.style.display = "none";
+              } else {
+                editOption.style.display = "block";
+              }
               contextMenu.style.top = `${event.clientY}px`;
               contextMenu.style.left = `${event.clientX}px`;
               contextMenu.style.display = "block";
             }
-
-            // currentMessage = event.target;
-            // console.log("currentMessage: ", currentMessage);
-
-            // // Position the menu
-            // contextMenu.style.top = `${event.clientY}px`;
-            // contextMenu.style.left = `${event.clientX}px`;
-            // contextMenu.style.display = "block";
           });
 
           // document.addEventListener("click", () => {
@@ -234,30 +246,86 @@
         
         const divInput = document.createElement('div');
         divMs.appendChild(divInput);
-        divInput.classList.add('chat-input');
-        
         const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Type a message...';
-        input.addEventListener('keypress', function(event) {
-          if (event.key === 'Enter' && input.value.trim() !== '') {
-            socket.emit('message', {
-              message: input.value,
-              chatId,
-              account_id,
-            });
-            input.value = ''; // Inputni tozalash
-          }
-        });
         divInput.appendChild(input);
         const button = document.createElement('button');
-        button.textContent = "Send";
         divInput.appendChild(button);
+        
+        divInput.classList.add('chat-input');
+        input.type = 'text';
+        input.placeholder = 'Type a message...';
+        button.textContent = "Send";
+        input.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            if (input.value.trim() !== '') {
+              socket.emit('message', {
+                message: input.value,
+                chatId,
+                account_id,
+              });
+              input.value = ''; 
+            }
+          }
+        });
+        button.addEventListener('click', function () {
+          if (input.value.trim() !== '') {
+            socket.emit('message', {
+                message: input.value,
+                chatId,
+                account_id,
+              });
+              input.value = ''; 
+          }
+        });
+        
+        // divInput.appendChild(button);
 
-        divMs.style.display = 'none'
+        const divInput2 = document.createElement('div');
+        divMs.appendChild(divInput2);
+        const input2 = document.createElement('input');
+        divInput2.appendChild(input2);
+        const button2 = document.createElement('button');
+        divInput2.appendChild(button2);
+        
+        divInput2.style.display = 'none';
+
+        divInput2.classList.add('chat-input');
+        input2.type = 'text';
+        button2.textContent = "Edit";
+        input2.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            if (input2.value.trim() !== '') {
+              socket.emit('editMessage', {
+                messageId: currentMessage.id,
+                chatId,
+                content: divforMsTemp.children[3].children[0].value,
+              });
+              divInput.style.display = 'flex';
+              divInput2.style.display = 'none';
+              // input2.value = ''; 
+            }
+          }
+        });
+        button2.addEventListener('click', function () {
+          if (input2.value.trim() !== '') {
+            socket.emit('editMessage', {
+                messageId: currentMessage.id,
+                chatId,
+                content: divforMsTemp.children[3].children[0].value,
+              });
+              divInput.style.display = 'flex';
+              divInput2.style.display = 'none';
+              // input2.value = ''; 
+          }
+        });
+        
+        divMs.style.display = 'none';
 
         messageContainer.appendChild(divMs);
-        chatsList.appendChild(li);
+        // chatsList.appendChild(li);
+        chatsList.insertBefore(li, chatsList.children[0]);
         chatIdAnd_ListAndMsDiv.set(chat._id, [li, divMs]);
       }
 
@@ -285,33 +353,98 @@
         chatsList.style.display = 'none';
 
         userOrGroups.forEach(item => {
+          if(item._id === account_id) {
+            return;
+          }
+          
+          if(!userId_and_chatId.has(item._id)) {
 
-          const li = document.createElement('li');
-          li.classList.add('chat-item');
-          const div1 = document.createElement('div');
-          div1.classList.add('icon', 'deleted');
-          const div2 = document.createElement('div');
-          div2.classList.add('info');
-          const p = document.createElement('p');
-          p.textContent = item.name;
-          const span = document.createElement('span');
-          span.textContent = "@" + item.username;                           // hozircha shunday bo'lib tursin
-          div2.appendChild(p);
-          div2.appendChild(span);
-          li.appendChild(div1);
-          li.appendChild(div2);
-          li.onclick = async function() {
-            await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
-            searchChatsList.innerHTML ='';
-            searchChatsList.style.display = 'none';
-            chatsList.style.display = 'inline';
-          };
-          searchChatsList.appendChild(li);
+            const div_for_li_and_button = document.createElement('div');
+            div_for_li_and_button.style.display = "flex";
+
+            const li = document.createElement('li');
+            div_for_li_and_button.appendChild(li);
+            li.classList.add('chat-item');
+            const button_add_to_contact = document.createElement('button');
+            div_for_li_and_button.appendChild(button_add_to_contact);
+            button_add_to_contact.textContent = "Add";
+            button_add_to_contact.classList.add('add-button');
+          
+            const div1 = document.createElement('div');
+            div1.classList.add('icon', 'deleted');
+            const div2 = document.createElement('div');
+            div2.classList.add('info');
+            const p = document.createElement('p');
+            p.textContent = item.name;
+            const span = document.createElement('span');
+            span.textContent = "@" + item.username;                           // hozircha shunday bo'lib tursin
+            div2.appendChild(p);
+            div2.appendChild(span);
+            li.appendChild(div1);
+            li.appendChild(div2);
+            button_add_to_contact.onclick =  async function() {
+              await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
+              searchChatsList.innerHTML ='';
+              searchChatsList.style.display = 'none';
+              chatsList.style.display = 'inline';
+            };
+            searchChatsList.appendChild(div_for_li_and_button);
+          } else {
+
+            const div_for_li_and_button = document.createElement('div');
+            div_for_li_and_button.style.display = "flex";
+
+            const li = document.createElement('li');
+            div_for_li_and_button.appendChild(li);
+            li.classList.add('chat-item');
+            const button_open_contact = document.createElement('button');
+            div_for_li_and_button.appendChild(button_open_contact);
+            button_open_contact.textContent = "Open";
+            button_open_contact.classList.add('add-button');
+          
+            const div1 = document.createElement('div');
+            div1.classList.add('icon', 'deleted');
+            const div2 = document.createElement('div');
+            div2.classList.add('info');
+            const p = document.createElement('p');
+            p.textContent = item.name;
+            const span = document.createElement('span');
+            span.textContent = "@" + item.username;                           // hozircha shunday bo'lib tursin
+            div2.appendChild(p);
+            div2.appendChild(span);
+            li.appendChild(div1);
+            li.appendChild(div2);
+            button_open_contact.onclick =  function() {
+              // await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
+              chatId = userId_and_chatId.get(item._id);
+              if(divforMsTemp) {
+                divforMsTemp.style.display = 'none';
+              }
+              divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
+              divforMsTemp.style.display = 'inline';
+
+              searchChatsList.innerHTML ='';
+              searchChatsList.style.display = 'none';
+              chatsList.style.display = 'inline';
+            };
+            searchChatsList.appendChild(div_for_li_and_button);
+          }
+          
         });
       });
 
       socket.on('takeAllData', ({chats, ownerUser}) => {
         ownerOfAccFunc(ownerUser);
+        // console.log("chats: ", chats);
+        // {chat, user, messages, status}
+        chats.sort((itm1, itm2) => {
+          let itm1_time = itm1.messages.length > 0 ? itm1.messages.at(-1).timestamp : itm1.chat.timestamp;
+          let itm2_time = itm2.messages.length > 0 ? itm2.messages.at(-1).timestamp : itm2.chat.timestamp;
+          // let itm1_time = itm1.messages.length > 0 ? itm1.messages[itm1.messages.length-1].timestamp : itm1.chat.timestamp;
+          // let itm2_time = itm2.messages.length > 0 ? itm2.messages[itm2.messages.length-1].timestamp : itm2.chat.timestamp;
+          // console.log("itm1_time: ", itm1_time, "\nitm2_time: ", itm2_time);
+          return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
+        });
         // console.log("chats: ", chats);
         chats.forEach(handleChat);
       });
@@ -332,23 +465,17 @@
         const closestMessage = event.target.closest(".message");
             if (closestMessage) {
               currentMessage = closestMessage;
-
-              // Kontekst menyuni sichqoncha joylashgan joyda ko'rsatish
               contextMenu.style.top = `${event.clientY}px`;
               contextMenu.style.left = `${event.clientX}px`;
               contextMenu.style.display = "block";
             }
-            // currentMessage = event.target;
-            // contextMenu.style.top = `${event.clientY}px`;
-            // contextMenu.style.left = `${event.clientX}px`;
-            // contextMenu.style.display = "block";
       });
       messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
       if(messageObj.writer) {
-        liList.children[1].children[1].textContent = '[' + messageObj.message + "\n[You: "+ getDateLikeHHMM() + ']]';
+        // liList.children[1].children[1].textContent = '[' + messageObj.message.content + "\n[You: "+ getDateLikeHHMM(messageObj.message.timestamp) + ']]';
         messageDiv.classList.add('message', 'outgoing');
       } else {
-        liList.children[1].children[1].textContent = '[' + messageObj.message + " \n[ "+ getDateLikeHHMM()+ ']]';
+        // liList.children[1].children[1].textContent = '[' + messageObj.message.content + " \n[ "+ getDateLikeHHMM(messageObj.message.timestamp)+ ']]';
         messageDiv.classList.add('message', 'incoming');
       }
       messagesDiv.appendChild(messageDiv);
@@ -361,7 +488,11 @@
         document.getElementById(data.messageId).remove();
       });
 
-    }
+      socket.on('editMessage', function(data) {
+        document.getElementById(data.messageId).children[0].textContent = data.content;
+      });
+
+  }
 
     function getDateLikeHHMM(time) {
       if (time) {

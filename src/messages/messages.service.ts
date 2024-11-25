@@ -29,8 +29,14 @@ export class MessagesService {
   }
 
   // Update a message by message_id
-  async updateMessage(_id: string | Types.ObjectId, updateMessageDto: MessageDto): Promise<IMessage> {
-    return this.messageModel.findOneAndUpdate({ _id }, updateMessageDto, { new: true }).exec();
+  async updateMessage(_id: string | Types.ObjectId, content: string): Promise<IMessage> {
+    const message = await this.messageModel.findById(_id).exec();
+    if (!message) { throw new Error('Message not found'); }
+    message.content = content;
+    return message.save();
+    // return this.messageModel.save(message);
+    // return this.messageModel.findByIdAndUpdate(_id, updateMessageDto, { new: true }).exec();
+    // return this.messageModel.findOneAndUpdate({ _id }, updateMessageDto, { new: true }).exec();
   }
 
   // Delete a message by message_id

@@ -4,7 +4,7 @@ export class MessageDto {
     readonly chat_id: Types.ObjectId;
     readonly sender_id: Types.ObjectId;
     // readonly receiver_id: string;
-    readonly content: string;
+    content: string;
     readonly timestamp: Date;
 }
 
