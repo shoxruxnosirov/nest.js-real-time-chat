@@ -6,7 +6,7 @@ export class MessageDto {
     // readonly receiver_id: string;
     content: string;
     readonly timestamp: Date;
-    readonly reply?: Types.ObjectId;
+    readonly replying_for_Ms_Id?: Types.ObjectId;
 }
 
 

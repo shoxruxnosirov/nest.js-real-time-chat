@@ -6,65 +6,6 @@
   <!-- <title>Ma'lumotlarni qabul qilish</title> -->
   <title>Telegram Clone</title>
   <link rel="stylesheet" href="styles4.css">
-  <style>
-        .context-menu {
-            position: absolute;
-            display: none;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-
-        .context-menu li {
-            list-style: none;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-
-        .context-menu li:hover {
-            background-color: #f0f0f0;
-        }
-
-.add-button {
-  margin-left: 10px; /* Divdan masofa */
-  padding: 8px 12px;
-  background-color: #28a745; /* Yashil rang */
-  color: white; /* Oq matn */
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.add-button:hover {
-  background-color: #218838; /* Hover paytida quyuq yashil */
-}
-
-.reply-box {
-  padding: 10px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-.reply-box span {
-  font-size: 14px;
-  color: #555;
-}
-
-.reply-box button {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #ff0000;
-}
-
-  </style>
 
 </head>
 <body>
@@ -72,11 +13,7 @@
 
     <div id="listContainer" class="sidebar">
       <ul class="chat-list" id="owner-of-the-account"></ul>
-
-      <div class="search-bar">
-        <input type="text" id="groupOrAccount_Name" placeholder="Search" required />
-        <!-- <button id="searchButton">search</button> -->
-      </div>
+      <div class="search-bar"><input type="text" id="groupOrAccount_Name" placeholder="Search" required /></div>
       <ul class="chat-list" id="search-chats-list"></ul>
       <ul class="chat-list" id="chats-list"></ul>
     </div>
@@ -103,22 +40,33 @@
     const chatsList = document.getElementById("chats-list");
     const searchChatsList = document.getElementById('search-chats-list');
     searchChatsList.style.display = 'none';
-    const chatIdAnd_ListAndMsDiv = new Map();
-    const userId_and_chatId = new Map();
-    let divforMsTemp;
     let listContainer = document.getElementById('listContainer');
     let messageContainer = document.getElementById('messageContainer');
     const contextMenu = document.getElementById("contextMenu");
+
+    const chatIdAnd_ListAndMsDiv = new Map();    
+    const userId_and_chatId = new Map();
+    const userId_userData = new Map();
+    
+    // const userId_MessagesIdArr = new Map();
+    // const messageId_userData = new Map();
+    const messageId_senderId = new Map();
+    
+    let accountData;
+    let sean;
+    
+    const chatId_replyToMessage = new Map();
+    const chatId_editToMessage = new Map();
     let currentMessage = null;
+
+    let divforMsTemp;
     let chatId;
-    let account_id;
 
     // URL parametrlarini olish
   window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const sean = JSON.parse(urlParams.get('sean'));
-      console.log("rooms: ", sean);
-      account_id = sean.account_id;
+      sean = JSON.parse(urlParams.get('sean'));
+      console.log("sean: ", sean);
       
       const socket = io('http://localhost:3001' , {
         extraHeaders: {
@@ -128,27 +76,32 @@
         }
       });
 
-      socket.account_id = account_id;
+      // socket.account_id = account_id;
 
       console.log("socket: ", socket);
 
       document.addEventListener("click", () => {
+        const contextMenu = document.getElementById("contextMenu")
         contextMenu.style.display = "none";
       });
 
       handleAction = function (action) {
-        // console.log("action: ", action, "\ncurrentMessage: ", currentMessage);
+
         if (action === "delete" && currentMessage) {
           socket.emit("deleteMessage", {chatId, messageId: currentMessage.id});
           currentMessage = null;
-        } else if (action === "edit" && currentMessage) {
-          console.log("edit uchun bosildi");
+        } 
+        else if (action === "edit" && currentMessage) {
+          // console.log("edit uchun bosildi");
+          chatId_editToMessage.set(chatId, currentMessage);
           divforMsTemp.children[2].style.display = "none";
           divforMsTemp.children[3].style.display = 'flex';
-          divforMsTemp.children[3].children[0].value = currentMessage.children[0].textContent;
-          // currentMessage = null;
-        } else if(action === "copy" && currentMessage) {
-          const messageContent = currentMessage.children[0].textContent.trim(); // Kontentni olish
+          // currentMessage.querySelector('p').textContent.trim()
+          divforMsTemp.children[3].children[0].value = currentMessage.querySelector('p').textContent.trim();//currentMessage.children[0].textContent;
+          currentMessage = null;
+        } 
+        else if(action === "copy" && currentMessage) {
+          const messageContent = currentMessage.querySelector('p').textContent.trim();//currentMessage.children[0].textContent.trim(); // Kontentni olish
           navigator.clipboard.writeText(messageContent) // Kontentni clipboardga nusxalash
           .then(() => {
             console.log("Message copied:", messageContent);
@@ -158,22 +111,30 @@
             console.error("Failed to copy:", err);
             currentMessage = null;
           });
-        } else if(action === "reply" && currentMessage) {
+        } 
+        else if(action === "reply" && currentMessage) {
+          chatId_replyToMessage.set(chatId, currentMessage);
+          // currentMessage = null;
           const replyBox = document.getElementById("replyBox" + chatId);
           const replyText = document.getElementById("replyText" + chatId);
           // const cancelReply = document.getElementById("cancelReply");
-            replyText.textContent = `Replying to: "${currentMessage.children[0].textContent.trim()}"`;
-            replyBox.style.display = "block";
-            divforMsTemp.children[3].children[1].focus()
+          console.log("currentMessage for Reply: ", currentMessage);
+          // const user_name = chatIdAnd_ListAndMsDiv.get(chatId)[2].name;
+            const user_name = userId_userData.get(messageId_senderId.get(currentMessage.id)).name;
+            replyText.textContent = `${user_name}: "${currentMessage.querySelector('p').textContent.trim()}"`;
+            replyBox.style.display = "inline";
+            divforMsTemp.children[2].children[1].focus();
+            currentMessage = null;
             // messageInput.focus();
           // contextMenu.style.display = "none"; // ContextMenu'ni yopish
-          // currentMessage = null;
         }
 
         contextMenu.style.display = "none"; // Menyuni yashirish
       }
 
       function ownerOfAccFunc (ownerOfThisAcc) {
+        accountData = ownerOfThisAcc;
+        userId_userData.set(accountData._id, accountData);
         const ownerOAcc = document.getElementById('owner-of-the-account');
 
         ownerOAcc.innerHTML = `<li class="chat-item">
@@ -182,212 +143,33 @@
               <p>${ownerOfThisAcc.name}</p>
               <span>@${ownerOfThisAcc.username}</span>
             </div>
-          </li>`
+          </li>`;
       }
 
-      function handleChat({chat, user, messages, status}) {
+      function addChatUser({chat, user, messages, status}) {
         console.log("chat: ", chat," \n user: ", user);
+        console.log("messages: ", messages);
+
+        userId_userData.set(user._id, user);
 
         if(!userId_and_chatId.has(user._id)) {
           userId_and_chatId.set(user._id, chat._id);
         }
-        chatId = chat._id;
+        // chatId = chat._id;
 
         if(chatIdAnd_ListAndMsDiv.has(chat._id)) {
+          console.log("mavjud chatni hosil qilishga urunish bo'ldi va qaytarildi ");
           return;
         }
 
-        const li = document.createElement('li');
-        li.classList.add('chat-item');
-        const div1 = document.createElement('div');
-        div1.classList.add('icon', 'deleted');
-
-        const div2 = document.createElement('div');
-        div2.classList.add('info');
-        const p = document.createElement('p');
-        p.textContent = user.name;
-        const span = document.createElement('span');
+        const chatUser_li_elem = createChatUserListElem({user, chat});
+         
+        const divMs = createChatUserMessagesContainer({chat, user, messages, status});
         
-        span.textContent = "@" + user.username;
-        // if(messages && messages.length > 0){
-        //   const lastMessage = messages[messages.length-1];
-        //   if(lastMessage.sender_id === account_id) {
-        //     span.textContent = '[' + lastMessage.content + "\n[You: "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
-        //   } else {
-        //     span.textContent = '[' + lastMessage.content + "\n[ "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
-        //   }
-        // }
-
-        div2.appendChild(p);
-        div2.appendChild(span);
-        li.appendChild(div1);
-        li.appendChild(div2);
-        li.onclick = function() {
-          chatId = chat._id;
-          if(divforMsTemp) {
-            divforMsTemp.style.display = 'none';
-          }
-          divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
-          divforMsTemp.style.display = 'inline';
-        }; 
-
-        const divMs = document.createElement('div');
-        // divMs.classList.add('chat-window');
-        const divHeader = document.createElement('div');
-        divMs.appendChild(divHeader);
-        divHeader.classList.add('chat-header');
-        const p2 = document.createElement('p');
-        divHeader.appendChild(p2);
-        p2.textContent = user.name;
-        const span2 = document.createElement('span');
-        divHeader.appendChild(span2);
-        span2.textContent = status? "online": "offline";
-        const divChatBody = document.createElement('div');
-        divChatBody.classList.add('chat-body');
-        divMs.appendChild(divChatBody);
-
-        if(messages && messages.length && messages.length > 0)
-        for(let i = 0; i < messages.length; i++) {
-          const div = document.createElement('div');
-          div.id = messages[i]._id;
-          // console.log("message :", messages[i]);
-          div.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
-
-            const closestMessage = event.target.closest(".message");
-            if (closestMessage) {
-              currentMessage = closestMessage;
-              const isIncoming = closestMessage.classList.contains("incoming");
-              const editOption = contextMenu.querySelector(".edit-option");
-              if (isIncoming) {
-                editOption.style.display = "none";
-              } else {
-                editOption.style.display = "block";
-              }
-              contextMenu.style.top = `${event.clientY}px`;
-              contextMenu.style.left = `${event.clientX}px`;
-              contextMenu.style.display = "block";
-            }
-          });
-
-          // document.addEventListener("click", () => {
-          //   contextMenu.style.display = "none";
-          // });
-
-          if(messages[i].sender_id === account_id) {
-            div.classList.add('message', 'outgoing');
-          } else {
-            div.classList.add('message', 'incoming');
-          }
-          div.innerHTML = `<p>${messages[i].content}</p><span>${getDateLikeHHMM(messages[i].timestamp)}</span>`;
-          divChatBody.appendChild(div);
-        }
-        
-        const divInput = document.createElement('div');
-        divMs.appendChild(divInput);
-        const divReplyBox = document.createElement('div');
-        divInput.appendChild(divReplyBox);
-        divReplyBox.classList.add('reply-box');
-        divReplyBox.id = 'replyBox' + chat._id;
-        divReplyBox.style.display = 'none';
-        // divReplyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
-        const spanReply = document.createElement('span');
-        divReplyBox.appendChild(spanReply);
-        spanReply.id = 'replyText' + chat._id;
-        const concelReply = document.createElement('button');
-        divReplyBox.appendChild(concelReply);
-        concelReply.id = 'concelReply' + chat._id;
-        concelReply.textContent = "Concel";
-        concelReply.addEventListener('click', function () {
-          divReplyBox.style.display = "none";
-          spanReply.textContent = "";
-          currentMessage = null;
-        });
-        const input = document.createElement('input');
-        divInput.appendChild(input);
-        const button = document.createElement('button');
-        divInput.appendChild(button);
-        
-        divInput.classList.add('chat-input');
-        input.type = 'text';
-        input.placeholder = 'Type a message...';
-        button.textContent = "Send";
-        input.addEventListener('keypress', function(event) {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
-            if (input.value.trim() !== '') {
-              socket.emit('message', {
-                message: input.value,
-                chatId,
-                account_id,
-                reply: currentMessage?.id
-              });
-              input.value = ''; 
-            }
-          }
-        });
-        button.addEventListener('click', function () {
-          if (input.value.trim() !== '') {
-            socket.emit('message', {
-                message: input.value,
-                chatId,
-                account_id,
-                reply: currentMessage?.id
-              });
-              input.value = ''; 
-          }
-        });
-        
-        // divInput.appendChild(button);
-
-        const divInput2 = document.createElement('div');
-        divMs.appendChild(divInput2);
-        const input2 = document.createElement('input');
-        divInput2.appendChild(input2);
-        const button2 = document.createElement('button');
-        divInput2.appendChild(button2);
-        
-        divInput2.style.display = 'none';
-
-        divInput2.classList.add('chat-input');
-        input2.type = 'text';
-        button2.textContent = "Edit";
-        input2.addEventListener('keypress', function(event) {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
-            if (input2.value.trim() !== '') {
-              socket.emit('editMessage', {
-                messageId: currentMessage.id,
-                chatId,
-                content: divforMsTemp.children[3].children[0].value,
-              });
-              currentMessage = null;
-              divInput.style.display = 'flex';
-              divInput2.style.display = 'none';
-              // input2.value = ''; 
-            }
-          }
-        });
-        button2.addEventListener('click', function () {
-          if (input2.value.trim() !== '') {
-            socket.emit('editMessage', {
-                messageId: currentMessage.id,
-                chatId,
-                content: divforMsTemp.children[3].children[0].value,
-              });
-              currentMessage = null;
-              divInput.style.display = 'flex';
-              divInput2.style.display = 'none';
-              // input2.value = ''; 
-          }
-        });
-        
-        divMs.style.display = 'none';
-
         messageContainer.appendChild(divMs);
-        // chatsList.appendChild(li);
-        chatsList.insertBefore(li, chatsList.children[0]);
-        chatIdAnd_ListAndMsDiv.set(chat._id, [li, divMs]);
+
+        chatsList.insertBefore(chatUser_li_elem, chatsList.children[0]);
+        chatIdAnd_ListAndMsDiv.set(chat._id, [chatUser_li_elem, divMs]);
       }
 
       
@@ -402,7 +184,7 @@
         }
       });
 
-      socket.on("addChatUser", handleChat);
+      socket.on("addChatUser", addChatUser);
 
       socket.on("userStatus", ({chatId, status}) => {
         chatIdAnd_ListAndMsDiv.get(chatId)[1].children[0].children[1].textContent = status;
@@ -414,7 +196,7 @@
         chatsList.style.display = 'none';
 
         userOrGroups.forEach(item => {
-          if(item._id === account_id) {
+          if(item._id === sean.account_id) {
             return;
           }
           
@@ -444,7 +226,7 @@
             li.appendChild(div1);
             li.appendChild(div2);
             button_add_to_contact.onclick =  async function() {
-              await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
+              await socket.emit("addChatUser", {clientAccId: sean.account_id, searchUserId: item._id});
               searchChatsList.innerHTML ='';
               searchChatsList.style.display = 'none';
               chatsList.style.display = 'inline';
@@ -503,29 +285,182 @@
           let itm2_time = itm2.messages.length > 0 ? itm2.messages.at(-1).timestamp : itm2.chat.timestamp;
           // let itm1_time = itm1.messages.length > 0 ? itm1.messages[itm1.messages.length-1].timestamp : itm1.chat.timestamp;
           // let itm2_time = itm2.messages.length > 0 ? itm2.messages[itm2.messages.length-1].timestamp : itm2.chat.timestamp;
-          // console.log("itm1_time: ", itm1_time, "\nitm2_time: ", itm2_time);
           return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
         });
         // console.log("chats: ", chats);
-        chats.forEach(handleChat);
+        chats.forEach(addChatUser);
       });
 
-      socket.on('message', function(messageObj) {
+      socket.on('message', function({ message, replying_for_Ms }) {
+        messageId_senderId.set(message._id, message.sender_id)
 
-      const liListAndMsDiv = chatIdAnd_ListAndMsDiv.get(messageObj.chatId);
-      const liList = liListAndMsDiv[0];
-      chatsList.removeChild(liList);
-      chatsList.insertBefore(liList, chatsList.children[0]);
+        const liListAndMsDiv = chatIdAnd_ListAndMsDiv.get(message.chat_id);
+        const liList = liListAndMsDiv[0];
+        chatsList.removeChild(liList);
+        chatsList.insertBefore(liList, chatsList.children[0]);
 
-      const messagesDiv = liListAndMsDiv[1].children[1];
+        const messagesDiv = liListAndMsDiv[1].children[1];
       
-      const messageDiv = document.createElement('div');
-      // console.log("message: ", [messageObj.message]);
-      messageDiv.id = messageObj.message._id;
+        const messageDiv = document.createElement('div');
+        // console.log("message: ", [message]);
+        messageDiv.id = message._id;
 
-      messageDiv.addEventListener("contextmenu", (event) => {
-        event.preventDefault();
-        const closestMessage = event.target.closest(".message");
+        messageDiv.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          const closestMessage = event.target.closest(".message");
+            if (closestMessage) {
+              currentMessage = closestMessage;
+              const isIncoming = closestMessage.classList.contains("incoming");
+              const editOption = contextMenu.querySelector(".edit-option");
+              if (isIncoming) {
+                editOption.style.display = "none";
+              } 
+              else {
+                editOption.style.display = "block";
+              }
+              contextMenu.style.top = `${event.clientY}px`;
+              contextMenu.style.left = `${event.clientX}px`;
+              contextMenu.style.display = "block";
+            }
+        });
+        if(replying_for_Ms) {
+          const user = userId_userData.get(replying_for_Ms.sender_id).name;
+          messageDiv.innerHTML = `<div class="reply-context">
+          <small>${user}: "${replying_for_Ms.content}"</small>
+          </div>
+          <p>${message.content}</p>
+          <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+        } 
+        else {
+          messageDiv.innerHTML = `<p>${message.content}</p>
+          <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+        }
+        // messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
+        if(sean.account_id == message.sender_id) {
+          // liList.children[1].children[1].textContent = '[' + messageObj.message.content + "\n[You: "+ getDateLikeHHMM(messageObj.message.timestamp) + ']]';
+          messageDiv.classList.add('message', 'outgoing');
+        } else {
+          // liList.children[1].children[1].textContent = '[' + messageObj.message.content + " \n[ "+ getDateLikeHHMM(messageObj.message.timestamp)+ ']]';
+          messageDiv.classList.add('message', 'incoming');
+        }
+        messagesDiv.appendChild(messageDiv);
+      });
+
+      socket.on('deleteMessage', function(data) {     // {chatId, messageId}
+        document.getElementById(data.messageId).remove();
+      });
+      
+      socket.on('replyMessageDelete', function(data) {     // {chatId, messageId}
+        const messageDiv = document.getElementById(data.messageId);
+        messageDiv.children[0].remove();
+        // messageDiv.innerHTML = `<p>${message.content}</p>
+        //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+      })
+      
+      socket.on('replyMessageEdit', function(data) {     // {chatId, messageId}
+        const messageDiv = document.getElementById(data.messageId);
+        // const senderId = messageId_senderId.get(data.messageId);
+        // const sender = userId_userData(senderId);
+        const [sender] =  messageDiv.children[0].children[0].textContent.split(": ");
+        messageDiv.children[0].children[0].textContent = sender + ": " + data.content;
+        
+        // messageDiv.innerHTML = `<p>${message.content}</p>
+        //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+      })
+
+      socket.on('editMessage', function(data) {
+        document.getElementById(data.messageId).querySelector('p').textContent = data.content;
+      });
+
+
+
+
+
+
+      function  createChatUserListElem({user, chat}) {
+        const li = document.createElement('li');
+        li.classList.add('chat-item');
+        const div1 = document.createElement('div');
+        div1.classList.add('icon', 'deleted');
+
+        const div2 = document.createElement('div');
+        div2.classList.add('info');
+        const p = document.createElement('p');
+        p.textContent = user.name;
+        const span = document.createElement('span');
+        
+        span.textContent = "@" + user.username;
+        // if(messages && messages.length > 0){
+        //   const lastMessage = messages[messages.length-1];
+        //   if(lastMessage.sender_id === account_id) {
+        //     span.textContent = '[' + lastMessage.content + "\n[You: "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
+        //   } else {
+        //     span.textContent = '[' + lastMessage.content + "\n[ "+ getDateLikeHHMM(lastMessage.timestamp) + ']]';
+        //   }
+        // }
+        div2.appendChild(p);
+        div2.appendChild(span);
+        li.appendChild(div1);
+        li.appendChild(div2);
+        li.onclick = function() {
+          chatId = chat._id;
+          if(divforMsTemp) {
+            divforMsTemp.style.display = 'none';
+          }
+          divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
+          divforMsTemp.style.display = 'inline';
+        };
+        return li;
+      }
+
+    function createChatUserMessagesContainer ({chat, user, messages, status}) {
+      const divMs = document.createElement('div');
+        // divMs.classList.add('chat-window');
+      const divHeader = createChatUserHeader({user, status});
+      divMs.appendChild(divHeader);
+      
+      const divChatBody = createChatUserChatBody({messages, user});
+      divMs.appendChild(divChatBody);
+
+      const {divReplyBox, spanReply} = createChatUserReplyBox({chat});
+      // divMs.appendChild(divReplyBox);   <=> divInput.insertBefore(divReplyBox, divInput.children[0]);
+        
+      const divInput = createChatUserInputMs(divReplyBox, spanReply);
+      divInput.insertBefore(divReplyBox, divInput.children[0]);
+      divMs.appendChild(divInput);
+
+      const divEdit = createChatUserEditMs(divInput);
+      divMs.appendChild(divEdit);
+
+      divMs.style.display = 'none';
+      
+      return divMs;
+    }
+    
+    function createChatUserHeader ({user, status}) {
+      const divHeader = document.createElement('div');
+        divHeader.classList.add('chat-header');
+        const p2 = document.createElement('p');
+        divHeader.appendChild(p2);
+        p2.textContent = user.name;
+        const span2 = document.createElement('span');
+        divHeader.appendChild(span2);
+        span2.textContent = status? "online": "offline";
+      return divHeader;
+    }
+    
+    function createChatUserChatBody({messages, user}) {
+      const divChatBody = document.createElement('div');
+        divChatBody.classList.add('chat-body');
+        if(messages && messages.length && messages.length > 0)
+        for(let i = 0; i < messages.length; i++) {
+          messageId_senderId.set(messages[i]._id, messages[i].sender_id);
+          const div = document.createElement('div');
+          div.id = messages[i]._id;
+          // console.log("message :", messages[i]);
+          div.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            const closestMessage = event.target.closest(".message");
             if (closestMessage) {
               currentMessage = closestMessage;
               const isIncoming = closestMessage.classList.contains("incoming");
@@ -539,46 +474,151 @@
               contextMenu.style.left = `${event.clientX}px`;
               contextMenu.style.display = "block";
             }
-      });
-      if(messageObj.reply) {
-        const replyedMessage = document.getElementById(messageObj.reply).children[0].textContent.trim();
-        messageDiv.innerHTML = `<div class="reply-context">
-        <small>Replying to: "${replyedMessage}"</small>
-      </div>
-      <p>${messageObj.message.content}</p>
-      <span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
-      } else {
-        messageDiv.innerHTML = `<p>${messageObj.message.content}</p>
-      <span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
-      }
-      // messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
-      if(messageObj.writer) {
-        // liList.children[1].children[1].textContent = '[' + messageObj.message.content + "\n[You: "+ getDateLikeHHMM(messageObj.message.timestamp) + ']]';
-        messageDiv.classList.add('message', 'outgoing');
-      } else {
-        // liList.children[1].children[1].textContent = '[' + messageObj.message.content + " \n[ "+ getDateLikeHHMM(messageObj.message.timestamp)+ ']]';
-        messageDiv.classList.add('message', 'incoming');
-      }
-      messagesDiv.appendChild(messageDiv);
-    });
+          });
 
-      socket.on('deleteMessage', function(data) {     // {chatId, messageId}
-        // console.log('deleteMesageid data: ', data);
-        // console.log("id:", data.messageId);
-        // console.log(document.getElementById(data.messageId));
-        document.getElementById(data.messageId).remove();
-      });
+          if(messages[i].replying_for_Ms_Id && messages[i].replySender_id) {
+            console.log("message for reply: ", [messages[i]]);
+            const replyedMessage = messages[i].replyContent;
+            // const replyForUser = messages[i].replySender_id === user._id ? user.name : "You";
+            const replyForUser = userId_userData.get(messages[i].replySender_id).name;
+            div.innerHTML = `<div class="reply-context">
+              <small>${replyForUser}: "${replyedMessage}"</small>
+              </div>
+              <p>${messages[i].content}</p>
+              <span>${getDateLikeHHMM(messages[i].timestamp)}</span>`;
+          } 
+          else {
+            div.innerHTML = `<p>${messages[i].content}</p>
+              <span>${getDateLikeHHMM(messages[i].timestamp)}</span>`;
+          }
+          // div.innerHTML = `<p>${messages[i].content}</p><span>${getDateLikeHHMM(messages[i].timestamp)}</span>`;
+          
+          if(messages[i].sender_id === sean.account_id) {
+            div.classList.add('message', 'outgoing');
+          } 
+          else {
+            div.classList.add('message', 'incoming');
+          }
+          divChatBody.appendChild(div);
+        }
+      return divChatBody;
+    }
 
-      socket.on('editMessage', function(data) {
-        document.getElementById(data.messageId).children[0].textContent = data.content;
-      });
+    function createChatUserReplyBox({chat}) {
+      const divReplyBox = document.createElement('div');
+        divReplyBox.classList.add('reply-box');
+        divReplyBox.id = 'replyBox' + chat._id;
+        divReplyBox.style.display = 'none';
+        // divReplyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+        const spanReply = document.createElement('span');
+        divReplyBox.appendChild(spanReply);
+        spanReply.id = 'replyText' + chat._id;
+        const concelReply = document.createElement('button');
+        divReplyBox.appendChild(concelReply);
+        concelReply.id = 'concelReply' + chat._id;
+        concelReply.textContent = "Concel";
+        concelReply.addEventListener('click', function () {
+          divReplyBox.style.display = "none";
+          spanReply.textContent = "";
+          chatId_replyToMessage.set(chatId, null);
 
+        });
+      return {divReplyBox, spanReply};
+    }
+
+    function createChatUserInputMs(divReplyBox, spanReply) {
+      const divInput = document.createElement('div');
+        const input = document.createElement('input');
+        divInput.appendChild(input);
+        const button = document.createElement('button');
+        divInput.appendChild(button);
+        divInput.classList.add('chat-input');
+        input.type = 'text';
+        input.placeholder = 'Type a message...';
+        button.textContent = "Send";
+        input.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            if (input.value.trim() !== '') {
+              socket.emit('message', {
+                content: input.value,
+                chatId,
+                sender_id: sean.account_id,
+                replying_for_Ms_Id: chatId_replyToMessage.get(chatId)?.id
+              });
+              input.value = ''; 
+              divReplyBox.style.display = "none";
+              spanReply.textContent = "";
+              chatId_replyToMessage.set(chatId, null);
+
+            }
+          }
+        });
+        button.addEventListener('click', function () {
+          if (input.value.trim() !== '') {
+            socket.emit('message', {
+                content: input.value,
+                chatId,
+                sender_id: sean.account_id,
+                replying_for_Ms_Id: chatId_replyToMessage.get(chatId)?.id
+              });
+              input.value = '';
+              divReplyBox.style.display = "none";
+              spanReply.textContent = "";
+              chatId_replyToMessage.set(chatId, null);
+          }
+        });
+      return divInput; 
+    }
+
+    function createChatUserEditMs(divInput) {
+      const divInput2 = document.createElement('div');
+        const input2 = document.createElement('input');
+        divInput2.appendChild(input2);
+        const button2 = document.createElement('button');
+        divInput2.appendChild(button2);
+        divInput2.style.display = 'none';
+        divInput2.classList.add('chat-input');
+        input2.type = 'text';
+        button2.textContent = "Edit";
+        input2.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            if (input2.value.trim() !== '') {
+              socket.emit('editMessage', {
+                messageId: chatId_editToMessage.get(chatId).id,
+                chatId,
+                content: divforMsTemp.children[3].children[0].value,
+              });
+              chatId_editToMessage.set(chatId, null);
+              divInput.style.display = 'flex';
+              divInput2.style.display = 'none';
+              // input2.value = ''; 
+            }
+          }
+        });
+        button2.addEventListener('click', function () {
+          if (input2.value.trim() !== '') {
+            socket.emit('editMessage', {
+                messageId: chatId_editToMessage.get(chatId).id,
+                chatId,
+                content: divforMsTemp.children[3].children[0].value,
+              });
+              chatId_editToMessage.set(chatId, null);
+              divInput.style.display = 'flex';
+              divInput2.style.display = 'none';
+              // input2.value = ''; 
+          }
+        });
+      return divInput2;
+    }
   }
 
     function getDateLikeHHMM(time) {
       if (time) {
         time = new Date(time);
-      } else {
+      } 
+      else {
         time = new Date();
       }
       let hours = time.getHours();   

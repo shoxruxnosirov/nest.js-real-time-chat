@@ -7,7 +7,7 @@ import { MessagesService } from 'src/messages/messages.service';
 import { UsersService } from 'src/users/users.service';
 import { IAccount } from 'src/users/interfaces/account.interface';
 import { MessageDto } from 'src/messages/dto/message.dto';
-import { IMessage } from 'src/messages/interfaces/message.interface';
+import { IMessage, IMessageWithReply } from 'src/messages/interfaces/message.interface';
 
 
 @WebSocketGateway(3001, {
@@ -49,14 +49,40 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return {chat, userId };
     });
     
-    const chats3: {chat: IChat, user: IAccount, messages: IMessage[], status: boolean } [] = [];
+    const chats3: {chat: IChat, user: IAccount, messages: IMessageWithReply[], status: boolean } [] = [];
 
     const chats2_lang: number = chats2.length;
     for (let i = 0; i < chats2_lang; i++) {
+      const messages: IMessage[] = await this.messagesService.findAllByChatId(chats2[i].chat.id);
+      // console.log("messages: ", messages);
+      const messagesWithReplys: IMessageWithReply[] = [];
+      const messages_lenght = messages.length;
+      for (let j = 0; j < messages_lenght; j++) {
+        if(messages[j].replying_for_Ms_Id) {
+          const replyMessage = await this.messagesService.findOneByMessageId(messages[j].replying_for_Ms_Id);
+          console.log("replyMessage: ", replyMessage);
+          if(!replyMessage) {
+            const messagesWithReply: IMessageWithReply = messages[j];
+            messagesWithReplys.push(messagesWithReply);
+          } 
+          else {
+            const replyContent = replyMessage.content;
+            const replySender_id = replyMessage.sender_id;
+            // const messagesWithReply: IMessageWithReply = {...messages[j], replyContent};
+            const {chat_id, content, sender_id, timestamp, _id, replying_for_Ms_Id} = messages[j];
+            messagesWithReplys.push({chat_id, content, sender_id, timestamp, _id, replying_for_Ms_Id, replySender_id, replyContent} as IMessageWithReply);
+          }
+        } else {
+          const messagesWithReply: IMessageWithReply = messages[j];
+          messagesWithReplys.push(messagesWithReply);
+        }
+      }
+
+      // console.log("messages: ", messagesWithReplys);
       chats3[i] = { 
         chat: chats2[i].chat,
         user: await this.userService.getById(chats2[i].userId),
-        messages: await this.messagesService.findAllByChatId(chats2[i].chat.id),
+        messages: messagesWithReplys, //await this.messagesService.findAllByChatId(chats2[i].chat.id),
         status: this.accountAndSocketArr.has(chats2[i].userId.toString())
       };
     }
@@ -130,27 +156,29 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('message') 
-  async handleMessage(client: Socket, messageObj: {chatId: string, message: string, account_id: string, reply: string}) {
-    console.log(`Received message from ${client.id}: ${messageObj.message}`);
+  async handleMessage(client: Socket, messageObj: {chatId: string, content: string, sender_id: string, replying_for_Ms_Id?: string}) {
+    console.log(`Received message from ${client.id}: ${messageObj.content}`);
     // this.server.emit('message', {client: client.id, message});  // Barcha clientlarga xabar yuborish
 
     let messageDto: MessageDto; 
-    if(messageObj.reply) {
+    if(messageObj.replying_for_Ms_Id) {
       messageDto = {
         chat_id: new Types.ObjectId(messageObj.chatId),
-        sender_id: new Types.ObjectId(messageObj.account_id),
-        content: messageObj.message,
+        sender_id: new Types.ObjectId(messageObj.sender_id),
+        content: messageObj.content,
         timestamp: new Date(),
-        reply: new Types.ObjectId(messageObj.reply)
+        replying_for_Ms_Id: new Types.ObjectId(messageObj.replying_for_Ms_Id)
       };
-    } else {
+    } 
+    else {
       messageDto = {
         chat_id: new Types.ObjectId(messageObj.chatId),
-        sender_id: new Types.ObjectId(messageObj.account_id),
-        content: messageObj.message,
+        sender_id: new Types.ObjectId(messageObj.sender_id),
+        content: messageObj.content,
         timestamp: new Date(),
       };
     }
+    const replying_for_Ms = messageObj.replying_for_Ms_Id ? await this.messagesService.findOneByMessageId(messageObj.replying_for_Ms_Id) : null; 
     const message = await this.messagesService.create(messageDto);
     // console.log("message: ", message);
 
@@ -158,9 +186,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     chat.participant_ids.forEach( async accountId => {
       const sockets = this.accountAndSocketArr.get(accountId.toString());
       if(sockets) {
-        const writer = sockets.includes(client.id);
         sockets.forEach(socketId => {
-          this.sockets.get(socketId).emit("message", { writer, message, chatId: messageObj.chatId, reply: messageObj.reply });
+          this.sockets.get(socketId).emit("message", { message, replying_for_Ms });
+          // this.sockets.get(socketId).emit("message", { writer, message, chatId: messageObj.chatId, reply: messageObj.replying_for_Ms_Id });
         });
       }
     });
@@ -170,22 +198,32 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleDeleteMessage(client: Socket, data: {chatId: string, messageId: string}) {
     // console.log("delete messageId=",data.messageId,"  ", await this.messagesService.findOneByMessageId(data.messageId));
     await this.messagesService.deleteMessage(data.messageId);
+    const replyMessages = await this.messagesService.findAllReplyMessages(new Types.ObjectId(data.messageId));
     const chat = await this.chatService.findOne(data.chatId);
     chat.participant_ids.forEach(accountId => {
       this.accountAndSocketArr.get(accountId.toString())?.forEach(socketId => {
-        this.sockets.get(socketId).emit("deleteMessage", data);
+        const socket = this.sockets.get(socketId);
+        socket.emit("deleteMessage", data);
+        replyMessages.forEach(replyMessage => {
+          socket.emit("replyMessageDelete", {messageId: replyMessage._id, chatId: data.chatId})
+        });
       });
     })
   }
 
   @SubscribeMessage('editMessage')
   async handleEditMessage(client: Socket, data: {chatId: string, messageId: string, content: string}) {
-    console.log("edit messageId=",data.messageId,"  ", await this.messagesService.findOneByMessageId(data.messageId));
+    // console.log("edit messageId=",data.messageId,"  ", await this.messagesService.findOneByMessageId(data.messageId));
     await this.messagesService.updateMessage(data.messageId, data.content);
+    const replyMessages = await this.messagesService.findAllReplyMessages(new Types.ObjectId(data.messageId));
     const chat = await this.chatService.findOne(data.chatId);
     chat.participant_ids.forEach(accountId => {
       this.accountAndSocketArr.get(accountId.toString())?.forEach(socketId => {
-        this.sockets.get(socketId).emit("editMessage", data);
+        const socket = this.sockets.get(socketId);
+        socket.emit("editMessage", data);
+        replyMessages.forEach(replyMessage => {
+          socket.emit("replyMessageEdit", {messageId: replyMessage._id, chatId: data.chatId, content: data.content});
+        });
       });
     })
   }

@@ -167,3 +167,61 @@ body {
 .chat-input button:hover {
     background-color: #45a049;
 }
+
+.context-menu {
+    position: absolute;
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.context-menu li {
+    list-style: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.context-menu li:hover {
+    background-color: #f0f0f0;
+}
+
+.add-button {
+margin-left: 10px; /* Divdan masofa */
+padding: 8px 12px;
+background-color: #28a745; /* Yashil rang */
+color: white; /* Oq matn */
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+}
+
+.add-button:hover {
+background-color: #218838; /* Hover paytida quyuq yashil */
+}
+
+.reply-box {
+padding: 10px;
+border: 1px solid #ccc;
+background-color: #f9f9f9;
+margin-bottom: 10px;
+position: relative;
+}
+
+.reply-box span {
+font-size: 14px;
+color: #555;
+}
+
+.reply-box button {
+position: absolute;
+right: 10px;
+top: 10px;
+border: none;
+background: none;
+cursor: pointer;
+color: #ff0000;
+}
+

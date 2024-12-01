@@ -9,7 +9,6 @@ import { IMessage } from './interfaces/message.interface';
 export class MessagesService {
   constructor(
     @InjectModel("Message") private messageModel: Model<IMessage>,
-    
   ) {}
 
   // Create a new message
@@ -21,6 +20,10 @@ export class MessagesService {
   // Get all messages by chat_id
   async findAllByChatId(chat_id: string | Types.ObjectId): Promise<IMessage[]> {
     return this.messageModel.find({ chat_id }).exec();
+  }
+  
+  async findAllReplyMessages(replying_for_Ms_Id: string | Types.ObjectId): Promise<IMessage[]> {
+    return this.messageModel.find({replying_for_Ms_Id}).exec();
   }
 
   // Get a specific message by message_id
