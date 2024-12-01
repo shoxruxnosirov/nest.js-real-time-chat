@@ -81,7 +81,7 @@
       console.log("socket: ", socket);
 
       document.addEventListener("click", () => {
-        const contextMenu = document.getElementById("contextMenu")
+        // const contextMenu = document.getElementById("contextMenu");
         contextMenu.style.display = "none";
       });
 
@@ -94,10 +94,16 @@
         else if (action === "edit" && currentMessage) {
           // console.log("edit uchun bosildi");
           chatId_editToMessage.set(chatId, currentMessage);
+          const editBox = document.getElementById("editBox" + chatId);
+          const editText = document.getElementById("editText" + chatId);
           divforMsTemp.children[2].style.display = "none";
           divforMsTemp.children[3].style.display = 'flex';
           // currentMessage.querySelector('p').textContent.trim()
-          divforMsTemp.children[3].children[0].value = currentMessage.querySelector('p').textContent.trim();//currentMessage.children[0].textContent;
+          const content = currentMessage.querySelector('p').textContent.trim();
+          divforMsTemp.children[3].querySelector('input').value = content;//currentMessage.children[0].textContent;
+          editText.textContent = content;
+          editBox.style.display = 'inline';
+          divforMsTemp.children[3].children[1].focus();
           currentMessage = null;
         } 
         else if(action === "copy" && currentMessage) {
@@ -114,7 +120,6 @@
         } 
         else if(action === "reply" && currentMessage) {
           chatId_replyToMessage.set(chatId, currentMessage);
-          // currentMessage = null;
           const replyBox = document.getElementById("replyBox" + chatId);
           const replyText = document.getElementById("replyText" + chatId);
           // const cancelReply = document.getElementById("cancelReply");
@@ -422,14 +427,17 @@
       const divChatBody = createChatUserChatBody({messages, user});
       divMs.appendChild(divChatBody);
 
-      const {divReplyBox, spanReply} = createChatUserReplyBox({chat});
+      const {replyBox, replyText} = createChatUserReplyBox({chat});
       // divMs.appendChild(divReplyBox);   <=> divInput.insertBefore(divReplyBox, divInput.children[0]);
         
-      const divInput = createChatUserInputMs(divReplyBox, spanReply);
-      divInput.insertBefore(divReplyBox, divInput.children[0]);
+      const divInput = createChatUserInputMs(replyBox, replyText);
+      divInput.insertBefore(replyBox, divInput.children[0]);
       divMs.appendChild(divInput);
 
-      const divEdit = createChatUserEditMs(divInput);
+      const {editBox, editText} = createChatUserEditBox({chat});
+
+      const divEdit = createChatUserEditMs(divInput, editBox, editText);
+      divEdit.insertBefore(editBox, divEdit.children[0])
       divMs.appendChild(divEdit);
 
       divMs.style.display = 'none';
@@ -505,25 +513,25 @@
     }
 
     function createChatUserReplyBox({chat}) {
-      const divReplyBox = document.createElement('div');
-        divReplyBox.classList.add('reply-box');
-        divReplyBox.id = 'replyBox' + chat._id;
-        divReplyBox.style.display = 'none';
-        // divReplyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
-        const spanReply = document.createElement('span');
-        divReplyBox.appendChild(spanReply);
-        spanReply.id = 'replyText' + chat._id;
+      const replyBox = document.createElement('div');
+      replyBox.classList.add('reply-box');
+      replyBox.id = 'replyBox' + chat._id;
+      replyBox.style.display = 'none';
+        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+        const replyText = document.createElement('span');
+        replyBox.appendChild(replyText);
+        replyText.id = 'replyText' + chat._id;
         const concelReply = document.createElement('button');
-        divReplyBox.appendChild(concelReply);
+        replyBox.appendChild(concelReply);
         concelReply.id = 'concelReply' + chat._id;
         concelReply.textContent = "Concel";
         concelReply.addEventListener('click', function () {
-          divReplyBox.style.display = "none";
-          spanReply.textContent = "";
+          replyBox.style.display = "none";
+          replyText.textContent = "";
           chatId_replyToMessage.set(chatId, null);
 
         });
-      return {divReplyBox, spanReply};
+      return {replyBox, replyText};
     }
 
     function createChatUserInputMs(divReplyBox, spanReply) {
@@ -571,7 +579,31 @@
       return divInput; 
     }
 
-    function createChatUserEditMs(divInput) {
+    function createChatUserEditBox({chat}) {
+      const editBox = document.createElement('div');
+      editBox.classList.add('reply-box');
+      editBox.id = 'editBox' + chat._id;
+      editBox.style.display = 'none';
+        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+        const editText = document.createElement('span');
+        editBox.appendChild(editText);
+        editText.id = 'editText' + chat._id;
+        const concelReply = document.createElement('button');
+        editBox.appendChild(concelReply);
+        concelReply.id = 'concelEdit' + chat._id;
+        concelReply.textContent = "Concel";
+        concelReply.addEventListener('click', function () {
+          editBox.style.display = "none";
+          editText.textContent = "";
+          chatId_editToMessage.set(chatId, null);
+          divforMsTemp.children[3].style.display = "none";
+          divforMsTemp.children[2].style.display = 'flex';
+
+        });
+      return {editBox, editText};
+    }
+
+    function createChatUserEditMs(divInput, editBox, editText) {
       const divInput2 = document.createElement('div');
         const input2 = document.createElement('input');
         divInput2.appendChild(input2);
@@ -588,12 +620,14 @@
               socket.emit('editMessage', {
                 messageId: chatId_editToMessage.get(chatId).id,
                 chatId,
-                content: divforMsTemp.children[3].children[0].value,
+                content: divforMsTemp.children[3].querySelector('input').value,
               });
+              input2.value = '';
+              editBox.style.display = "none";
+              editText.textContent = "";
               chatId_editToMessage.set(chatId, null);
               divInput.style.display = 'flex';
               divInput2.style.display = 'none';
-              // input2.value = ''; 
             }
           }
         });
@@ -602,12 +636,14 @@
             socket.emit('editMessage', {
                 messageId: chatId_editToMessage.get(chatId).id,
                 chatId,
-                content: divforMsTemp.children[3].children[0].value,
+                content: divforMsTemp.children[3].querySelector('input').value,
               });
+              input2.value = '';
+              editBox.style.display = "none";
+              editText.textContent = "";
               chatId_editToMessage.set(chatId, null);
               divInput.style.display = 'flex';
               divInput2.style.display = 'none';
-              // input2.value = ''; 
           }
         });
       return divInput2;
