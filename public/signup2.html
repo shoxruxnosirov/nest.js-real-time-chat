@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<!-- <div class="form-container">
+    <h2>Signup</h2>
+    <form id="signup-form">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="text" id="username" placeholder="username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+</div> -->
+
+<script>
+    (async () => {
+        try {
+            const response = await fetch('http://localhost:3000/auth/google', {
+                method: 'GET',
+                // headers: {
+                //     'Content-Type': 'application/json',
+                // },
+                // body: JSON.stringify({ email, name, username, password })
+            });
+            console.log(await response.json())
+
+        } catch (err) {
+            console.log('err', err);
+        }
+    })();
+
+    // document.getElementById('signup-form').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+
+    //     const email = document.getElementById('email').value;
+    //     const name = document.getElementById('name').value;
+    //     const username = document.getElementById('username').value;
+    //     const password = document.getElementById('password').value;
+
+    //     // Form data validation (optional)
+    //     if (!email || !name || !password) {
+    //         alert('Please fill in all fields');
+    //         return;
+    //     }
+
+    //     // Signup API request to the server
+    //     fetch('http://localhost:3000/auth/signup', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({ email, name, username, password })
+    //     })
+    //     .then(response => response.json())
+    //     .then(sean => {
+    //         if (sean.token) {
+    //             // If token exists in response, save it to localStorage
+    //             // window.access_token = data.token;
+    //             // window.location.href = 'rooms.html';
+    //             // localStorage.setItem('authToken', data.token);
+    //             // alert('Signup successful! Token saved to localStorage.');
+    //             window.location.href = "rooms.html?sean=" + encodeURIComponent(JSON.stringify(sean));
+    //         } else {
+    //             // Handle errors if token is not returned
+    //             alert('Signup failed. Please try again.');
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         alert('An error occurred during signup.');
+    //     });
+
+    //     // Clear the form
+    //     document.getElementById('signup-form').reset();
+    // });
+
+</script>
+
+</body>
+</html>

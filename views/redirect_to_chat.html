@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+</head>
+<body>
+    <script type="application/json" id="data-script">
+        <!-- Bu joyga JSON ma'lumot keladi -->
+      </script>
+  <script>
+
+    const jsonData = document.getElementById('data-script').textContent;
+    localStorage.setItem('userData', jsonData);
+    // Yo'naltirishni darhol amalga oshirish
+    window.location.href = "http://localhost:3000/chat";
+  </script>
+  <p>Agar yo'naltirish amalga oshmasa, <a href="http://localhost:3000/chat">shu yerni bosing</a>.</p>
+</body>
+</html>

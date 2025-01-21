@@ -1,0 +1,4174 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Clone</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <style>
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #242F3D;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      display: none; 
+      height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 37%;
+      min-width: 260px;
+      background-color: #17212B;
+      color: white;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .search-bar {
+      padding: 10px 15px;
+      background-color: #17212B;
+      border-bottom: 1px solid #17212B;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #242F3D;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .search-bar input::placeholder {
+      color: #aaa;
+    }
+    
+    /* Header */
+    .sidebar .header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 15px;
+      background-color: #1f1f1f;
+    }
+    
+    .sidebar .chat-list {
+      list-style: none;
+      padding: 10px 0;
+    }
+    
+    .chat-item {
+      display: flex;
+      align-items: center;
+      /* padding: 10px 15px; */
+      cursor: pointer;
+      transition: background-color 0.3s;
+      background-color: #17212B;
+    }
+    
+    .chat-item:hover {
+      background-color: #202B36;
+    }
+    
+    /* Chat oynasi */
+    .chat-window {
+      width: 60%;
+      min-width: 175px;
+      /* flex: 1; */
+      display: flex;
+      flex-direction: column;
+      height: 100vh; /* Ekran balandligi */
+      background-color: #0E1621;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    .chat-header {
+      display: flex;
+      height: 8vh;
+      padding: 1vh 2vh;
+      background-color: #17212B;
+      border-bottom: 1px solid #17212B;
+      justify-content: space-between;
+    }
+    
+    .chat-header p {
+        color: #F5F5F5;
+        font-weight: 500;
+    }
+    
+    .chat-header span {
+        font-size: 2vh;
+        color: #888;
+        /* width: 100%; */
+    }
+
+    .chat-header-settings-button {
+      /* align-self: flex-end; */
+      color: #888;
+      font-size: 4vh;
+      position: relative; /* Ichki divni absolute qilish */
+      margin-top: 5px;
+    }
+    
+    .chat-body {
+      /* flex: 1; */
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        height: 85vh;
+        overflow-y: auto;
+        background-color: #0E1621;
+    }
+
+    .chat-body::-webkit-scrollbar {
+      width: 6px; 
+    }
+    
+    .chat-body::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.4); 
+      border-radius: 4px; 
+    }
+    
+    .chat-body::-webkit-scrollbar-track {
+      background: transparent; 
+    }
+    
+    .message {
+        /* margin-bottom: 10px; */
+        margin-bottom: 10px; /* Pastdan masofa */
+        padding: 5px 10px;
+        border-radius: 12px;
+        max-width: 60%;
+        min-width: 75px;
+    }
+
+    .message.new-message {
+      transform: translateY(100%);
+      animation: slideIn 0.3s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+          transform: translateY(100%);
+      }
+      to {
+          transform: translateY(0);
+      }
+    }
+    
+    .message.outgoing {
+        background-color: #2B5278;
+        align-self: flex-end;
+        /* text-align: right; */
+        color: #E4ECF2;
+    }
+    
+    .message.incoming {
+        background-color: #182533;
+        align-self: flex-start;
+        /* text-align: left; */
+        color: #E4ECF2;
+    }
+
+    .message span {
+        display: block;
+        font-size: 12px;
+        color: #7DA8D3;
+        margin-top: 5px;
+    }
+
+    .message .reply-content { 
+      height: 42px;
+      border-left: 3px solid #5FAEE7;
+      border-radius: 4px;
+      background-color: #325E87;
+      margin-bottom: 3px;
+      padding-left: 6px;
+      padding-right: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+  .reply-content-text {
+    padding-left: 6px;
+  }
+
+    .message .ms-sender-name {
+      color: #E4ECF2;
+      text-align: left;
+    }
+
+    .message .replying-for-user {
+      color: #4d9fdd;
+    }
+
+    .message .reply-text {
+      color: #E4ECF2;
+    }
+    
+    .message-content-message {
+      display: flex;
+      flex-direction: column;
+      /* position: relative; */
+      /* display: block; */
+    }
+
+    .message-content-message p {
+      position: relative;
+      margin: 0;
+      color: #E4ECF2;
+      font-size: 14px;
+      word-wrap: break-word;
+    }
+
+    .message-content-message span {
+      align-self: flex-end;
+      font-size: 12px;
+      position: relative;
+      /* right: 0px;
+      bottom: 0px; */
+      color: #888;
+    }
+    
+    .reply-and-input-box {
+        height: 7vh;
+        flex-direction: column;
+        display: flex;
+    }
+    
+    .chat-input {
+        position: fixed;  
+        width: 63%;     
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        background-color: #17212B;
+    }
+    
+    .chat-input input {
+      background-color: #17212B;
+      color: #EFEFEF;
+        flex: 0.91;
+        margin-left: 12px;
+        outline: none;
+      border: none;
+        /* border: 0px solid #17212B; */
+        /* border-radius: 5px; */
+        /* margin-right: 10px; */
+        font-size: 15px;
+    }
+    
+    .chat-input button {
+        padding: 1vh 1vw;
+        /* margin-right: 7px; */
+        /* top: 10px;
+        right: 10px; */
+        border: none;
+        background-color: #4caf50;
+        /* color: #26f10b; */
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .chat-input button:hover {
+        background-color: #45a049;
+    }
+    
+    .context-menu-message {
+        position: absolute;
+        display: none;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+    }
+    
+    .context-menu-message li {
+        list-style: none;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+    
+    .context-menu-message li:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .add-button {
+      margin-left: 10px; /* Divdan masofa */
+      padding: 8px 12px;
+      background-color: #28a745; /* Yashil rang */
+      color: white; /* Oq matn */
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .add-button:hover {
+      background-color: #218838; /* Hover paytida quyuq yashil */
+    }
+    
+    .reply-box {
+      bottom: 4vh;
+      display: flex;
+      position: relative;  
+      justify-content: space-between;
+        width: 100%;     
+        padding: 6px;
+        background-color: #17212B;
+    }
+    
+    .reply-box span {
+      font-size: 12px;
+      color: #555;
+      flex: 0.91;
+    }
+    
+    .reply-box button {
+      position: absolute;
+      padding: 10px;
+      right: 10px;
+      top: 0px;
+      border: none;
+      font-size: 20px;
+      background: none;
+      cursor: pointer;
+      color: #880000;;
+    }
+    .reply-box button:hover {
+      color: #ff0000;
+    }
+    
+    .file-cancel-button {
+
+      position: absolute;
+      left: 40px;
+      top: 0;
+      font-size: 20px;
+      padding: 10px;
+      padding-top: 0;
+      border-radius: 2px;
+      color: #880000;
+      /* background-color: #ff0000; */
+      /* border: 1px solid #ccc; */
+      cursor: pointer;
+    }
+    .file-cancel-button:hover {
+      color: #ff0000;
+    }
+
+
+    
+    .sidebarChatType {
+      width: 3%; /* Ekranning 20 dan bir qismini egallaydi */
+      min-width: 75px; /* Kichik ekranlar uchun minimal kenglik */
+      background-color: #0E1621; /* Telegram'ga o'xshash rang */
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 0;
+      box-sizing: border-box;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .sidebarChatType-header {
+      cursor: pointer;
+      background-color: #0E1621;
+      /* color: white; */
+      /* padding: 10px; */
+      text-align: center;
+      border: none;
+      user-select: none;
+      border-bottom: 1px solid #354f60;
+    }
+    
+    .sidebarChatType-header button {
+        cursor: pointer;
+        background-color: #0E1621;
+        font-size: 20px;
+        color: white;
+        padding-bottom: 10px;
+        text-align: center;
+        border: none;
+        user-select: none;
+    }
+    
+    .menu-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .menu-list li {
+        /* border-bottom: 1px solid #354f60; */
+        text-align: center;
+        padding: 20px 4px;
+    }
+    
+    
+    .menu-list li:hover {
+        background-color: #354f60;
+        cursor: pointer;
+    }
+    
+    .counter {
+        background-color: #7289da;
+        color: #ffffff;
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 12px;
+    }
+
+    /* Modal window for input */
+    .modal {
+      position: fixed;
+      align-items: center;
+      background: #17212B;
+      border-radius: 10px;
+      box-shadow: 6px 6px 8px rgba(0, 0, 0, 0.8);
+      width: 0;
+      /* height: 160px; */
+      padding: 20px;
+      top: 50%; /* Ekranning yuqori qismidan 50% pastga */
+      left: 60%; 
+      transform: translate(-50%) scaleX(0);
+      transform-origin: top right;
+      z-index: 2; 
+      overflow: hidden;
+      display: none; 
+    }
+
+    /* Kengayish animatsiyasi */
+    @keyframes expand {
+        0% {
+          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          width: 0;
+        }
+        100% {
+          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          width: 400px;
+        }
+    }
+    /* Form kengaygan holati */
+    .modal.open {
+        display: flex;
+        animation: expand 0.1s ease-out forwards;
+    }
+    
+    .modal .image-section-group {
+        margin-right: 20px;
+    }
+
+    .modal .image-section-group img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        cursor: pointer;
+        object-fit: cover;
+        opacity: 0.2;
+    }
+
+    .modal .content-section-group {
+        flex: 1;
+    }
+
+    .modal .content-section-group h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #3476AB;
+    }
+
+    .modal .content-section-group input {
+        width: 100%;
+        padding: 10px;
+        color: #F5F5CD;
+        background-color: #17212B;
+        border: none;
+        border-bottom: 2px solid #3476AB;
+        outline: none;
+        margin-bottom: 12px;
+        /* border-radius: 5px; */
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif;
+        line-height: 1.5;
+    }
+
+    .modal .content-section-group .create-group-buttons {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .modal .content-section-group button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #17212B;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .modal .content-section-group button.cancel {
+        /* background: #f44336; */
+        color: #3476AB;
+        padding-right: 20px;
+    }
+    .modal .content-section-group button.cancel:hover {
+        background: #1D2A39;
+    }
+
+    .modal .content-section-group button.next {
+        /* background: #1D2A39; */
+        color: #3476AB;
+    }
+    .modal .content-section-group button.next:hover {
+      background: #1D2A39;
+    }
+
+    
+
+    
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-div-for-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .profile-div-for-img-for-group-detail {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .addUserToGroupContainer {
+      display: flex;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      width: 40%;
+      height: auto;
+      background-color: #354f60;
+    }
+
+    .addUserToGroupList {
+      display: flex;
+    }
+
+    .list-item-add-user-to-group {
+      display: flex;
+    }
+
+    
+
+    .group-setting-usersList {
+      align-self: flex-end;
+      width: 100%;
+      background-color: #333333;
+      position: absolute; 
+        /* top: 0;    
+        right: 0; */
+    }
+
+       
+    
+    /* Panel (chap tomondan chiqadigan blok) */
+    #settings-panel {
+      background-color: white;
+      width: 300px;
+      height: 100%;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%); /* Panelni chapga yashirish */
+      transition: transform 0.3s ease;
+      padding: 20px;
+    }
+    
+    
+    /* Panel ichidagi elementlar */
+    #settings-panel h3 {
+      margin-top: 0;
+    }
+    
+    #settings-panel ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    #settings-panel ul li {
+      margin: 15px 0;
+    }
+    
+    #settings-panel ul li a {
+      text-decoration: none;
+      color: #333;
+    }
+    
+    #settings-panel #close-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+    
+    /* Panelni ko'rinadigan holatga olib kelish */
+    #dropdownMenu.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    #dropdownMenu.visible #sidebar-settings-panel {
+      transform: translateX(0); /* Panelni ko'rsatish */
+    }
+    
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      /* width: 100%;
+      height: 100%; */
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5); /* Yarim shaffof qora fon */
+      z-index: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    #userAccSettingsPanel {
+      background-color: #17212B;
+      width: 240px;
+      height: 100%;
+      /* padding: 20px; */
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%); /* Panelni chapga yashirish */
+      transition: transform 0.3s ease;
+      /* padding: 20px; */
+    }
+    
+    #overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    #overlay.visible #userAccSettingsPanel {
+      transform: translateX(0); /* Panelni ko'rsatish */
+    }
+    
+    /* userAccSettingsPanel */
+    
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+    
+    
+    
+    .avatar {
+      width: 75px;
+      height: 75px;
+      background-color: #4b6a85;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+    
+    .avatar img {
+        width: 75px;
+        height: 75px; 
+        border-radius: 50%;
+        object-fit: cover; 
+      }
+    
+    .name-status h2 {
+      margin: 0;
+      color: #E9E9E9;
+      font-size: 18px;
+    }
+    /* 
+    .name-status p {
+      margin: 0;
+      font-size: 14px;
+      color: #adb5bd;
+    } */
+    
+    .user-acc-settings-menu {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .user-acc-settings-menu li {
+      /* margin: 10px 0; */
+      padding: 10px 15px;
+      background-color: #17212B;
+      color: #E9E9E9;
+      /* border-radius: 5px; */
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .user-acc-settings-menu li:hover {
+      background-color: #232E3C;
+    }
+    
+    /* gruppaga odam qo'shish */
+    
+    .add-members-modal {
+      position: fixed;
+      width: 400px;
+      top: 30%;
+      left: 50%;
+      z-index: 3; 
+      background-color: #17212B;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .add-members-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .add-members-modal-header h3 {
+      color: #EBEBEB;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    
+    .add-members-modal-header span {
+      color: #65717B;
+    }
+    
+    .add-members-modal-selected-members {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .add-members-modal-selected-member {
+      background-color: #1F2C39;
+      color: #EBEBEB;
+      font-size: 12px;
+      border-radius: 5px;
+      padding: 3px 7px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .add-members-modal-selected-member .remove {
+      margin-left: 10px;
+      cursor: pointer;
+      color: #f66;
+    }
+    
+    .add-members-modal-member-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    /* Custom Scroll Bar Dizayni */
+    .add-members-modal-member-list::-webkit-scrollbar {
+      width: 6px; 
+    }
+    
+    .add-members-modal-member-list::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.4); 
+      border-radius: 4px; 
+    }
+    
+    /* .add-members-modal-member-list::-webkit-scrollbar-track {
+      background: transparent; 
+    } */
+    
+    .add-members-modal-member {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #374a5e;
+    }
+    
+    .add-members-modal-member .add-members-modal-avatar {
+      width: 40px;
+      height: 40px;
+      background-color: #4b6a85;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .add-members-modal-details {
+      flex: 1;
+    }
+    
+    .add-members-modal-details p {
+      margin: 0;
+      color: #F5F5F5;
+      font-size: 14px;
+    }
+    
+    .add-members-modal-details small {
+      color: #65717B;
+    }
+    
+    .add-members-modal-select-member {
+      cursor: pointer;
+    }
+    
+    .add-members-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    .add-members-modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .add-members-modal-actions .cancel {
+      background-color: #17212B;
+      color: #3476AB;
+    }
+    
+    .add-members-modal-actions .cancel:hover {
+      background: #1D2A39;
+    }
+    
+    .add-members-modal-actions .create {
+      background-color: #17212B;
+      color: #3476AB;
+      /* padding-right: 20px; */
+    }
+    
+    .add-members-modal-actions .create:hover {
+      background: #1D2A39;
+    }
+
+    /* Yarim shaffof fon va Cropper modal */
+    #cropOverlay {
+      position: fixed;
+      /* top: 0;
+      left: 0; */
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 3;
+      justify-content: center;
+      align-items: center;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    #cropImageContainer {
+        position: absolute;
+        top: 0; 
+        left: 50%; 
+        transform: translate(-50%, 0); 
+        max-height: 90%;
+        max-width: 100%;
+        border-radius: 8px;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .crop-controls {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        /* z-index: 1; */
+        /* margin-top: 10px; */
+    }   
+
+    .crop-controls button {
+        padding: 10px 20px;
+        font-size: 16px; 
+        cursor: pointer;
+    }
+
+    /* edit profile */
+    
+    .info-card {
+      position: fixed;
+      align-items: center;
+      background: #17212B;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      width: 0;
+      /* height: 160px; */
+      padding: 20px;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%) scaleX(0);
+      /* transform-origin: top right; */
+      z-index: 2; 
+      overflow: hidden;
+      display: none;
+    }
+
+    @keyframes expand2 {
+      0% {
+        transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+        width: 0;
+      }
+      100% {
+        transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+        width: 400px;
+      }
+    }
+    
+    .info-card.open {
+      display: block;
+      animation: expand2 0.1s ease-out forwards;
+    }
+
+    .back-menu-button {
+      pointer-events: auto; /* Tugma bosilishini ta'minlaydi */
+      cursor: pointer;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background: none;
+      border: none;
+      /* cursor: pointer; */
+      font-size: 20px;
+      color: #3476AB;
+      padding-top: 10px;
+      padding-left: 10px;
+      padding-right: 20px;
+      padding-bottom: 20px;
+    }
+    
+    .back-menu-button:hover {
+      /* background-color: #007bff; */
+
+      font-size: 30px;
+      padding-top: 4px;
+      padding-left: 6px;
+    }
+
+    .menu-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    /* .menu-button img {
+      width: 20px;
+      height: 20px;
+    } */
+
+    .profile-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .profile-picture {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #5A5E63;
+    }
+    
+    
+    .add-image {
+      position: absolute;
+      bottom: 5px;
+      right: 100px;
+      /* background-color: #3BA9EE; */
+      background: none;
+      opacity: 0.2;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .add-image:hover {
+      /* background-color: #3498DB; */
+      opacity: 0.7;
+    }
+
+    .name {
+      text-align: center;
+      font-size: 20px;
+      color: #E9E9E9;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 14px;
+      color: #A3A3A3;
+      margin-bottom: 20px;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .info-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    .info-list li:hover {
+      background: #1D2A39;
+    }
+
+    .info-list li img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    .info-list li span {
+      color: #D1D1D1;
+    }
+
+    /* edit name */
+    .edit-name-modal {
+      position: fixed;
+      background: #17212B;
+      top: 40%;
+      left: 60%;
+      padding: 20px;
+      width: 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transform: translate(-50%) scaleX(0);
+      transform-origin: top right;
+      z-index: 2; 
+      overflow: hidden;
+      display: none;
+      z-index: 3;
+    }
+    
+    @keyframes expand3 {
+        0% {
+          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          width: 0;
+        }
+        100% {
+          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          width: 300px;
+        }
+      }
+      
+      .edit-name-modal.open {
+          display: block;
+          animation: expand3 0.1s ease-out forwards;
+      }
+      
+      .edit-name-modal h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #3476AB;
+      }
+      
+      .edit-name-modal label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #8d99ae;
+      }
+      
+      .edit-name-modal input {
+        width: 100%;
+        padding: 10px;
+        color: #F5F5CD;
+        background-color: #17212B;
+        border: none;
+        border-bottom: 2px solid #3476AB;
+        outline: none;
+        margin-bottom: 12px;
+        /* border-radius: 5px; */
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif;
+        line-height: 1.5;
+      }
+      
+      .profile-Name-buttons {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .profile-Name-buttons button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #17212B;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      
+      .profile-Name-buttons .cancel {
+        color: #3476AB;
+        padding-right: 20px;
+      }
+
+      /* .profile-Name-buttons .cancel:hover {
+        background: #1D2A39;
+      } */
+      
+      .profile-Name-buttons .save {
+        /* background: #2b2d42;
+        color: #edf2f4;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer; */
+        color: #3476AB;
+      }
+      
+      .profile-Name-buttons button:hover {
+        background: #1D2A39;
+      }
+
+    /* group info */
+    
+    .group-info {
+      display: none;
+      width: 500px;
+      top: 10%;
+      left: 42%;
+      padding: 20px;
+      background-color: #17212B;
+      width: 320px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      position: fixed;
+    }
+    
+    .group-info-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        /* background-color: #3a3a3a;  */
+    }
+
+    .header-title {
+        color: #EBEBEB;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .close-btn {
+        color: #708499;
+        font-size: 26px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .close-btn:hover {
+        color: #cc0000;
+    }
+
+    .group-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+    }
+
+    .group-photo {
+        /* width: 50px;
+        height: 50px; */
+        /* border-radius: 50%; */
+        /* background-color: #777; */
+        margin-right: 15px;
+    }
+    
+    .group-photo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* margin-bottom: 15px; */
+      position: relative;
+    }
+
+
+    .group-picture {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #5A5E63;
+    }
+
+
+    .add-image-group {
+      position: absolute;
+      bottom: 5px;
+      right: 0px;
+      /* background-color: #3BA9EE; */
+      background: none;
+      opacity: 0.4;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .add-image-group:hover {
+      /* background-color: #3498DB; */
+      opacity: 0.8;
+    }
+
+
+
+    .group-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .group-name {
+        color: #EBEBEB;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .group-members-count {
+        color: #708499;
+        font-size: 14px;
+    }
+
+    .group-username {
+      display: flex;
+      justify-content: space-between;
+        padding: 6px 10px;
+        border-bottom: 1px solid #444;
+        color: #708499;
+        font-size: 14px;
+        text-align: left;
+        word-wrap: break-word;
+    }
+
+    .group-username span {
+      color: #3476AB;
+    }
+
+    .add-member {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #444;
+        cursor: pointer;
+        color: #b4c3c5;
+    }
+
+    .add-member-icon {
+        margin-right: 5px;
+        font-size: 14px;
+    }
+
+    .group-members {
+        /* padding: 15px; */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    /* Custom Scroll Bar Dizayni */
+    .group-members::-webkit-scrollbar {
+    width: 6px; 
+    }
+    
+    .group-members::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4); 
+    border-radius: 4px; 
+    }
+    
+    /* .group-members::-webkit-scrollbar-track {
+    background: transparent; 
+    } */
+    
+    
+    .member {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .member:last-child {
+        margin-bottom: 0;
+    }
+
+    .member-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #555;
+        margin: 0;
+        margin-left: 9px;
+        cursor: pointer;
+        /* margin-right: 10px; */
+    }
+
+    .member-photo img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        /* padding: 10px; */
+        /* margin: 10px, 15px; */
+        /* background-color: #555; */
+        /* margin-right: 10px; */
+    }
+
+    .member-info {
+      color: #E9E8E8;
+      justify-content: space-between;
+        display: flex;
+        font-size: 14px;
+        flex-grow: 1;
+    }
+
+    .member-status {
+        color: #888;
+        font-size: 12px;
+    }
+
+    .button {
+        padding: 6px 10px;
+        border: none;
+        background-color: #17212B;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        color: #3476AB;
+        /* margin-Left: auto; */
+      }
+
+    .button:hover {
+      background: #1D2A39;
+    }
+
+    .show-message-content-modal {
+      position: fixed;
+      z-index: 4;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8); /* Qoramtir fon */
+      justify-content: center;
+      align-items: center; 
+    }
+
+    .show-message-content {
+      position: relative;
+      max-width: 100vw; /* Maksimal kenglik */
+      max-height: 100vh; /* Maksimal bo'y */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .show-message-file {
+      width: auto; /* Kenglik avtomatik bo'ladi */
+      height: auto; /* Bo'y avtomatik bo'ladi */
+      max-width: 100vw; /* Maksimal kenglik */
+      max-height: 100vh; /* Maksimal bo'y */
+      object-fit: contain; /* Proporsiyani saqlab, sig'dirish */
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .show-message-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .show-message-close:hover,
+    .show-message-close:focus {
+      color: red;
+      text-decoration: none;
+    }
+
+    .message-count {
+      position: absolute;
+      bottom: 6px; /* Ekranning pastki qismida joylashadi */
+      right: 6px; /* Ekranning o'ng burchagida */
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .info {
+      /* background-color: #2c2c3e; */
+      /* border-radius: 8px; */
+      /* padding: 10px; */
+      width: 100%;
+      height: 52px;
+      position: relative;
+      /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); */
+    }
+
+    .top-left {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #66c1e9;
+    }
+
+    .top-right {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 12px;
+      color: #a8a8b5;
+    }
+
+    .bottom-left {
+      position: absolute;
+      bottom: 6px;
+      left: 10px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .bottom-right {
+      position: absolute;
+      bottom: 6px;
+      right: 10px;
+      background-color: #486384;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    
+    
+  </style>
+
+</head>
+<body>
+  <div id="container" class="container" class="hidden">
+
+    <div class="sidebarChatType">
+      <div id = "sidebarChatType-header" class="sidebarChatType-header">
+        <button id="userAccSettingsButton">&#9776;</button>
+      </div>
+      <div>
+        <ul class="menu-list">
+            <li onclick="selectChatType('all')">All </li>
+            <li onclick="selectChatType('people')">People </li>
+            <li onclick="selectChatType('groups')">Groups </li>
+            <!-- <li onclick="selectChatType('channals')">Channels <span class="counter">15</span></a></li> -->
+        </ul>
+      </div>
+    </div>  
+
+    <div id="listContainer" class="sidebar">
+      <ul class="chat-list" id="owner-of-the-account"></ul>
+      <div class="search-bar"><input type="text" id="groupOrAccount_Name" placeholder="Search" required /></div>
+      <ul class="chat-list" id="search-chats-list"></ul>
+      <ul class="chat-list" id="chats-list"></ul>
+    </div>
+
+    <div id="messageContainer" class="chat-window">
+    </div>
+    
+  </div>
+
+  <div>
+    
+    <div id="overlay" class="hidden">
+      <div id="userAccSettingsPanel">
+        <div class="profile">
+          <div class="avatar">
+            <img src="">
+          </div>
+          <div class="name-status">
+            <h2>User_</h2>
+          </div>
+        </div>
+        <ul class="user-acc-settings-menu">
+          <li id="openGroupModal" onclick="openGroupModal()">New Group</li>
+          <li id="openEditProfile">Edit profile</li> <!-- onclick="openEditProfile()" -->
+        </ul>
+      </div>
+    </div>
+
+
+    <div id="groupModal" class="modal">
+      <div class="image-section-group">
+          <img src="http://localhost:3000/uploads/camera_icon.jpg" alt="Select Image", onclick="selectGroupPicture()">
+          <input type="file" id="groupModalSelectPicture" accept="image/*" style="display: none;">
+      </div>
+      <div class="content-section-group">
+          <h2>Group name</h2>
+          <input type="text" id="groupName" oninput="checkOnInput_Input()">
+          <div class="create-group-buttons">
+              <button class="cancel" onclick="cancelCreateGroup()">Cancel</button>
+              <button class="next" onclick="createNextGroup()">Next</button>
+          </div>
+      </div>
+    </div>
+
+    <!-- Cropper Overlay -->
+    <div id="cropOverlay">
+      <div id="cropImageContainer">
+          <img id="cropImage" src="" alt="Kesish uchun rasm" />
+          <div class="crop-controls">
+            <button id="cancelCrop">Cancel</button>
+              <button id="setPhoto">Set Photo</button>
+          </div>
+      </div>
+    </div>
+
+    <div class="add-members-modal" id="addUserToGroupContainer" style="display: none;">
+      <div class="add-members-modal-header">
+        <h3>Add Members</h3>
+        <span>1 / 200000</span>
+      </div>
+      <div class="add-members-modal-selected-members">
+        <!-- <div class="add-members-modal-selected-member">Akbar_tatu<span class="remove">&times;</span></div> -->
+      </div>
+      <ul class="add-members-modal-member-list">
+        <!-- <li class="add-members-modal-member">
+          <div class="add-members-modal-avatar"></div>
+          <div class="add-members-modal-details">
+            <p>Akbar_tatu_bugalter</p>
+            <small>last seen yesterday at 2:39 PM</small>
+          </div>
+          <input type="checkbox" class="add-members-modal-select-member" />
+        </li> -->
+      </ul>
+      <div class="add-members-modal-actions">
+        <button class="cancel" id="addUserToGroupCancel" onclick="addUserToGroupCancel()">Cancel</button>
+        <button class="create" id="addUserToGroupButton">Create</button>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <button class="back-menu-button">&#8592;</button>
+      <button class="menu-button">&#8942;</button>
+      <div class="profile-container">
+        <img class="profile-picture" src="" alt="Profile Picture">
+        <input type="file" id="profileSelectPicture" accept="image/*" style="display: none;">
+        <img class="add-image" src="http://localhost:3000/uploads/camera_icon.jpg" alt="Profile Picture" onclick="selectProfilePicture()">
+      </div>
+      <div class="name">Shoxrux</div>
+      <ul class="info-list">
+        <li id="profileNikname">
+          <div><!-- <img src="user-icon.png" alt="Name"> -->Name</div>
+          <span>somebody</span>
+        </li>
+        <li id="profileUsername">
+          <div><!-- <img src="username-icon.png" alt="Username"> -->Username </div>
+          <span>@someUsername</span>
+        </li>
+        <li id="profileEmail">
+          <div><!-- <img src="email-icon.png" alt="Email"> -->Email</div>
+          <span>somebody@gmail.com</span>
+        </li>
+      </ul>
+    </div>
+
+    <div id="editNameModal" class="edit-name-modal">
+      <h3>Edit your name</h3>
+        <label for="edit-name-first-name">First name</label>
+        <input type="text" id="edit-name-first-name" placeholder="" value="" />
+        
+        <label for="edit-name-last-name">Last name</label>
+        <input type="text" id="edit-name-last-name" placeholder="" value="" />
+        
+        <div class="profile-Name-buttons">
+          <button type="button" class="cancel">Cancel</button>
+          <button class="save">Save</button>
+        </div>
+    </div>
+
+    <div id="edit-groupName-modal" class="edit-name-modal">
+      <h3>Edit group name</h3>
+        <!-- <label for="edit-groupName">Group name</label> -->
+        <input type="text" id="edit-groupName" oninput="checkOnInput_InputEdit()" />
+        
+        <div class="profile-Name-buttons">
+          <button type="button" class="cancel">Cancel</button>
+          <button class="save">Save</button>
+        </div>
+    </div>
+
+    <div id="editUsernameBox" class="modal" >
+      <div class="content-section-group">
+          <h2>Username</h2>
+          <input type="text" id="editProfileUsername" oninput="editProfileUsername()" />
+          <p></p>
+          <div class="add-members-modal-actions">
+              <button class="cancel">Cancel</button>
+              <button class="create">Save</button>
+          </div>
+      </div>
+  </div>
+
+  <div id="editGroupUsernameBox" class="modal" >
+    <div class="content-section-group">
+        <h2>GroupUsername</h2>
+        <input type="text" id="editGroupUsername" oninput="editGroupUsername()" />
+        <p></p>
+        <div class="add-members-modal-actions">
+            <button class="cancel">Cancel</button>
+            <button class="create">Save</button>
+        </div>
+    </div>
+</div>
+
+  <div class="group-info">
+    <div class="group-info-header">
+        <div class="header-title">Group Info</div>
+        <button class="close-btn">&times;</button>
+    </div>
+    <div class="group-details">
+      <div style="display: flex; align-items: center;">
+        <div class="group-photo">
+          <div class="group-photo-img">
+            <img class="group-picture" src="" alt="Profile Picture">
+          </div>
+          <!-- <input type="file" id="groupProfileSelectPicture" accept="image/*" style="display: none;"> -->
+          <img class="add-image-group" src="http://localhost:3000/uploads/camera_icon.jpg" alt="Profile Picture" onclick="selectGroupProfilePicture()">
+            <!-- <img src="" alt=""> -->
+        </div>
+        <div class="group-text">
+            <div class="group-name"></div>
+            <div class="group-members-count"></div>
+        </div>
+      </div>
+        <button class="button" style="display: none;">Edit</button>
+    </div>
+    <div class="group-username">
+      <div style="align-items: center;">
+        username: <span></span>
+      </div>
+      <button class="button" style="display: none;">Edit</button>
+    </div>
+    <div class="add-member">
+        <div>3 member</div>
+        <span class="add-member-icon">➕ Add</span> 
+    </div>
+    <div class="group-members">
+        <!-- <div class="member">
+            <div class="member-photo" style="background-color: #9c9c9c;">
+                <img src="" alt="">
+            </div>
+            <div class="member-info">
+                <div>Shoxrux</div>
+                <div class="member-status">Last seen just now</div>
+            </div>
+        </div> -->
+    </div>
+  </div>
+
+    <div>
+      <ul class="context-menu-message" id="contextMenuMessage">
+        <li onclick="handleMessageAction('reply')">Reply</li>
+        <li onclick="handleMessageAction('edit')" class="edit-option">Edit</li>
+        <li onclick="handleMessageAction('copy')">Copy</li>
+        <!-- <li onclick="handleMessageAction('pin')">Pin</li> -->
+        <!-- <li onclick="handleMessageAction('forward')">Forward</li> -->
+        <!-- <li onclick="handleMessageAction('select')">Select</li> -->
+        <li onclick="handleMessageAction('delete')">Delete</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+  <script>
+
+    // const jsonData = document.getElementById('data-script').textContent;
+    const jsonData = localStorage.getItem('userData');
+    const accountData = JSON.parse(jsonData);
+    let allChats = null;
+    console.log(accountData);
+    let sean = accountData;
+    if(!accountData?.email) {
+      window.location.href = "http://localhost:3000/auth/google";
+    } else {
+      document.getElementById('container').classList.remove('hidden');
+      container.style.display= "flex";
+    }
+
+    
+    let handleMessageAction;
+    let selectChatType;
+    const chatsList = document.getElementById("chats-list");
+    const searchChatsList = document.getElementById('search-chats-list');
+    searchChatsList.style.display = 'none';
+    let listContainer = document.getElementById('listContainer');
+    let messageContainer = document.getElementById('messageContainer');
+    const contextMenuMessage = document.getElementById("contextMenuMessage");
+
+    const userAccSettingsButton = document.getElementById('userAccSettingsButton');
+    const overlay = document.getElementById('overlay');
+    const createGroupModel = document.getElementById('groupModal');
+    const addUserToGroupContainer = document.getElementById('addUserToGroupContainer');
+
+    userAccSettingsButton.addEventListener('click', () => {
+      const profileImage = document.querySelector('#userAccSettingsPanel .profile img');
+      profileImage.src = accountData.picture;
+
+      const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
+      profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+      overlay.classList.add('visible');
+  });
+
+  // Sozlamalar panelini yopish
+  // userAccSettingsCloseBtn.addEventListener('click', () => {
+  //   overlay.classList.remove('visible');
+  // });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('visible');
+    }
+  });
+
+  // const fileInput = document.getElementById('groupModalSelectPicture');
+  const cropOverlay = document.getElementById('cropOverlay');
+  const cropImage = document.getElementById('cropImage');
+  const cropImageContainer = document.getElementById('cropImageContainer');
+  const setPhotoButton = document.getElementById('setPhoto');
+  const cancelCropButton = document.getElementById('cancelCrop');
+  // const outputImage = document.getElementById('outputImage');
+  const outputImage = createGroupModel.querySelector('#groupModal .image-section-group img')
+  let cropper;
+  let croppedBlob;
+  let isprofileSelectPhoto = false;
+  let uploadProfilePicture;
+
+    const chatIdAnd_ListAndMsDiv = new Map();    
+    const userId_and_chatId = new Map();
+    const userId_userData = new Map();
+    const chatId_selectedFile = new Map();
+
+    const chatId_ChatData = new Map();    // res api uchun
+    
+    const messageId_sender = new Map();
+    messageId_replyingMsId = new Map();
+    
+    const chatId_replyToMessage = new Map();
+    const chatId_editToMessage = new Map();
+    let currentMessage = null;
+
+    let divforMsTemp;
+    let chatId;
+    
+    let editProfileUsername;
+    let editGroupUsername;
+    let profilePicture = null;
+    let addUserOrGroupFunc = null;
+    let appendMessage = null;
+    // let openEditProfile;
+
+
+    
+    // document.getElementById('sidebarChatType-header').addEventListener('click', (event) => {
+    //   event.stopPropagation();
+    //   const dropdownMenu = document.getElementById("dropdownMenu");
+    //   dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+    // });
+
+    function checkOnInput_Input() {
+      document.querySelector('.content-section-group h2').style.color = "#3476AB";
+      groupName.style.borderBottom = '2px solid #3476AB';
+    }
+
+    function checkOnInput_InputEdit() {
+      document.querySelector('#edit-groupName-modal h3').style.color = "#3476AB";
+      document.getElementById('edit-groupName').style.borderBottom = '2px solid #3476AB';
+    }
+
+    function openGroupModal() {
+            createGroupModel.classList.add('open');
+            document.getElementById('groupName').focus();
+    }
+
+    function cancelCreateGroup() {
+      createGroupModel.classList.remove('open');
+      croppedBlob = null;
+      outputImage.src = 'http://localhost:3000/uploads/camera_icon.jpg';
+      outputImage.style.opacity = 0.2;
+      document.getElementById('groupName').value = '';
+    }
+
+    function selectGroupPicture() {
+      document.getElementById('groupModalSelectPicture').click();
+    }
+
+    document.getElementById('groupModalSelectPicture').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            cropImage.src = reader.result;
+            cropOverlay.style.display = 'flex';
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1, 
+                viewMode: 2,
+                autoCropArea: 0.8, 
+                background: false 
+            });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+   
+    cancelCropButton.addEventListener('click', () => {
+      cropOverlay.style.display = 'none';
+      if (cropper) cropper.destroy(); // Cropperni tozalash
+    });
+
+    setPhotoButton.addEventListener('click', () => {
+      if (cropper) {
+        console.log("cropper: ", cropper);
+          cropper.getCroppedCanvas().toBlob(async (blob) => {
+            let [ext, type] = Object.entries(mimeTypes).find(([ext, type]) => type === blob.type);
+            const newFileName = `cropped_image.${ext}`; 
+            console.log("newFile: ", newFileName);
+            const newFile = new File([blob], newFileName, { type: blob.type });
+            if(isprofileSelectPhoto) {
+              await uploadProfilePicture(newFile, isprofileSelectPhoto);
+              isprofileSelectPhoto = false;
+              cropOverlay.style.display = 'none';
+            } 
+            else {
+              croppedBlob = newFile;
+              const croppedUrl = URL.createObjectURL(newFile);
+              outputImage.src = croppedUrl;
+              outputImage.style.opacity = 1;
+              console.log("croppedUrl: ", croppedUrl);
+              cropOverlay.style.display = 'none';
+            }
+          });
+      }
+    });
+
+    function addUserToGroupCancel () {
+      const addedMemberCount = document.querySelector('.add-members-modal-header span');
+      addedMemberCount.textContent = '1 / 200000';
+  
+      document.querySelector('.add-members-modal-selected-members').innerHTML = '';
+      document.querySelector('.add-members-modal-member-list').innerHTML = '';
+  
+      addUserToGroupContainer.style.display = 'none';
+      // cancelCreateGroup();
+    }
+
+    
+    // document.getElementById('addUserToGroupCancel').addEventListener('click', () => {
+      
+    // });
+
+    function addMemberToGroup(members) {
+      console.log('members: ', members);
+      document.getElementById('addUserToGroupButton').textContent = 'Add';
+      addUserToGroupContainer.style.display = 'block';
+      // const usersList = document.getElementById('addUserToGroupList');
+      const usersList = document.querySelector('.add-members-modal-member-list');
+      const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
+      const addingUserCount = document.querySelector('.add-members-modal-header').querySelector('span');
+      chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
+        if(chat.type === 'lich' && !members.includes(user.account_id)) {
+          console.log('user: ', user);
+
+          const listItem = document.createElement("li");
+          listItem.classList.add('add-members-modal-member');
+
+          const memberAvatar = createChatProfilePicture(user);
+          
+          // memberAvatar.classList.add('member-photo');
+          memberAvatar.classList.add('add-members-modal-avatar');
+
+          listItem.appendChild(memberAvatar);
+
+          const memberDetails = document.createElement('div');
+          memberDetails.innerHTML = `<p>${user.name + ' ' + (user.lastName ?? '')}</p>`;
+          memberDetails.classList.add('add-members-modal-details');
+          
+          listItem.appendChild(memberDetails);
+
+          const selectMember = document.createElement('input');
+          selectMember.type = 'checkbox';
+          selectMember.classList.add('add-members-modal-select-member');
+          selectMember.id = `checkbox-${user.account_id}`;
+          // const addMemberToGroupFor = document.createElement('label');
+          // addMemberToGroupFor.setAttribute("for", `checkbox-${user._id}`);
+          // addMemberToGroupFor.textContent = 'Add';
+          listItem.appendChild(selectMember);
+          // listItem.appendChild(addMemberToGroupFor);
+
+          usersList.appendChild(listItem);
+
+          selectMember.addEventListener("change", () => {
+            if (selectMember.checked) {
+              addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] + ` / 200000`;
+              const selectedMember = document.createElement("div");
+              selectedMember.classList.add("add-members-modal-selected-member");
+              // selectedMember.innerHTML = `<p>${user.name}</p><span class="remove">&times;</span>`;
+              // const cancelSelectedMemeber = selectedMember.querySelector(".remove");
+              const selectedUserName = document.createElement('p');
+              selectedMember.appendChild(selectedUserName);
+              selectedUserName.textContent = user.name + " " + (user.lastName || '');
+              const cancelSelectedMemeber = document.createElement('span');
+              selectedMember.appendChild(cancelSelectedMemeber);
+              cancelSelectedMemeber.textContent = `\u00D7`;         // cancelSelectedMember.innerHTML = '&times;';
+              cancelSelectedMemeber.classList.add('remove');
+              selectedMembersContainer.appendChild(selectedMember);
+
+              cancelSelectedMemeber.addEventListener("click", () => {
+                event.stopPropagation();
+                selectedMember.remove();
+                selectMember.checked = false;
+                addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] - 1 + ` / 200000`;
+              });
+            } 
+            else {
+              const selectedMember = Array.from(
+                selectedMembersContainer.children
+              ).find((child) => child.id = `checkbox-${user._id}`);
+              if (selectedMember) {
+                selectedMember.remove();
+                addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] - 1 + ` / 200000`;
+              }
+            }
+          });
+        }
+      });
+    }
+
+    function createNextGroup() {
+      const groupName = document.getElementById("groupName");
+      if (groupName.value.trim() === "") {
+        document.querySelector('.content-section-group h2').style.color = "red";
+        groupName.style.borderBottom = '2px solid red';
+        groupName.focus();
+        return;
+      }
+      // const groupName = document.getElementById("groupName").value.trim();
+      // document.getElementById("groupModal").style.display = "none";
+      // console.log("gruppa yaratishga harakat!");
+      if(groupName) {
+        document.getElementById('addUserToGroupButton').textContent = 'Create';
+        addUserToGroupContainer.style.display = 'block';
+        // const usersList = document.getElementById('addUserToGroupList');
+        const usersList = document.querySelector('.add-members-modal-member-list');
+        const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
+        const addingUserCount = document.querySelector('.add-members-modal-header').querySelector('span');
+        chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
+          if(chat.type === 'lich') {
+
+            const listItem = document.createElement("li");
+            listItem.classList.add('add-members-modal-member');
+
+            const memberAvatar = createChatProfilePicture(user);
+            
+            // memberAvatar.classList.add('member-photo');
+            memberAvatar.classList.add('add-members-modal-avatar');
+
+            listItem.appendChild(memberAvatar);
+
+            const memberDetails = document.createElement('div');
+            memberDetails.innerHTML = `<p>${user.name + ' ' + (user.lastName ?? '')}</p>`;
+            memberDetails.classList.add('add-members-modal-details');
+            
+            listItem.appendChild(memberDetails);
+
+            const selectMember = document.createElement('input');
+            selectMember.type = 'checkbox';
+            selectMember.classList.add('add-members-modal-select-member');
+            selectMember.id = `checkbox-${user.account_id}`;
+            // const addMemberToGroupFor = document.createElement('label');
+            // addMemberToGroupFor.setAttribute("for", `checkbox-${user._id}`);
+            // addMemberToGroupFor.textContent = 'Add';
+            listItem.appendChild(selectMember);
+            // listItem.appendChild(addMemberToGroupFor);
+
+            usersList.appendChild(listItem);
+
+            selectMember.addEventListener("change", () => {
+              if (selectMember.checked) {
+                addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] + 1 + ` / 200000`;
+                const selectedMember = document.createElement("div");
+                selectedMember.classList.add("add-members-modal-selected-member");
+                // selectedMember.innerHTML = `<p>${user.name}</p><span class="remove">&times;</span>`;
+                // const cancelSelectedMemeber = selectedMember.querySelector(".remove");
+                const selectedUserName = document.createElement('p');
+                selectedMember.appendChild(selectedUserName);
+                selectedUserName.textContent = user.name + " " + (user.lastName || '');
+                const cancelSelectedMemeber = document.createElement('span');
+                selectedMember.appendChild(cancelSelectedMemeber);
+                cancelSelectedMemeber.textContent = `\u00D7`;         // cancelSelectedMember.innerHTML = '&times;';
+                cancelSelectedMemeber.classList.add('remove');
+                selectedMembersContainer.appendChild(selectedMember);
+
+                cancelSelectedMemeber.addEventListener("click", () => {
+                  event.stopPropagation();
+                  selectedMember.remove();
+                  selectMember.checked = false;
+                  addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] - 1 + ` / 200000`;
+                });
+              } 
+              else {
+                const selectedMember = Array.from(
+                  selectedMembersContainer.children
+                ).find((child) => child.id = `checkbox-${user._id}`);
+                if (selectedMember) {
+                  selectedMember.remove();
+                  addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] - 1 + ` / 200000`;
+                }
+              }
+            });
+          }
+        });
+      }
+    }
+      
+
+    
+    function cancelEditProfile() {
+      document.getElementById("editProfileContainer").style.display = "none";
+    }
+
+    // async function editProfileUsername() {
+    //   const username = document.getElementById("editProfileUsername").value.trim();
+    //   const response = await fetch('http://localhost:3000/auth/editusername', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${sean.jwtToken}`,
+    //     },
+    //     body: JSON.stringify({ id: accountData.account_id, username })
+    //   });
+        
+    //     // console.log(" new username data: ", response);
+    //   if(response.ok) {
+    //     const user = await response.json();
+    //     document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
+    //     console.log(" new username data: ", user);
+    //   }
+    // }
+
+    // async function editGroupUsername() {
+    //   const username = document.getElementById("editGroupUsername").value.trim();
+    //   const response = await fetch('http://localhost:3000/auth/editusername', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${sean.jwtToken}`,
+    //     },
+    //     body: JSON.stringify({ id: accountData.account_id, username })
+    //   });
+        
+    //     // console.log(" new username data: ", response);
+    //   if(response.ok) {
+    //     const user = await response.json();
+    //     document.getElementById('profileUsername').querySelector('span').textContent = "Username: " + user.username;
+    //     console.log(" new username data: ", user);
+    //   }
+    // }
+
+  // function editProfileNIkName() {
+  //   const nikNameBox = document.getElementById('profileNiknameBox');
+  //   const nikName = nikNameBox.children[1];
+  //   if(nikNameBox.children[1].value.trim() === "") {
+  //     nikNameBox.children[3].style.display = 'none';
+  //     nikNameBox.children[2].style.display = 'block';
+  //   } else {
+  //     nikNameBox.children[3].style.display = 'block';
+  //     nikNameBox.children[2].style.display = 'none';
+  //   }
+  // }
+
+  function getChatsByUsername(userOrGroups) {
+    // console.log("search userOrGroup: ", userOrGroups);
+    searchChatsList.style.display = 'inline';
+    chatsList.style.display = 'none';
+    
+    
+    const div_for_li_and_button = document.createElement('ul');
+    div_for_li_and_button.style.display = "flex";
+
+    userOrGroups.forEach(item => {
+      if(item._id === sean.account_id) {
+        return;
+      }
+      const li = document.createElement('li');
+        div_for_li_and_button.appendChild(li);
+        li.classList.add('chat-item');
+
+        const div1 = document.createElement('div');
+        div1.classList.add("member-photo");
+        const div1ProfileImg = createChatProfilePicture(item);
+        // div1ProfileImg.classList.add('member-photo');
+        div1.appendChild(div1ProfileImg);
+        const div2 = document.createElement('div');
+        div2.classList.add('info');
+        const p = document.createElement('p');
+        p.classList.add('top-left')
+        p.textContent = item.name + " " + (item.lastName || '');
+        const span = document.createElement('span');
+        span.classList.add('bottom-left')
+        span.textContent = "@" + item.username;
+        div2.appendChild(p);
+        div2.appendChild(span);
+        li.appendChild(div1);
+        li.appendChild(div2);
+
+        const addOrJoin_or_open = document.createElement('button');
+        li.appendChild(addOrJoin_or_open);
+        addOrJoin_or_open.classList.add('button');
+        addOrJoin_or_open.style.marginLeft = 'auto';
+
+      if(!userId_and_chatId.has(item._id)) { 
+        addOrJoin_or_open.textContent = (item.type === "group") ? "Join" : "Add";
+        addOrJoin_or_open.onclick = async () => { 
+          await addUserOrGroupFunc(item, addOrJoin_or_open, item._id); 
+        }
+      } 
+      else {
+        addOrJoin_or_open.textContent = "Open";
+        addOrJoin_or_open.onclick = openChatOpen(item._id);
+      }
+
+      searchChatsList.appendChild(li);
+    });
+  }
+
+  function openChatOpen(userOrGroup_id) {
+      return function() {
+        // await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
+        // chatId = chatId_ChatData.get(userOrGroup_id);
+        // console.log('openChatOpen_accid: ', userOrGroup_id);
+        chatId = userId_and_chatId.get(userOrGroup_id);
+        // chatId_ChatData
+              if(divforMsTemp) {
+                divforMsTemp.style.display = 'none';
+              }
+              divforMsTemp = chatIdAnd_ListAndMsDiv.get(chatId)[1];
+              divforMsTemp.style.display = 'flex';
+
+              searchChatsList.innerHTML ='';
+              searchChatsList.style.display = 'none';
+        chatsList.style.display = 'inline';
+      }        
+    };
+  
+  async function getPreviousMessages(messagesContainer, chatId, appendMessage, msQueue) {
+  try { 
+
+    if(msQueue) {
+      while(msQueue.head) {
+        const chatBodyRect = messagesContainer.getBoundingClientRect();
+        const invisibleMessageRect = messagesContainer.querySelector(`#${CSS.escape(msQueue.head.elem)}`).getBoundingClientRect()
+        if(invisibleMessageRect.top < chatBodyRect.bottom) {
+          msQueue.dequeue();
+          const unreadedMss = chatIdAnd_ListAndMsDiv.get(chatId)[0].querySelector('.bottom-right');
+          unreadedMss.textContent = msQueue.count;
+          if(msQueue.count === 0) {
+            unreadedMss.textContent = 0;
+            unreadedMss.style.display = 'none';
+            break;
+          }
+        } else {
+          console.log('mssQueue: ', msQueue);
+          break;
+        }
+      }
+      console.log('msQueue: ', msQueue);
+    }
+    
+    const lastId = messagesContainer.children[0]?.id;
+    if(lastId) {
+      // Hozirgi scroll pozitsiyasini va konteyner balandligini saqlash
+      const previousScrollHeight = messagesContainer.scrollHeight;
+      const previousScrollTop = messagesContainer.scrollTop;
+
+      const response = await fetch(`http://localhost:3000/messages/previous/${chatId}?lastId=${lastId}&limit=20`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${sean.jwtToken}`, // Bearer tokenni headerga qo'shish
+        },
+      });
+      const data = await response.json();
+      const messages = [];
+      for(let i = data.length - 1; i >= 0; i--) {
+        messages.push(await appendMessage(data[i]));
+      }
+      messagesContainer.prepend(...messages);
+  
+      // Scroll pozitsiyasini tiklash
+      const newScrollHeight = messagesContainer.scrollHeight;
+      messagesContainer.scrollTop = previousScrollTop + (newScrollHeight - previousScrollHeight);
+      return data.length === 0;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+}
+
+  
+  function selectProfilePicture() {
+    document.getElementById('profileSelectPicture').click();
+    isprofileSelectPhoto = 'lich';
+  } 
+
+  function selectGroupProfilePicture() {
+    document.getElementById('profileSelectPicture').click();
+    // document.getElementById('groupProfileSelectPicture').click();
+    isprofileSelectPhoto = 'group';
+  } 
+    
+    document.getElementById('profileSelectPicture').onchange = function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            cropImage.src = reader.result;
+            cropOverlay.style.display = 'flex';
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1, 
+                viewMode: 2,
+                autoCropArea: 0.8, 
+                background: false 
+            });
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // document.getElementById('groupProfileSelectPicture').onchange = function(event) {
+    //   const file = event.target.files[0];
+    //   if (file) {
+    //     const reader = new FileReader();
+    //     reader.onload = () => {
+    //         cropImage.src = reader.result;
+    //         cropOverlay.style.display = 'flex';
+    //         if (cropper) cropper.destroy();
+    //         cropper = new Cropper(cropImage, {
+    //             aspectRatio: 1, 
+    //             viewMode: 2,
+    //             autoCropArea: 0.8, 
+    //             background: false 
+    //         });
+    //     };
+    //     reader.readAsDataURL(file);
+    //   }
+    // }
+
+    function chatStatus({chatId, status}) {
+      const span = chatIdAnd_ListAndMsDiv.get(chatId)[1].children[0].querySelector('span');
+      if(status === 'online') {
+        span.style.color = '#5EB5F7'
+      } else {
+        span.style.color = '#888'
+      }
+      span.textContent = status;
+    }
+    
+
+
+    // URL parametrlarini olish
+  window.onload = async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      // sean = JSON.parse(urlParams.get('sean'));
+      console.log("sean: ", sean);
+      
+      const response = await fetch('http://localhost:3000/chats/getAllChat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sean.jwtToken}`,
+          },
+          body: JSON.stringify({ accountId: accountData.account_id})
+      });
+
+      if(response.ok) {
+        ownerOfAccFunc(accountData);
+        allChats = await response.json(); // {allChats: IUserOrGroupChat, lastMessage:ISendMessage }[]
+        allChats.sort((itm1, itm2) => {
+          let itm1_time = itm1.lastMessages.length > 0 ? itm1.lastMessages.at(-1).message.timestamp : itm1.chatData.timestamp;
+          let itm2_time = itm2.lastMessages.length > 0 ? itm2.lastMessages.at(-1).message.timestamp : itm2.chatData.timestamp;
+          return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
+        });
+        console.log("allchats: ", allChats);
+        allChats.forEach(addChatUser);
+      }
+
+      
+      
+      const socket = io('http://localhost:3001' , {
+        extraHeaders: {
+          transports: ['websocket'],
+          Authorization: `Bearer ${sean.jwtToken}`,
+          customAccountId: sean.account_id,
+        }
+      });
+
+      socket.on('connect', () => {
+        console.log("connect soket");
+        socket.emit('connectedSocket', {
+          allChats
+        });
+      })
+
+
+      // socket.account_id = account_id;
+
+      console.log("socket: ", socket);
+
+      document.addEventListener("click", (e) => {
+        contextMenuMessage.style.display = "none";
+
+        if (
+          !createGroupModel.contains(e.target) && 
+          !document.getElementById('openGroupModal').contains(e.target) && 
+          !cropOverlay.contains(e.target) &&
+          !addUserToGroupContainer.contains(e.target)
+        ) {
+          cancelCreateGroup();
+        }
+
+        if(
+          !addUserToGroupContainer.contains(e.target) && 
+          !document.querySelector('.create-group-buttons .next').contains(e.target) &&
+          !document.querySelector('.add-member-icon').contains(e.target)
+        ) {
+          addUserToGroupCancel();
+        }
+
+        if(
+          !document.querySelector('.info-card').contains(e.target) &&
+          !document.getElementById('editNameModal').contains(e.target) && 
+          !document.getElementById('openEditProfile').contains(e.target) &&
+          !document.getElementById('editUsernameBox').contains(e.target) && 
+          !document.getElementById('cropOverlay').contains(e.target)
+        ) {
+          document.querySelector('.info-card').classList.remove('open');
+        }
+
+        if(
+          !document.getElementById('editNameModal').contains(e.target) &&
+          !document.getElementById('profileNikname').contains(e.target)
+        ) {
+          document.getElementById('editNameModal').classList.remove('open');
+        }
+
+        if(
+          !document.querySelector('.group-info').contains(e.target) &&
+          !chatIdAnd_ListAndMsDiv.get(chatId)?.[1].querySelector('.chat-header').contains(e.target) &&
+          !document.getElementById('edit-groupName-modal').contains(e.target) &&
+          !document.getElementById('editGroupUsernameBox').contains(e.target)
+        ) {
+          document.querySelector('.group-info').style.display = 'none';
+        }
+
+        if(
+          !document.getElementById('editUsernameBox').contains(e.target) &&
+          !document.getElementById('profileUsername').contains(e.target)
+        ) {
+          document.getElementById('editUsernameBox').classList.remove('open');
+        }
+      });
+
+
+      document.getElementById('addUserToGroupButton').addEventListener('click', async () => {
+        // document.getElementById('addUserToGroupContainer').style.display = 'none';
+        const usersList = document.querySelector('.add-members-modal-member-list');
+        const checkedCheckboxes = usersList.querySelectorAll('input[type="checkbox"]:checked');
+        const usersId = [[accountData.account_id],[true],[true]];
+        const unitNumbers = Array.from(checkedCheckboxes).map(elem => {
+          usersId[0].push(elem.id.slice(9))
+          usersId[1].push(false);
+          usersId[2].push(false);
+        });
+        if(document.getElementById('addUserToGroupButton').textContent === 'Create') {
+          
+          let picture = null;
+          if(croppedBlob) {
+            picture = await uploadFile([croppedBlob], 'photo');
+          }
+          
+          const groupName = document.getElementById("groupName").value.trim();
+  
+          const response = await fetch('http://localhost:3000/chats/createGroup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${sean.jwtToken}`,
+            },
+            body: JSON.stringify({
+              type: 'group',
+              name: groupName,
+              picture: picture?.url,
+              participant_ids: usersId[0],
+              changeGroupData: usersId[1],
+              removeMessage: usersId[2]
+            })
+          });
+  
+          if(response.ok) {
+            const data = await response.json();
+            console.log("chreate group data: ", data);
+            await socket.emit('createGroup', data);
+          }
+
+          cancelCreateGroup();
+          overlay.classList.remove('visible');
+        }
+        else {
+          if(usersId[0].length > 1) {
+            const response = await fetch('http://localhost:3000/chats/addMembersToGroup', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${sean.jwtToken}`,
+              },
+              body: JSON.stringify({
+                participant_ids: usersId[0].slice(1),
+                chatId
+              })
+            });
+    
+            if(response.ok) {
+              const data = await response.json();
+              console.log("chreate group data: ", data);
+              await socket.emit('createGroup', data);
+            }
+          } else {
+            console.log('hech qanday so\'rov bo\'lmadi qo\'shiladigan odam yo\'q');
+          }
+        }
+        addUserToGroupCancel();
+      });
+
+      document.getElementById('openEditProfile').addEventListener('click', function(e) {
+        document.querySelector('.info-card').classList.add('open');
+
+        const profilePicture = document.querySelector('.profile-picture');
+        profilePicture.src = accountData.picture;
+        const nameElement = document.querySelector('.info-card .name');
+        nameElement.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+
+        document.querySelector('#profileNikname span').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        document.querySelector('#profileUsername span').textContent = accountData.username || '';
+        document.querySelector('#profileEmail span').textContent = accountData.email || '';      
+      });
+
+      document.querySelector('#editNameModal .profile-Name-buttons .cancel').addEventListener('click', () => {
+        document.getElementById('editNameModal').classList.remove('open');
+      });
+
+      document.querySelector('#editNameModal .profile-Name-buttons .save').addEventListener('click', async () => {
+        const firstname = document.getElementById('edit-name-first-name');
+        const lastName = document.getElementById('edit-name-last-name');
+        if(firstname.value.trim() === '') {
+            firstname.labels[0].style.color = 'red';
+            return;
+          }
+          firstname.labels[0].style.color = '#3476AB';
+          // await socket.emit('editProfile', {
+          //   type: 'lich',
+          //   editedField: 'name',
+          //   accountId: accountData.account_id,
+          //   data: {name: firstname.value.trim(), lastName: lastName.value.trim()}
+          // });
+
+          const response = await fetch('http://localhost:3000/chats/editProfile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${sean.jwtToken}`,
+            },
+            body: JSON.stringify({
+              type: 'lich',
+              editedField: 'name',
+              accountId: accountData.account_id,
+              data: {name: firstname.value.trim(), lastName: lastName.value.trim()}
+            })
+          });
+          
+          if(response.ok) {
+            await socket.emit('editProfile', await response.json());
+            document.getElementById('editNameModal').classList.remove('open');
+          }
+      });
+
+      document.querySelector('#edit-groupName-modal .profile-Name-buttons .cancel').addEventListener('click', () => {
+        document.querySelector('#edit-groupName-modal').classList.remove('open');
+      });
+
+      document.querySelector('#edit-groupName-modal .profile-Name-buttons .save').addEventListener('click', async () => {
+        const groupName = document.getElementById('edit-groupName');
+        if(groupName.value.trim() === '') {
+          document.querySelector('#edit-groupName-modal h3').style.color = 'red';
+          groupName.style.borderBottom = '2px solid red';
+          groupName.focus();
+          // groupName.labels[0].style.color = 'red';
+            return;
+        }
+          // groupName.labels[0].style.color = '#3476AB';
+          
+          const response = await fetch('http://localhost:3000/chats/editProfile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${sean.jwtToken}`,
+            },
+            body: JSON.stringify({
+              type: 'group',
+              editedField: 'name',
+              accountId: chatId,
+              data: groupName.value.trim()
+            })
+          });
+                
+        if(response.ok) {
+          await socket.emit('editProfile', await response.json());
+          document.querySelector('#edit-groupName-modal').classList.remove('open');
+        }
+      });
+
+
+      document.getElementById('profileNikname').addEventListener('click', () => {
+        const editNikName = document.getElementById('editNameModal');
+        editNikName.classList.add('open');
+
+        editNikName.querySelector('h3').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        const firstname = document.getElementById('edit-name-first-name');
+        firstname.value = accountData.name;
+        const lastName = document.getElementById('edit-name-last-name');
+        lastName.value = accountData.lastName;
+      });
+
+
+      document.getElementById('profileUsername').addEventListener('click', async () => {
+        document.getElementById('editUsernameBox').classList.add('open');
+        // document.getElementById('groupName').focus();
+      });
+      
+      document.querySelector('#editUsernameBox .cancel').addEventListener('click', () => {
+        document.getElementById('editUsernameBox').classList.remove('open');
+      });
+
+      document.querySelector('#editUsernameBox .create').addEventListener('click', async () => {
+        if(document.querySelector('#editUsernameBox p').style.color === 'red') {
+          return;
+        }
+        const username = document.getElementById("editProfileUsername").value.trim();
+        const response = await fetch('http://localhost:3000/auth/editusername', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sean.jwtToken}`,
+          },
+          body: JSON.stringify({ id: accountData.account_id, username })
+        });
+                
+        if(response.ok) {
+          const user = await response.json();
+          Object.assign(accountData, user);
+          localStorage.setItem('userData', JSON.stringify(accountData));
+          document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
+          console.log(" new username data: ", user);
+          document.getElementById('editUsernameBox').classList.remove('open');
+        }
+      });
+
+
+      document.querySelector('#editGroupUsernameBox .cancel').addEventListener('click', () => {
+        document.getElementById('editGroupUsernameBox').classList.remove('open');
+      });
+
+      document.querySelector('#editGroupUsernameBox .create').addEventListener('click', async () => {
+        if(document.querySelector('#editUsernameBox p').style.color === 'red') {
+          return;
+        }
+        const groupUsername = document.getElementById("editGroupUsername").value.trim();
+        const response = await fetch('http://localhost:3000/chats/editProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sean.jwtToken}`,
+          },
+          body: JSON.stringify({ type: 'group', accountId: chatId, editedField: 'username', data: groupUsername })
+        });
+                
+        if(response.ok) {
+          // const editChat = await response.json();
+          // console.log('edited group username data: ', editChat);
+          // const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(chatId);
+          // Object.assign(user, editChat);
+          // Object.assign(chat, editChat);
+          // localStorage.setItem('userData', JSON.stringify(accountData));
+          // document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
+          // console.log(" new username data: ", user);
+          document.querySelector('.group-info .group-username span').textContent = groupUsername;
+          document.getElementById('editGroupUsernameBox').classList.remove('open');
+        }
+      });
+
+
+      document.querySelector('.info-card .back-menu-button').addEventListener('click', () => {
+        // console.log('shu qism ishlayabdi');
+        // document.querySelector('.info-card').style.display = 'none';
+        document.querySelector('.info-card').classList.remove('open');
+      });
+
+      editProfileUsername = async function() {
+        const username = document.getElementById("editProfileUsername").value.trim();
+        const editbutton = document.querySelector('#editUsernameBox .create');
+        const errBotton = document.querySelector('#editUsernameBox p');
+        if(username.length > 3) {
+          const data = await checkUsernameIsUnique(username);
+          if (data.isUnique) {
+            errBotton.textContent = "This username is available.";
+            errBotton.style.color = '#3476AB';
+          } 
+          else {
+            errBotton.textContent = "This username is already occupied.";
+            errBotton.style.color = 'red';
+          }
+        } else if(username === '') {
+          errBotton.textContent = '';
+        } else {
+          errBotton.textContent = "This username is too short.";
+          errBotton.style.color = 'red';
+        }
+      }
+
+      editGroupUsername = async function() {
+        const username = document.getElementById("editGroupUsername").value.trim();
+        const editbutton = document.querySelector('#editGroupUsernameBox .create');
+        const errBotton = document.querySelector('#editGroupUsernameBox p');
+        if(username.length > 3) {
+          const data = await checkUsernameIsUnique(username);
+          if (data.isUnique) {
+            errBotton.textContent = "This username is available.";
+            errBotton.style.color = '#3476AB';
+          } 
+          else {
+            errBotton.textContent = "This username is already occupied.";
+            errBotton.style.color = 'red';
+          }
+        } else if(username === '') {
+          errBotton.textContent = '';
+        } else {
+          errBotton.textContent = "This username is too short.";
+          errBotton.style.color = 'red';
+        }
+      }
+
+    addUserOrGroupFunc = async function (userOrGroupData, openChatButton, newContactAccId) {
+      const response = await fetch('http://localhost:3000/chats/createChat_or_joinToGroup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sean.jwtToken}`,
+          },
+          body: JSON.stringify({ 
+            type: userOrGroupData.type === 'group' ? 'group' : 'lich',
+            clientAccId: sean.account_id,
+            searchUserOrGroupId: userOrGroupData._id
+           })
+      });
+
+      if(response.ok) {
+        const {chatData, lastMessages} = await response.json();
+        console.log("chatData: ", chatData);
+        await socket.emit("addChatUser", {
+          chatDatas: [
+            chatData,
+            {
+              type: 'lich',
+              name: accountData.name,
+              lastName: accountData.lastName,
+              username: accountData.username,
+              picture: accountData.picture,
+              chatId: chatData.chatId,
+              account_id: accountData.account_id
+            }
+          ],
+          lastMessages
+        });
+        // console.log("newContactAccId: ", newContactAccId, "\nchatData.account_id: ", chatData.account_id);
+        openChatButton.textContent = 'Open';
+        openChatButton.onclick = openChatOpen(newContactAccId);
+      }
+    }
+
+
+      selectChatType = function(chatType) {
+        if(chatType === 'all') {
+          chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
+            chatList.style.display = 'flex';
+          });
+        } 
+        else if(chatType === 'people') {
+          chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
+            if(chat.type === 'lich') {
+              chatList.style.display = 'flex';
+            } else {
+              chatList.style.display = 'none';
+            }
+          });
+        }
+        else if(chatType === 'groups') {
+          chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
+            if(chat.type === 'group') {
+              chatList.style.display = 'flex';
+            } else {
+              chatList.style.display = 'none';
+            }
+          });
+        }
+      }
+
+      handleMessageAction = function (action) {
+
+        if (action === "delete" && currentMessage) {
+          socket.emit("deleteMessage", {chatId, messageId: currentMessage.id});
+          currentMessage = null;
+        } 
+        else if (action === "edit" && currentMessage) {
+          // console.log("edit uchun bosildi");
+          chatId_editToMessage.set(chatId, currentMessage);
+          const editBox = document.getElementById("editBox" + chatId);
+          const editText = document.getElementById("editText" + chatId);
+          divforMsTemp.children[2].style.display = "none";
+          divforMsTemp.children[3].style.display = 'flex';
+          // currentMessage.querySelector('p').textContent.trim()
+          const content = currentMessage.querySelector('.message-content-message p')?.textContent;//.trim();
+          divforMsTemp.children[3].querySelector('input[type="text"]').value = content;//currentMessage.children[0].textContent;
+          editText.textContent = content;
+          editBox.style.display = 'block';
+          divforMsTemp.children[3].querySelector('input[type="text"]').focus();
+          currentMessage = null;
+        } 
+        else if(action === "copy" && currentMessage) {
+          const messageContent = currentMessage.querySelector('.message-content-message p').textContent.trim();//currentMessage.children[0].textContent.trim(); // Kontentni olish
+          navigator.clipboard.writeText(messageContent) // Kontentni clipboardga nusxalash
+          .then(() => {
+            console.log("Message copied:", messageContent);
+            currentMessage = null;
+          })
+          .catch((err) => {
+            console.error("Failed to copy:", err);
+            currentMessage = null;
+          });
+        } 
+        else if(action === "reply" && currentMessage) {
+          chatId_replyToMessage.set(chatId, currentMessage);
+          const replyBox = document.getElementById("replyBox" + chatId);
+          const replyText = document.getElementById("replyText" + chatId);
+          // const cancelReply = document.getElementById("cancelReply");
+          console.log("currentMessage for Reply: ", currentMessage);
+            const user_name = messageId_sender.get(currentMessage.id).senderName;
+            replyText.textContent = `${user_name}: "${currentMessage.querySelector('.message-content-message p').textContent.trim()}"`;
+            replyBox.style.display = "block";
+
+            divforMsTemp.children[2].querySelector('input[type="text"]').focus();
+            currentMessage = null;
+            // messageInput.focus();
+          // contextMenuMessage.style.display = "none"; // ContextMenu'ni yopish
+        }
+
+        contextMenuMessage.style.display = "none"; // Menyuni yashirish
+      }
+
+      function ownerOfAccFunc (ownerOfThisAcc) {
+        // accountData = ownerOfThisAcc;
+        // console.log("accountData: ", ownerOfThisAcc);
+        userId_userData.set(accountData.account_id, accountData);
+        const ownerOAcc = document.getElementById('owner-of-the-account');
+
+        ownerOAcc.innerHTML = `
+        <li class="chat-item">
+          <div class="member-photo" style="background-color: #9c9c9c;">
+              <img src="${accountData.picture}" alt="">
+          </div>
+          <div class="info">
+            <p>${accountData.name}</p>
+          </div>
+        </li>`;
+          // <span>${ownerOfThisAcc.name}</span>
+      }
+
+      async function addChatUser({chatData, lastMessages}) {
+        console.log("addChatUser chatData: ", chatData);
+        // 
+        if(!userId_and_chatId.has(chatData.account_id)) {
+          // userId_and_chatId.set(newContactAccId, chatData.chatId);
+          userId_and_chatId.set(chatData.account_id, chatData.chatId);
+        } else {
+          alert('2 marta chat ochishga urunish');
+        }
+        // chatId_ChatData.set(chatData.chatId, chatData);
+        
+        if(chatIdAnd_ListAndMsDiv.has(chatData.chatId)) {
+          console.log("mavjud chatni hosil qilishga urunish bo'ldi va qaytarildi ");
+          return;
+        }
+        const chatUser_li_elem = createChatUserListElem(chatData, lastMessages);
+        const divMs = await createChatUserMessagesContainer({chat: chatData, user: chatData, messages: lastMessages, status: 'ulanmoqda'});
+        messageContainer.appendChild(divMs);
+        chatsList.insertBefore(chatUser_li_elem, chatsList.children[0]);
+        chatIdAnd_ListAndMsDiv.set(chatData.chatId, [chatUser_li_elem, divMs, {user: chatData, chat: chatData}, new Queue(), false]);
+      }
+      // async function addChatUser({chat, user, messages, status}) {
+      //   console.log("chat: ", chat," \n user: ", user);
+      //   userId_userData.set(user._id, user);
+      //   if(!userId_and_chatId.has(user._id)) {
+      //     userId_and_chatId.set(user._id, chat.chatId);
+      //   }
+      //   if(chatIdAnd_ListAndMsDiv.has(chat.chatId)) {
+      //     console.log("mavjud chatni hosil qilishga urunish bo'ldi va qaytarildi ");
+      //     return;
+      //   }
+      //   const chatUser_li_elem = createChatUserListElem({user, chat});
+      //   const divMs = await createChatUserMessagesContainer({chat, user, messages, status});
+      //   messageContainer.appendChild(divMs);
+      //   chatsList.insertBefore(chatUser_li_elem, chatsList.children[0]);
+      //   chatIdAnd_ListAndMsDiv.set(chat.chatId, [chatUser_li_elem, divMs, {user, chat}]);
+      // }
+
+      
+      const searchUser = document.getElementById('groupOrAccount_Name');
+      searchUser.addEventListener('input', async function () {
+        searchChatsList.innerHTML = "";
+        if(searchUser.value.trim().length > 2) {
+          const response = await fetch('http://localhost:3000/chats/getUserNames', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${sean.jwtToken}`,
+            },
+            body: JSON.stringify({ username: searchUser.value.trim() })
+          });
+          // return response.json();
+          getChatsByUsername(await response.json());
+        } else {
+          searchChatsList.style.display = 'none';
+          chatsList.style.display = 'inline';
+        }
+      });
+
+      socket.on("addChatUser", async (chatData, lastMessages, status) => {
+        // console.log('chatdata: socket: ', chatData);
+        await addChatUser({chatData, lastMessages});
+        // console.log('{chatId: chatData.chatId, status}: ', {chatId: chatData.chatId, status});
+        chatStatus({chatId: chatData.chatId, status});
+      });
+
+      // socket.on('addMemberToGroup', ({chat}) => {
+      //   const span = chatIdAnd_ListAndMsDiv.get(chat.chatId)[1].children[0].querySelector('span');
+      //   span.textContent = chat.participant_length + ' ta a\'zo';
+      // })
+
+      socket.on("chatStatus", chatStatus);
+
+      socket.on('editProfileData', ({chatData, type}) => {
+        // if(chatData.type === type) {
+        const chatId = userId_and_chatId.get(chatData.account_id);
+          const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(chatId);
+          // const chatUser_li_elem = createChatUserListElem({editedUser, editedChat});
+          // const editedchatType = chatData.type;
+          delete chatData.type;
+          delete chatData.chatId;
+          delete chatData.account_id;
+          
+          // console.log("this acc edit data: ", chatData);
+          Object.assign(user, chatData);
+          Object.assign(chat, chatData);
+          const nikName = chatList.querySelector('.info')?.querySelector('.top-left');
+          nikName.textContent = user.name + " " + (user.lastName || '');
+          const profilePicture = chatList.querySelector('.member-photo');
+          profilePicture.innerHTML = `<img src="${user.picture}", class='profile-img'>`;
+          msDivList.querySelector('.chat-header p').textContent = (user.name || '') + ' ' + (user.lastName || '');
+          if(chat.type === 'group' && chatId === chat.chatId) {
+            document.querySelector('.group-info .group-name').textContent = (user.name || '') + ' ' + (user.lastName || '');
+          } 
+        // }
+
+      });
+
+      socket.on('editProfileName', ({name, lastName, account_id}) => {
+          messageId_sender.forEach((data, msId) => {
+            messageId_replyingMsId.forEach((respyingMsId, messageId) => {
+              if(respyingMsId === msId && account_id === data.sender_id) {
+                document.getElementById(messageId).querySelector('.replying-for-user').textContent = name + ' ' + (lastName ?? '');
+              }
+            });
+          });
+
+          messageId_sender.forEach((data, msId) => {
+            if(data.sender_id === account_id) {
+              const senderName = document.getElementById(msId).querySelector('.ms-sender-name');
+              if(senderName.textContent) {
+                senderName.textContent = name + ' ' + (lastName ?? '');
+              }
+            }
+          })
+      });
+
+      socket.on('editProfile', (profileData) => {
+        console.log('profileDAta: ', profileData);
+        delete profileData.type;
+        delete profileData.chatId;
+        delete profileData.account_id;
+        Object.assign(accountData, profileData);
+        localStorage.setItem('userData', JSON.stringify(accountData));
+        const userData = document.querySelectorAll('.info-card .info-list li');
+        document.querySelector ('#userAccSettingsPanel .profile .name-status h2').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        document.querySelector('.info-card .name').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        document.querySelector('#editNameModal h3').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        userData[0].querySelector('span').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
+        userData[1].querySelector('span').textContent = accountData.username;
+        document.querySelector('#userAccSettingsPanel .profile .avatar img').src = accountData.picture;
+        document.querySelector('.info-card .profile-container .profile-picture').src = accountData.picture;
+        // userData[2].querySelector('span').textContent = accountData.email;
+        document.querySelector('#editNameModal #edit-name-first-name').value = accountData.name;
+        document.querySelector('#editNameModal #edit-name-last-name').value = accountData.lastName;
+
+      });
+
+      // socket.on('takeAllData', async ({chats, ownerUser}) => {
+      //   ownerOfAccFunc(ownerUser);
+      //   chats.sort((itm1, itm2) => {
+      //     let itm1_time = itm1.messages.length > 0 ? itm1.messages.at(-1).timestamp : itm1.chat.timestamp;
+      //     let itm2_time = itm2.messages.length > 0 ? itm2.messages.at(-1).timestamp : itm2.chat.timestamp;
+      //     return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
+      //   });
+      //   chats.forEach(await addChatUser);
+      // });
+
+      socket.on('message', async function({ message, replying_for_Ms,}) {
+        const liListAndMsDiv = chatIdAnd_ListAndMsDiv.get(message.chatId);
+        const liList = liListAndMsDiv[0];
+        chatsList.removeChild(liList);
+        chatsList.insertBefore(liList, chatsList.children[0]);
+        
+        const messagesDiv = liListAndMsDiv[1].children[1];
+        const messageDiv = await appendMessage({ message, replying_for_Ms, isNewMs: true, liList});
+        const lastMessage = messagesDiv.lastElementChild;
+        messagesDiv.appendChild(messageDiv);
+        if(messageDiv.classList.contains('outgoing')) {
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } else {
+          const messageRect = lastMessage?.getBoundingClientRect() ?? 0;
+          const containerRect = messagesDiv.getBoundingClientRect();
+          if (messageRect.top <= containerRect.bottom && chatId === message.chatId) {
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          } 
+          else {
+            msQueue = chatIdAnd_ListAndMsDiv.get(message.chatId)[3];
+            msQueue.enqueue(message._id);
+            const unreadMss = chatIdAnd_ListAndMsDiv.get(message.chatId)[0].querySelector('.bottom-right');
+            unreadMss.style.display = 'flex';
+            unreadMss.textContent = msQueue.count;
+          }
+        }
+      });
+
+      socket.on('deleteMessage', function(data) {     // {chatId, messageId}
+        const [liList, msDiv, {user, chat}] = chatIdAnd_ListAndMsDiv.get(data.chatId);
+        const chatBody = msDiv.querySelector('.chat-body');
+        lastMsId = chatBody.children[chatBody.children.length - 1].id;
+        if(lastMsId === data.messageId) {
+          if(chatBody.children.length > 1) {
+
+            console.log('lastMs2: ', chatBody);
+            const lastMs2 = chatBody.children[chatBody.children.length - 2];
+            const sender = messageId_sender.get(lastMs2.id);
+            liList.querySelector('.bottom-left').textContent = sender.senderName + ': ' + lastMs2.querySelector('.message-content-message p').textContent;
+            liList.querySelector('.top-right').textContent = lastMs2.querySelector('.message-content-message span').textContent;
+          }
+          else {
+            liList.querySelector('.bottom-left').textContent = 'No message';
+            liList.querySelector('.top-right').textContent = getDateLikeHHMM(user.timestamp);
+          }
+        }
+        document.getElementById(data.messageId).remove();
+      });
+      
+      socket.on('replyMessageDelete', function(data) {     // {chatId, messageId}
+        const messageDiv = document.getElementById(data.messageId);
+        console.log("div: ", messageDiv);
+        if(messageDiv) {
+          // const replyingForMs = messageDiv.querySelector('.reply-content');
+          const replyingForMs = messageDiv.children[0];
+          console.log("replyingForMs: ", replyingForMs);
+          replyingForMs?.remove();
+        }
+        // messageDiv.innerHTML = `<p>${message.content}</p>
+        //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+      })
+      
+        // socket.on('replyMessageEdit', function(data) {     // {chatId, messageId}
+        //   const messageDiv = document.getElementById(data.messageId);
+        //   // const sender = messageId_sender.get(data.messageId);
+        //   // const sender = userId_userData(sender.sender_id);
+        //   // const replyText = messageDiv.querySelector('.reply-text');
+        //   console.log('replyMessageEdit');
+        //   messageDiv.querySelector('.reply-text').textContent = data.content;
+        //   messageDiv.querySelector('.replying-for-user').textContent = data.senderName;
+        //   // const [sender] =  replyText.textContent.split(": ");
+        //   // replyText.textContent = sender + ": \"" + data.content + "\"";
+          
+        //   // messageDiv.innerHTML = `<p>${message.content}</p>
+        //   //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+        // });
+
+      socket.on('editMessage', function(data) {
+        document.getElementById(data.messageId).querySelector('p').textContent = data.content;
+        messageId_replyingMsId.forEach((respyingMsId, messageId) => {
+            if(respyingMsId === data.messageId) {
+              const messageDiv = document.getElementById(messageId);
+              messageDiv.querySelector('.reply-text').textContent = data.content;
+            }
+        })
+      });
+
+      socket.on('receiveFile', function(data) {
+        console.log('file data: ', data);
+        alert(data);
+      });
+
+      // socket.on('editUsername', function(data) {
+      //   const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(data.chatId);
+      //   // msDivList.children[0]
+      //   if(chat.type === 'group') {
+      //     chat.username = data.username;
+      //     const username = msDivList.querySelector('.group-setting-usersList')?.querySelector('p');
+      //     if(username) {
+      //       username.textContent = `@${data.username}`;
+      //     }
+      //   }
+      // });
+
+      async function appendMessage ({ message, replying_for_Ms, isNewMs, liList}) {
+        // console.log('message: ', message);
+        const messageDiv = document.createElement('div');
+        messageId_sender.set(message._id, {sender_id: message.sender_id, senderName: message.senderName});
+        messageDiv.id = message._id;
+
+        messageDiv.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          const closestMessage = event.target.closest(".message");
+            if (closestMessage) {
+              currentMessage = closestMessage;
+              const isIncoming = closestMessage.classList.contains("incoming");
+              const editOption = contextMenuMessage.querySelector(".edit-option");
+              if (isIncoming) {
+                editOption.style.display = "none";
+              } 
+              else {
+                editOption.style.display = "block";
+              }
+              contextMenuMessage.style.top = `${event.clientY}px`;
+              contextMenuMessage.style.left = `${event.clientX}px`;
+              contextMenuMessage.style.display = "block";
+            }
+        });
+        
+        messageDiv.innerHTML = `
+            <span class='ms-sender-name'></span>
+            <div class="reply-content" style='display: flex;'>
+                <!-- <img src=""> -->
+                <div class="reply-content-text">
+                  <span class="replying-for-user">Shoxrux</span>
+                  <span class="reply-text">biror gap da hullas</span>
+                </div>
+            </div>
+            <div class="message-content-file"></div>
+            <div class="message-content-message">
+                <p>Boshqa izoh da</p>
+                <span>12:56 AM</span>
+            </div>`;
+
+        const replayContent = messageDiv.querySelector('.reply-content');
+        if(replying_for_Ms) {
+            replayContent.style.borderLeft = `3px solid rgb(${replying_for_Ms.color})`;
+            replayContent.style.backgroundColor = `rgba(${replying_for_Ms.color}, 0.2)`
+            // replayContent.style.opacity = 0.2;
+
+          messageId_replyingMsId.set(message._id, replying_for_Ms._id);
+          if(replying_for_Ms.fileUrl) {
+            replayContent.insertBefore(await createMessageFile(replying_for_Ms.fileUrl, 'reply'), replayContent.children[0]);
+          }
+          const replayingMsUser = messageDiv.querySelector('.replying-for-user');
+          replayingMsUser.textContent = replying_for_Ms.senderName;
+          replayingMsUser.style.color = `rgb(${replying_for_Ms.color})`;
+          messageDiv.querySelector('.reply-text').textContent = replying_for_Ms.content;
+        }
+        else {
+          replayContent.remove();
+        }
+
+        if(message.fileUrl) {
+          const msContent = messageDiv.querySelector('.message-content-file');
+          msContent.insertBefore(await createMessageFile(message.fileUrl, 'message'), msContent.children[0]);
+        }
+          const msContentMs = messageDiv.querySelector('.message-content-message');
+          msContentMs.querySelector('p').textContent = message.content;
+          msContentMs.querySelector('span').textContent = getDateLikeHHMM(message.timestamp, true);
+
+        // if(userId_and_chatId.has(message.chatId)) {
+        //   const span = document.createElement('span');
+        //   span.textContent = message.senderName;
+        //   messageContent.appendChild(span);
+        // }
+
+        // if(message.fileUrl) {
+        //   const messageFile = await createMessageFile(message.fileUrl);
+        //   messageContent.appendChild(messageFile);
+        //   // messageDiv.append(messageFile);
+        // }
+
+
+        // if(userId_and_chatId.has(message.chatId)) {
+        //   messageContent.innerHTML = `<span>${message.sen}</span>`
+        // }
+        // const messageContentText = document.createElement('p');
+        // messageContentText.textContent = message.content ?? '';
+        // messageContent.appendChild(messageContentText);
+
+        // const messageTimeStamp = document.createElement('span');
+        // messageTimeStamp.textContent = getDateLikeHHMM(message.timestamp);
+        // messageContent.appendChild(messageTimeStamp);
+
+          // messageContent.innerHTML = `<p>${message.content ?? ''}</p>
+          // <span>${getDateLikeHHMM(message.timestamp)}</span>`;
+        
+
+          // messageDiv.appendChild(messageContent);
+        // }
+        // messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
+        if(sean.account_id === message.sender_id) {
+          if(isNewMs) {
+            liList.querySelector('.bottom-left').textContent = 'You: ' + message.content;
+            liList.querySelector('.top-right').textContent = getDateLikeHHMM(message.timestamp);
+          }
+          messageDiv.classList.add('message', 'outgoing');
+        } else {
+          if(isNewMs) {
+            liList.querySelector('.bottom-left').textContent = message.senderName + ': ' + message.content;
+            liList.querySelector('.top-right').textContent = getDateLikeHHMM(message.timestamp);
+          }
+          messageDiv.classList.add('message', 'incoming');
+          if(userId_and_chatId.has(message.chatId)) {
+            const msSenderName = messageDiv.querySelector('.ms-sender-name');
+            msSenderName.textContent = message.senderName;
+            msSenderName.style.color = `rgb(${message.color})`;
+          }
+        }
+        if(isNewMs) {
+          messageDiv.classList.add('new-message');
+          setTimeout(() => {
+            messageDiv.classList.remove('new-message');
+          }, 300);
+        }
+        return messageDiv;
+      }
+
+      async function createMessageFile(fileUrl, boxType) {
+            const url = fileUrl;
+            const extension = url.substring(url.lastIndexOf('.')).toLowerCase();
+
+            const mimetype = getFileMimetype(url);
+            console.log("getMimeType: ", mimetype);
+            if(!mimetype) {
+              const link = document.createElement('a');
+              // const fileName = fileUrl.split('\/').at(-1).slice(14);
+              const fileName = fileUrl.slice(44);
+              link.href = url;
+              link.target = '_blank';
+              link.download = fileName;
+              // return link;
+              const fileDiv = document.createElement('div');
+              fileDiv.style.display = 'flex';
+
+              fileDiv.innerHTML = `<img src="http://localhost:3000/uploads/file-icon.png"> <p>${fileName}</p>`;
+              const file_icon = fileDiv.querySelector('img');
+              file_icon.style.maxWidth = '42px';
+              file.icon.style.borderRadius = '3px';
+              fileDiv.onclick = () => link.click();
+              return fileDiv;
+            }
+            else if(mimetype.startsWith('image/')) {
+              const img = document.createElement('img');
+              img.src = url;
+              // img.alt = file.filename;
+              if(boxType === 'message') {
+                img.style.maxWidth = '200px';
+                img.style.borderRadius = '5px';
+              } 
+              else {
+                img.style.maxWidth = '42px';
+                img.style.marginLeft = '6px';
+                img.style.borderRadius = '3px';
+              }
+              img.style.cursor = 'pointer';
+  
+              // link.appendChild(img);
+              img.onclick = () => {
+                const showImage = document.createElement('div');
+                showImage.classList.add('show-message-content-modal');
+
+                showImage.innerHTML = `
+                <div class="show-message-content">
+                  <span class="show-message-close">&times;</span>
+                  <img class='show-message-file' src="${url}" alt="Rasm">
+                </div>`;
+
+                showImage.querySelector('.show-message-close').onclick = () => {
+                  showImage.remove();
+                }
+                document.body.appendChild(showImage);
+              };
+              return img;
+            }
+            else if(mimetype.startsWith('video/')) {
+              const video = document.createElement('video');
+              video.src = url;
+              video.controls = true;
+              if(boxType === 'message') {
+                video.style.maxWidth = '200px';
+                video.style.borderRadius = '5px';
+              } 
+              else {
+                video.style.maxHeight = '42px';
+                video.style.marginLeft = '6px';
+                video.style.borderRadius = '3px';
+              }
+  
+              // link.appendChild(video);
+              // video.onclick = () => window.open(file.path, '_blank');
+              // video.onclick = () => {
+              //   video.pause();
+              //   const showVideo = document.createElement('div');
+              //   showVideo.classList.add('show-message-content-modal');
+
+              //   showVideo.innerHTML = `
+              //   <div class="show-message-content">
+              //     <span class="show-message-close">&times;</span>
+              //     <video class='show-message-file' src="${url}" alt="Rasm">
+              //   </div>`;
+              //   showVideo.querySelector('video').controls = true;
+
+              //   showVideo.querySelector('.show-message-close').onclick = () => {
+              //     showVideo.remove();
+              //   }
+              //   document.body.appendChild(showVideo);
+              // };
+              return video;
+            }
+            else if (mimetype.startsWith('audio/')) {
+              const audio = document.createElement('audio');
+              audio.controls = true;
+  
+              // link.appendChild(audio);
+              // audio.onclick = () => window.open(file.path, '_blank');
+              return audio;
+            } 
+            // else if (file.mimetype === 'application/pdf') {
+            //   link.innerText = `PDF: ${file.filename}`;
+            // } 
+            else {
+              const link = document.createElement('a');
+              // const fileName = fileUrl.split('\/').at(-1).slice(14);
+              const fileName = fileUrl.slice(44);
+
+              link.href = url;
+              link.target = '_blank';
+              link.download = fileName;
+              // link.textContent = 'Yuklash';
+              link.innerText = `${fileName}`;
+              return link;
+            }
+        // messageDiv.appendChild(link);
+      }
+          
+    
+
+      function createChatUserListElem(chatData, messages) {
+        const li = document.createElement('li');
+        li.classList.add('chat-item');
+
+        const div1 = createChatProfilePicture(chatData);
+        div1.classList.add('member-photo');
+
+        const div2 = document.createElement('div');
+        div2.classList.add('info');
+
+        if(chatData.type === 'group') {
+          // div2.style.display = "flex";
+          // const chatTypeIcon = document.createElement('img');
+          // div2.appendChild(chatTypeIcon);
+          // chatTypeIcon.style.maxWidth = '12px';
+          // chatTypeIcon.style.maxHeight = '12px';
+          // chatTypeIcon.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGWGNy4dAG-qrqHOOVjbVh9hT0OBkU8_ZaoA&s'
+        }
+        
+        const p = document.createElement('p');
+        p.classList.add('top-left');
+        if(chatData.type === 'group') {
+          p.textContent = "👥 " + chatData.name;// + " " + (chatData.lastName || '');
+        } 
+        else {
+          p.textContent = chatData.name + " " + (chatData.lastName || '');
+        } 
+        
+        const messageCount = document.createElement('span');
+        messageCount.classList.add('bottom-right');
+        messageCount.textContent = '0';
+        messageCount.style.display = 'none';
+        
+        const lastMessage = document.createElement('span');
+        lastMessage.classList.add('bottom-left');
+
+        const timestamp = document.createElement('span');
+        timestamp.classList.add('top-right');
+
+        console.log('chatData: ', chatData);
+        timestamp.textContent = getDateLikeHHMM(chatData.timestamp);
+
+        if(messages && messages.length > 0){
+          const _lastMessage = messages[messages.length-1].message;
+          timestamp.textContent = getDateLikeHHMM(_lastMessage.timestamp);
+          if(_lastMessage.sender_id === accountData.account_id) {
+            lastMessage.textContent = 'You: ' + _lastMessage.content;
+          } else {
+            lastMessage.textContent = _lastMessage.senderName + ': ' + _lastMessage.content;
+          }
+        } 
+        else {
+          lastMessage.textContent = "No message";
+        } 
+        div2.appendChild(p);
+        div2.appendChild(lastMessage);
+        div2.appendChild(messageCount);
+        div2.appendChild(timestamp)
+
+
+        li.appendChild(div1);
+        li.appendChild(div2);
+        li.onclick = function() {
+          chatId = chatData.chatId;
+          if(divforMsTemp) {
+            divforMsTemp.style.display = 'none';
+          }
+          const listAndMsDiv = chatIdAnd_ListAndMsDiv.get(chatId)
+          divforMsTemp = listAndMsDiv[1];
+          divforMsTemp.style.display = 'flex';
+          divforMsTemp.children[2].querySelector('input[type="text"]').focus();
+
+          // const scrollTop = divforMsTemp.children[1].children
+          if(!listAndMsDiv[4]) {
+            listAndMsDiv[4] = true;
+            getPreviousMessages(divforMsTemp.children[1], chatId, appendMessage , listAndMsDiv[3]);
+          }
+        };
+        return li;
+      }
+
+    async function createChatUserMessagesContainer ({chat, user, messages, status}) {
+      const divMs = document.createElement('div');
+        // divMs.classList.add('chat-window');
+      const divHeader = createChatUserHeader({user, status});
+      divMs.appendChild(divHeader);
+      
+      const divChatBody = await createChatUserChatBody({messages, chatId: chat.chatId});
+      divMs.appendChild(divChatBody);
+
+      const div_for_replyBox_inputBox = document.createElement('div');
+      div_for_replyBox_inputBox.classList.add('reply-and-input-box');
+      divMs.appendChild(div_for_replyBox_inputBox);
+
+      const replyBox = createChatUserReplyBox({chat});
+      div_for_replyBox_inputBox.appendChild(replyBox);
+
+      const selectFileBox = createChatUserSelectFile(chat);
+        
+      const divInput = createChatUserInputMs(replyBox, chat, selectFileBox);
+      div_for_replyBox_inputBox.appendChild(divInput);
+
+      const div_for_editBox = document.createElement('div');
+      div_for_editBox.style.display = "none";
+      div_for_editBox.classList.add('reply-and-input-box');
+      divMs.appendChild(div_for_editBox);
+      const {editBox, editText} = createChatUserEditBox({chat});
+      div_for_editBox.appendChild(editBox);
+
+
+      const divEdit = createChatUserEditMs(div_for_replyBox_inputBox, div_for_editBox, editBox, editText);
+      // divEdit.insertBefore(editBox, divEdit.children[0])
+      div_for_editBox.appendChild(divEdit);
+
+      divMs.classList.add('chat-container')
+      divMs.style.display = 'none';
+      
+      return divMs;
+    }
+    
+    function createChatUserHeader ({user, status}) {
+      // console.log("user or group: ", user);
+      const divHeader = document.createElement('div');
+        divHeader.classList.add('chat-header');
+        const divChatHeader = document.createElement('div');
+        divHeader.appendChild(divChatHeader);
+        const p2 = document.createElement('p');
+        divChatHeader.appendChild(p2);
+        p2.textContent = user.name + " " + (user.lastName || '');
+        const span2 = document.createElement('span');
+        divChatHeader.appendChild(span2);
+        if(status === "online") {
+          span2.style.color = '#5EB5F7'
+        }
+        else {
+          span2.style.color = '#888'
+        }
+        span2.textContent = status//? "online": "offline";
+        const divSetting = document.createElement('div');
+        divSetting.classList.add('chat-header-settings-button')
+        divHeader.appendChild(divSetting);
+        divSetting.innerHTML = `&#8942;`;
+        // const settingsList = document.createElement('div');
+        // settingsList.classList.add('group-setting-usersList');
+        // divHeader.appendChild(settingsList);
+        divHeader.onclick = async function() {
+
+          if(user.type === 'group') {
+            console.log("group open info: groupData: ", user);
+            
+            const response = await fetch(`http://localhost:3000/chats/members`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${sean.jwtToken}`,
+              },
+              body: JSON.stringify({ chatId: user.chatId })
+            });
+            if(response.ok) {
+              const {chatData: groupData, members} = await response.json();
+              const groupInfo = document.querySelector('.group-info');
+              groupInfo.querySelector('.add-image-group').style.display = 'none';
+              groupInfo.style.display = "block";
+              groupInfo.querySelector('.close-btn').onclick = function() {
+                groupInfo.style.display = "none";
+                // document.querySelector('.group-info .close-btn')
+              }
+              if(groupData.picture) {
+                groupInfo.querySelector('.group-photo .group-photo-img').innerHTML = `<img src="${groupData.picture}" class="group-picture" alt="">`
+              } else {
+                const profileImage = groupInfo.querySelector('.group-photo .group-photo-img');
+                profileImage.innerHTML = `<div class="profile-div-for-img-for-group-detail">${groupData.name.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase()}</div>`;
+                // profileImage.textContent = groupData.name.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase();
+              }
+              groupInfo.querySelector('.group-name').textContent = (groupData.name || '') + ' ' + (groupData.lastName || '');
+              groupInfo.querySelector('.group-members-count').textContent = groupData.participant_ids.length + " members";
+              groupInfo.querySelector('.add-member').children[0].textContent = groupData.participant_ids.length + " members";
+              const groupUsername = groupInfo.querySelector('.group-username');
+              groupUsername.querySelector('span').textContent = groupData.username ? '@' + groupData.username : '';
+
+              groupInfo.querySelector('.add-member-icon').onclick = () => {
+                console.log('members: ', members);
+                addMemberToGroup(members.map(itm => itm._id));
+              }
+  
+              if(groupData.changeGroupData[groupData.participant_ids.indexOf(accountData.account_id)]) {
+                groupInfo.querySelector('.add-image-group').style.display = 'block';
+                const editName = groupInfo.querySelector('.group-details button');
+                editName.style.display = 'block'; 
+                editName.onclick = () => {
+                  const editNikName = document.querySelector('#edit-groupName-modal');
+                  editNikName.classList.add('open');
+          
+                  // editNikName.querySelector('input').textContent = (groupData.name);
+                  const name = document.getElementById('edit-groupName');
+                  name.value = groupData.name;
+                }
+                groupInfo.querySelector('.group-name').onclick = editName.onclick; 
+  
+                const editUsername = groupUsername.querySelector('button');
+                editUsername.style.display = 'block';
+  
+                editUsername.onclick = function() {
+                  document.getElementById('editGroupUsernameBox').classList.add('open');
+                }
+                groupInfo.querySelector('.group-username').onclick = editUsername.onclick;
+              }
+              await groupMembers(members);
+            }
+          }
+        }
+      return divHeader;
+    }
+    
+    async function createChatUserChatBody({messages, chatId}) {
+      const divChatBody = document.createElement('div');
+        divChatBody.classList.add('chat-body');
+
+        if(messages && messages.length && messages.length > 0)
+        for(let i = 0; i < messages.length; i++) {
+          const messageDiv = await appendMessage(messages[i]);
+          divChatBody.appendChild(messageDiv);  
+        }
+        let is_Called_Messages = false;
+        const scrollTop = divChatBody.scrollTop;
+        const chatBodyRect = divChatBody.getBoundingClientRect();
+        let msQueue = null; //chatIdAnd_ListAndMsDiv.get(3);
+        divChatBody.addEventListener('scroll', async () => {
+          if(scrollTop <= 2000 && !is_Called_Messages) {
+            is_Called_Messages = true;
+            is_Called_Messages = await getPreviousMessages(divChatBody, chatId, appendMessage);
+          }
+          if(msQueue === null) {
+            msQueue = chatIdAnd_ListAndMsDiv.get(chatId)[3];
+          }
+          if(msQueue.head) {
+            const invisibleMessageRect = divChatBody.querySelector(`#${CSS.escape(msQueue.head.elem)}`).getBoundingClientRect()
+            if(invisibleMessageRect.top < chatBodyRect.bottom + 600) {
+              msQueue.dequeue();
+              const unreadedMss = chatIdAnd_ListAndMsDiv.get(chatId)[0].querySelector('.bottom-right');
+              unreadedMss.textContent = msQueue.count;
+              if(msQueue.count === 0) {
+                unreadedMss.style.display = 'none';
+              }
+            } 
+          }
+        });
+      return divChatBody;
+    }
+
+    function createChatUserReplyBox({chat}) {
+      const replyBox = document.createElement('div');
+      replyBox.classList.add('reply-box');
+      replyBox.id = 'replyBox' + chat.chatId;
+      replyBox.style.display = 'none';
+        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+
+        const replyText = document.createElement('span');
+        replyBox.appendChild(replyText);
+        replyText.id = 'replyText' + chat.chatId;
+
+        const concelReply = document.createElement('button');
+        replyBox.appendChild(concelReply);
+        // concelReply.id = 'concelReply' + chat.chatId;
+        concelReply.innerHTML = "&times;";
+        concelReply.addEventListener('click', function () {
+          replyBox.style.display = "none";
+          replyText.textContent = "";
+          chatId_replyToMessage.set(chatId, null);
+
+        });
+      return replyBox;
+    }
+
+    function createChatUserSelectFile() {
+      const selectFileBox = document.createElement('div');
+      return selectFileBox;
+    }
+
+    function createChatUserInputMs(divReplyBox, chat, selectFileBox) {
+      const divInput = document.createElement('div');
+        divInput.appendChild(selectFileBox);
+        const {fileInput, fileLabel} = createChatUserFileInput(chat, selectFileBox); 
+        divInput.appendChild(fileInput);
+        divInput.appendChild(fileLabel);
+
+        const input = document.createElement('input');
+        divInput.appendChild(input);
+        const button = document.createElement('button');
+        divInput.appendChild(button);
+        divInput.classList.add('chat-input');
+        input.type = 'text';
+        input.placeholder = 'Type a message...';
+        button.textContent = "Send";
+        input.addEventListener('keypress', async function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            sendMessage({input, divReplyBox, selectFileBox});
+          }
+        });
+        button.addEventListener('click', function () {
+          sendMessage({input, divReplyBox, selectFileBox});
+          // if (input.value.trim() !== '') {
+          //   socket.emit('message', {
+          //       content: input.value,
+          //       chatId,
+          //       sender_id: sean.account_id,
+          //       replying_for_Ms_Id: chatId_replyToMessage.get(chatId)?.id
+          //     });
+          //     input.value = '';
+          //     divReplyBox.style.display = "none";
+          //     spanReply.textContent = "";
+          //     chatId_replyToMessage.set(chatId, null);
+          // }
+        });
+      return divInput; 
+    }
+    
+    async function sendMessage({input, divReplyBox, selectFileBox}) {
+      const selectFile = chatId_selectedFile.get(chatId);
+      if (input.value.trim() !== '' || selectFile) {
+        let fileData = null;
+        if(selectFile) {
+          fileData = await uploadFile(selectFile);
+          console.log("fileData: ", fileData);
+        }
+              // console.log("fileData: ", fileData);
+        socket.emit('message', {
+          content: input.value,
+          fileUrl: fileData?.url,
+          chatId,
+          sender_id: sean.account_id,
+          senderName: accountData.name,
+          color: accountData.color,
+          replying_for_Ms_Id: chatId_replyToMessage.get(chatId)?.id
+        });
+        input.value = ''; 
+        selectFileBox.innerHTML = '';
+        chatId_selectedFile.set(chatId, null);
+        divReplyBox.style.display = "none";
+        divReplyBox.querySelector('span').textContent = '';
+        chatId_replyToMessage.set(chatId, null);
+      }
+    }
+
+    function createChatUserFileInput(chat, selectFileBox) {
+      const fileInput = document.createElement('input')
+      fileInput.type = 'file';
+      fileInput.id = "file-input" + chat.chatId;
+      fileInput.classList.add('file-input');
+      fileInput.style.display = 'none';
+      fileInput.onchange = async function(event) {
+        const file = event.target.files[0];
+        console.log("selected file: ", file)
+        if (file) {
+          chatId_selectedFile.set(chat.chatId, [file]);
+
+          let selectFile;
+          const fileType = file.type;
+          if (fileType.startsWith('image/')) {
+            // Rasm uchun
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.style.maxWidth = '30px';
+            img.style.maxHeight = '30px';
+            // preview.appendChild(img);
+            selectFile = img;
+          }
+          else if (fileType === 'application/pdf') {
+            // PDF uchun
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            
+
+            const fileURL = URL.createObjectURL(file);
+            const pdfDoc = await pdfjsLib.getDocument(fileURL).promise; // PDF ochiladi
+            const page = await pdfDoc.getPage(1); // 1-chi sahifa
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+      
+            const viewport = page.getViewport({ scale: 0.03 }); // Scale - kattalashtirish
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport }).promise;
+            // const pdfDoc = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+            // const page = await pdfDoc.getPage(1);
+            // const canvas = document.createElement('canvas');
+            // const context = canvas.getContext('2d');
+
+            // const viewport = page.getViewport({ scale: 1 });
+            // canvas.height = viewport.height;
+            // canvas.width = viewport.width;
+            // page.render({ canvasContext: context, viewport: viewport });
+            // preview.appendChild(canvas);
+            selectFile = canvas;
+          } 
+          else if (fileType.startsWith('video/')) {
+            // Video uchun
+            const videoIcon = document.createElement('div');
+            const names = file.name.split('.');
+            videoIcon.textContent = '🎥 ' + names[0].slice(0, 4) + "... ." + names.at(-1);
+            // videoIcon.textContent = '🎥 Video File';
+            videoIcon.style.fontSize = '10px';
+            videoIcon.style.color = '#333';
+            // preview.appendChild(videoIcon);
+            selectFile = videoIcon;
+          } 
+          else {
+            const otherFile = document.createElement('p');
+            const names = file.name.split('.');
+            otherFile.textContent = names[0].slice(0, 4) + "... ." + names.at(-1);
+            otherFile.style.fontSize = "10px"; // Masalan, 16 piksel
+            // otherFile.style.fontWeight = "bold";
+            selectFile = otherFile;
+          }
+          selectFileBox.innerHTML = '';
+
+          selectFileBox.appendChild(selectFile);
+
+          cancelSelectFile = document.createElement('span');
+          selectFileBox.appendChild(cancelSelectFile);
+          cancelSelectFile.innerHTML = "&times;";
+          cancelSelectFile.classList.add('file-cancel-button');
+
+          cancelSelectFile.addEventListener('click', function() {
+            selectFile.remove();
+            cancelSelectFile.remove();
+            chatId_selectedFile.set(chat.chatId, null);
+          });
+        }
+      };
+      const fileLabel = document.createElement('label');
+      fileLabel.setAttribute("for", "file-input" + chat.chatId);
+      fileLabel.textContent = "📎";
+      fileLabel.classList.add('upload-button');
+      return {fileInput, fileLabel};
+    }
+
+    uploadProfilePicture = async function (newFile, lich_or_group) {
+      const uploadedData = await uploadFile([newFile]);
+      // await socket.emit('editProfile', {
+      //   type: 'lich',
+      //   editedField: 'picture',
+      //   accountId: accountData.account_id,
+      //   data: uploadedData.url
+      // });
+      const response = await fetch('http://localhost:3000/chats/editProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sean.jwtToken}`,
+        },
+        body: JSON.stringify( {
+          type: lich_or_group,
+          editedField: 'picture',
+          accountId: lich_or_group === 'lich' ? accountData.account_id : chatId,
+          data: uploadedData.url
+        })
+      });
+      
+      if(response.ok) {
+        await socket.emit('editProfile', await response.json());
+      }
+    }
+
+  async function uploadFile(files) {
+    const formData = new FormData();
+          formData.append('file', files[0]);
+
+          const response = await fetch('http://localhost:3000/files/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${sean.jwtToken}`,
+            },
+            body: formData,
+          });
+
+    const fileData = await response.json();
+    return fileData;
+  }
+
+    async function checkUsernameIsUnique(username) {
+                const response = await fetch('http://localhost:3000/chats/isUnique', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${sean.jwtToken}`,
+                  },
+                  body: JSON.stringify({ username })
+                });
+      return response.json();
+    }
+    
+    function createChatUserEditBox({chat}) {
+      const editBox = document.createElement('div');
+      editBox.classList.add('reply-box');
+      editBox.id = 'editBox' + chat.chatId;
+      // editBox.style.display = 'none';
+        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
+        const editText = document.createElement('span');
+        editBox.appendChild(editText);
+        editText.id = 'editText' + chat.chatId;
+        const concelReply = document.createElement('button');
+        editBox.appendChild(concelReply);
+        concelReply.id = 'concelEdit' + chat.chatId;
+        concelReply.innerHTML = "&times;";
+        concelReply.addEventListener('click', function () {
+          editBox.style.display = "none";
+          editText.textContent = "";
+          chatId_editToMessage.set(chatId, null);
+          divforMsTemp.children[3].style.display = "none";
+          divforMsTemp.children[2].style.display = 'flex';
+
+        });
+      return {editBox, editText};
+    }
+
+    function createChatUserEditMs(div_for_replyBox_inputBox, div_for_editBox, editBox, editText) {
+      const divInput2 = document.createElement('div');
+        const input2 = document.createElement('input');
+        divInput2.appendChild(input2);
+        const button2 = document.createElement('button');
+        divInput2.appendChild(button2);
+        div_for_editBox.style.display = 'none';
+        divInput2.classList.add('chat-input');
+        input2.type = 'text';
+        button2.textContent = "Edit";
+        input2.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
+            if (input2.value.trim() !== '') {
+              socket.emit('editMessage', {
+                messageId: chatId_editToMessage.get(chatId).id,
+                chatId,
+                content: divforMsTemp.children[3].querySelector('input').value,
+              });
+              input2.value = '';
+              // editBox.style.display = "none";
+              editText.textContent = "";
+              chatId_editToMessage.set(chatId, null);
+              div_for_replyBox_inputBox.style.display = 'flex';
+              div_for_editBox.style.display = 'none';
+            }
+          }
+        });
+        button2.addEventListener('click', function () {
+          if (input2.value.trim() !== '') {
+            socket.emit('editMessage', {
+                messageId: chatId_editToMessage.get(chatId).id,
+                chatId,
+                content: divforMsTemp.children[3].querySelector('input').value,
+              });
+              input2.value = '';
+              editBox.style.display = "none";
+              editText.textContent = "";
+              chatId_editToMessage.set(chatId, null);
+              div_for_replyBox_inputBox.style.display = 'flex';
+              div_for_editBox.style.display = 'none';
+          }
+        });
+      return divInput2;
+    }
+
+    async function groupMembers(membersData) {
+      // const membersDataResponse = await fetch('http://localhost:3000/chats/members', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${sean.jwtToken}`,
+      //     },
+      //   body: JSON.stringify({chatId})
+      // });
+
+      // const membersData = await membersDataResponse.json();
+      console.log('membersData: ', membersData)
+
+      const _groupMembers = document.querySelector('.group-info .group-members');
+      _groupMembers.innerHTML = '';
+      membersData.forEach(user => {
+        const memberContainer = document.createElement('div');
+        _groupMembers.appendChild(memberContainer);
+        memberContainer.classList.add('chat-item');
+        memberContainer.innerHTML = `
+          <div class="member-photo" style="background-color: #9c9c9c;">
+              <img src="${user.picture}" alt="">
+          </div>
+          <div class="info">
+              <div class="top-left">${user.name + ' ' + (user.lastName || '')}</div>
+              <div class='bottom-left'>${user.username ? '@'+user.username : "no username"}</div>
+              <button class="top-right button"></button>
+          </div>`;
+        const buttonAddOrOpen = memberContainer.querySelector('.info button');
+        buttonAddOrOpen.style.marginLeft = 'auto';
+        if(user._id !== accountData.account_id) {
+          if(userId_and_chatId.has(user._id)) {
+            buttonAddOrOpen.textContent = "Open";
+            memberContainer.onclick = () => {
+                openChatOpen(user._id)();
+                document.querySelector('.group-info').style.display = 'none';
+              }
+          } else {
+            buttonAddOrOpen.textContent = "Add";
+            memberContainer.onclick = async function () {
+              await addUserOrGroupFunc(user, buttonAddOrOpen, user._id);
+              memberContainer.onclick = () => {
+                openChatOpen(user._id)();
+                document.querySelector('.group-info').style.display = 'none';
+              }
+              buttonAddOrOpen.onclick = null;
+            }
+          }
+        } 
+        else {
+          buttonAddOrOpen.remove();
+        }
+      });
+    }
+
+  }
+
+  const mimeTypes = {
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      bmp: "image/bmp",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+      ico: "image/x-icon",
+      tiff: "image/tiff",
+      heic: "image/heic",
+      heif: "image/heif",
+      avif: "image/avif",
+      mp4: "video/mp4",
+      webm: "video/webm",
+      ogg: "video/ogg",
+      avi: "video/x-msvideo",
+      wmv: "video/x-ms-wmv",
+      mov: "video/quicktime",
+      flv: "video/x-flv",
+      mkv: "video/x-matroska",
+      "3gp": "video/3gpp",
+      mpeg: "video/mpeg",
+      ts: "video/mp2t",
+      m4v: "video/x-m4v",
+      divx: "video/divx",
+      mp3: "audio/mpeg",
+      wav: "audio/wav",
+      aac: "audio/aac",
+      ogg: "audio/ogg",
+      flac: "audio/flac",
+      m4a: "audio/mp4",
+      amr: "audio/amr",
+      midi: "audio/midi",
+      wma: "audio/x-ms-wma",
+      opus: "audio/opus",
+      aiff: "audio/aiff",
+      alac: "audio/alac"
+    };
+    
+    function getFileMimetype(fileUrl) {
+      
+      const dotIndex = fileUrl.lastIndexOf('.');
+      if(dotIndex  !== -1){
+        const ext = fileUrl.substring(dotIndex + 1).toLowerCase();
+        // console.log("fileExt:", ext)
+        console.log("fileExt", mimeTypes[ext]);
+        return mimeTypes[ext];
+      }
+    }
+
+    function getDateLikeHHMM(time, forMs) {
+      const now = new Date();
+      time = time ? new Date(time) : now;
+    
+      // Bugungi sana bilan solishtirish
+      const isToday = 
+        now.getFullYear() === time.getFullYear() &&
+        now.getMonth() === time.getMonth() &&
+        now.getDate() === time.getDate();
+      let returnDate = '';
+      if (isToday) {
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        returnDate = `${hours}:${minutes}`;
+      } 
+      if(!isToday || forMs){
+        let day = time.getDate();
+        let month = time.getMonth() + 1; 
+        let year = time.getFullYear() % 100;
+        day = day < 10 ? '0' + day : day;
+        month = month < 10 ? '0' + month : month;
+        returnDate += ` ${day}/${month}/${year}`;
+      }
+      return returnDate;
+    }
+
+    function createChatProfilePicture(user) {
+      const div1 = document.createElement('div');
+      // div1.classList.add('member-photo');
+          // div1.classList.add('icon', 'deleted');
+          if(user.picture) {
+            const profileImage = document.createElement('img');
+            profileImage.src = user.picture;
+            div1.appendChild(profileImage);
+            profileImage.classList.add('profile-img'); 
+          } 
+          else {
+            const fullName = (user.name + " " + (user.lastName || '')).trim()
+            const profileImage = document.createElement('div');
+            profileImage.textContent = fullName.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase();
+            div1.appendChild(profileImage);
+            profileImage.classList.add('profile-div-for-img');
+          } 
+      return div1;
+    }
+
+    class Queue {
+      constructor() {
+        this.head = null; // Navbat boshidagi element
+        this.tail = null; // Navbat oxiridagi element
+        this.count = 0;
+      }
+      
+      // Navbatga yangi element qo'shish
+      enqueue(item) {
+        const newNode = { elem: item, next: null }; 
+        if (this.tail) {
+          this.tail.next = newNode;
+        }
+        this.tail = newNode; 
+        if (!this.head) {
+          this.head = newNode;
+        }
+        this.count++;
+      }
+      
+      // Navbatdan birinchi elementni o'chirish
+      dequeue() {
+        if (!this.head) {
+          this.count === 0;
+          return null;
+        }
+        const removedItem = this.head.elem;
+        this.head = this.head.next; 
+        if (!this.head) {
+          this.tail = null;
+        }
+        this.count--;
+        return removedItem;
+      }
+      
+      isEmpty() {
+        return this.head === null;
+      }
+    }
+
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+<!-- <script src="https://cdn.jsdelivr.net/npm/mime-types@2.1.35/lib/index.js"></script> -->
+
+
+</body>
+</html>
+

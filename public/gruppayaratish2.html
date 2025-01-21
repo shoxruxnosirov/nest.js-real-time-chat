@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Group Modal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .modal {
+            background-color: #1f1f1f;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #4a4a4a;
+            margin-bottom: 20px;
+        }
+
+        .modal h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .modal input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .modal .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .modal .cancel {
+            background-color: #4a4a4a;
+            color: #fff;
+        }
+
+        .modal .next {
+            background-color: #0088cc;
+            color: #fff;
+        }
+
+        .dots {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <span class="dots">&#8942;</span>
+        <img src="https://via.placeholder.com/60" alt="Group Icon">
+        <h3>Group name</h3>
+        <input type="text" placeholder="Enter group name">
+        <div class="actions">
+            <button class="cancel">Cancel</button>
+            <button class="next">Next</button>
+        </div>
+    </div>
+</body>
+</html>

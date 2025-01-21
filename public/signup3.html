@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google OAuth</title>
+</head>
+<body>
+  <button id="google-auth-btn">Google bilan kirish</button>
+
+  <script>
+    // Yuqoridagi JavaScript kod bu yerda bo'ladi
+    // Google OAuth endpoint'ga yo'naltirish
+function startGoogleAuth() {
+  window.location.href = 'http://localhost:3000/auth/google';
+}
+
+// Callback sahifasida ma'lumotlarni olish
+async function handleGoogleCallback() {
+  const queryString = window.location.search; // URL'dan ?code=... ni o'qish
+  const urlParams = new URLSearchParams(queryString);
+  const code = urlParams.get('code'); // Google'dan kelgan "code" parametri
+
+  if (code) {
+    try {
+      // Backendga code'ni yuborib, token olish
+      const response = await fetch('http://localhost:3000/auth/google/callback', {
+        method: 'POST', // Backendda POST endpoint tayyorlangan bo'lishi kerak
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }), // Google'dan olingan code yuboriladi
+      });
+
+      if (!response.ok) {
+        throw new Error('Token olishda xatolik yuz berdi');
+      }
+
+      const data = await response.json();
+
+      // Ma'lumotlarni saqlash va foydalanish
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+
+      console.log('Foydalanuvchi ma\'lumotlari:', data.user);
+    } catch (error) {
+      console.error('Xatolik:', error.message);
+    }
+  } else {
+    console.log('Google code kelmadi.');
+  }
+}
+
+// Sahifa yuklanganda callback funksiyani chaqiramiz
+if (window.location.pathname === '/auth/google/callback') {
+  handleGoogleCallback();
+}
+
+    document.getElementById('google-auth-btn').addEventListener('click', startGoogleAuth);
+  </script>
+</body>
+</html>

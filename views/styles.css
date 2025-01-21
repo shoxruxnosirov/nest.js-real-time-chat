@@ -1,0 +1,254 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e5e5e5;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 30%;
+    background-color: #2a2a2a;
+    color: white;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Qidiruv qismi */
+.search-bar {
+    padding: 10px 15px;
+    background-color: #1f1f1f;
+    border-bottom: 1px solid #444;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    font-size: 14px;
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+}
+
+/* Header */
+.sidebar .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: #1f1f1f;
+}
+
+.sidebar .chat-list {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-item:hover {
+    background-color: #333333;
+}
+
+/* Chat oynasi */
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Ekran balandligi */
+    background-color: #f5f5f5;
+}
+
+.chat-header {
+    height: 8vh;
+    padding: 1vh 2vh;
+    background-color: #ededed;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-header p {
+    font-weight: bold;
+}
+
+.chat-header span {
+    font-size: 2vh;
+    color: #888;
+}
+
+.chat-body {
+    flex: 1;
+    padding: 15px;
+    display: flex;          /*keyin qo'shildi*/
+    /* flex-direction: column-reverse; */ /* Pastdan yuqoriga joylashish */
+    /* height: calc(100vh - 150px); */
+    height: 80vh;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+}
+
+.message {
+    /* margin-bottom: 10px; */
+    margin-bottom: 25px; /* Pastdan masofa */
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 65%;
+}
+
+.message.outgoing {
+    background-color: #d1f7c4;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message.incoming {
+    background-color: #fff;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.message span {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.reply-and-input-box {
+    position: fixed;  /* keyin qo'shildi */
+    bottom: 0;          /*  keyin qo'shildi */
+    width: 100vh;        /*  keyin qo'shildi */
+    display: flex;
+    align-items: center;
+    /* padding: 10px; */
+    border-top: 1px solid #ddd;
+    background-color: #ededed;
+}
+
+/* Xabar yuborish qismi */
+.chat-input {
+    position: fixed;  /* keyin qo'shildi */
+    bottom: 0;          /*  keyin qo'shildi */
+    width: 70%;        /*  keyin qo'shildi */
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #ededed;
+}
+
+.chat-input input {
+    
+    flex: 1;
+    padding: 1vh;
+    /* border: 1px solid #ccc;  */
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.chat-input button {
+    padding: 1vh 2vh;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background-color: #45a049;
+}
+
+.context-menu {
+    position: absolute;
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.context-menu li {
+    list-style: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.context-menu li:hover {
+    background-color: #f0f0f0;
+}
+
+.add-button {
+margin-left: 10px; /* Divdan masofa */
+padding: 8px 12px;
+background-color: #28a745; /* Yashil rang */
+color: white; /* Oq matn */
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+}
+
+.add-button:hover {
+background-color: #218838; /* Hover paytida quyuq yashil */
+}
+
+.reply-box {
+    bottom: 7vh;
+    width: 100vh;
+padding: 10px;
+border: 1px solid #ccc;
+background-color: #f9f9f9;
+margin-bottom: 10px;
+position: relative;
+}
+
+.reply-box span {
+font-size: 12px;
+color: #555;
+}
+
+.reply-box button {
+position: absolute;
+right: 10px;
+top: 10px;
+border: none;
+background: none;
+cursor: pointer;
+color: #ff0000;
+}
+
+.file-cancel-button {
+    font-size: 8px;
+    padding: 1px 1px;
+    border-radius: 2px;
+    background-color: #ff0000;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  .file-cancel-button:hover {
+    background-color: #e0e0e0;
+  }
+

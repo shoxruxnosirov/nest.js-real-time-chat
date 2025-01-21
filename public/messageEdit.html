@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Context Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            background-color: #e4f7ff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .context-menu {
+            position: absolute;
+            display: none;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .context-menu li {
+            list-style: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .context-menu li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="message" id="message1">Salom</div>
+
+    <ul class="context-menu" id="contextMenu">
+        <li onclick="handleAction('reply')">Reply</li>
+        <li onclick="handleAction('edit')">Edit</li>
+        <li onclick="handleAction('copy')">Copy Text</li>
+        <!-- <li onclick="handleAction('pin')">Pin</li> -->
+        <!-- <li onclick="handleAction('forward')">Forward</li> -->
+        <!-- <li onclick="handleAction('select')">Select</li> -->
+        <li onclick="handleAction('delete')">Delete</li>
+    </ul>
+
+    <script>
+        const message = document.getElementById("message1");
+const contextMenu = document.getElementById("contextMenu");
+
+// Show the custom context menu
+message.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+
+    // Position the menu
+    contextMenu.style.top = `${event.clientY}px`;
+    contextMenu.style.left = `${event.clientX}px`;
+    contextMenu.style.display = "block";
+});
+
+// Hide the context menu on click elsewhere
+document.addEventListener("click", () => {
+    contextMenu.style.display = "none";
+});
+
+// Handle menu actions
+function handleAction(action) {
+    alert(`Action selected: ${action}`);
+    contextMenu.style.display = "none";
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login Success</title>
+</head>
+<body>
+    <h1>Google Login Muvaffaqiyatli</h1>
+    <p>Hush kelibsiz, {{data.user.name}}!</p>
+
+    <script type="application/json" id="data-script">
+        <!-- Bu joyga JSON ma'lumot keladi -->
+      </script>
+
+    <!-- Obyektni JavaScript-ga uzatish -->
+    <script>
+
+        // JSONni olish va qayta obyektga aylantirish
+    const jsonData = document.getElementById('data-script').textContent;
+    const dynamicData = JSON.parse(jsonData); // JSONni obyektga o'zgartirish
+
+    // Ma'lumotni ishlatish
+    console.log(dynamicData);
+    // document.getElementById('output').innerText = `User: ${dynamicData.name}, Age: ${dynamicData.age}`;
+  
+        // const serverData = {{{json data}}}; // Handlebars uchun JSON uchlik qavslari bilan ishlatiladi.
+        // console.log('Serverdan kelgan ma\'lumot:', serverData);
+    </script>
+</body>
+</html>

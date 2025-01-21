@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Sidebar</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+     <style>
+/* Sidebar Styling */
+.sidebarChatType {
+    width: 3%; /* Ekranning 20 dan bir qismini egallaydi */
+    min-width: 75px; /* Kichik ekranlar uchun minimal kenglik */
+    background-color: #1c2b35; /* Telegram'ga o'xshash rang */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: auto;
+}
+
+.sidebarChatType-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 4px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    border-bottom: 1px solid #354f60;
+}
+
+.menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-list li {
+    border-bottom: 1px solid #354f60;
+    padding: 20px 4px;
+}
+
+
+.menu-list li:hover {
+    background-color: #354f60;
+    cursor: pointer;
+    
+}
+
+.counter {
+    background-color: #7289da;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+
+     </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebarChatType">
+        <div class="sidebarChatType-header">
+            <span>settings</span>
+        </div>
+        <ul class="menu-list">
+            <li>All <span class="counter">9</span></li>
+            <li>People <span class="counter">9</span></li>
+            <li>Groups <span class="counter">9</span></li>
+            <li>Channels <span class="counter">15</span></a></li>
+        </ul>
+    </div>
+
+   
+</body>
+</html>
