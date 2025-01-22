@@ -41,8 +41,9 @@ export class UsersService {
     }
     
     isGray(r: number, g: number, b: number): boolean {
-        const tolerance = 40;
-        return Math.abs(r - g) < tolerance && Math.abs(r - b) < tolerance && Math.abs(g - b) < tolerance// && (r > 130 || g > 130 || b > 130);
+        return !( (200 < b && ( (100 < g || 100 < r ) && Math.abs(r - g) > 80 )) ||
+            (200 < r && ( (100 < g || 100 < b ) && Math.abs(g - b) > 80 )) || 
+            (200 < g && ( (100 < b || 100 < r ) && Math.abs(r - b) > 80 ))  );
     }
 
     async createAccount(createAccountDto: CreateAccountDto): Promise<ISeanAndAccount> {
@@ -56,7 +57,7 @@ export class UsersService {
                 account = await new this.accountModel(accountDto).save();
             }
             const createSean: ISean = await new this.seanModel({account_id: account._id, accessToken, refreshToken, jwtToken} as ISean).save();
-            return {_id: createSean._id, jwtToken, ...createAccountDto, account_id: account._id, color: account.color } as ISeanAndAccount;
+            return {_id: createSean._id, jwtToken, ...createAccountDto, account_id: account._id, color: account.color, username: account.username } as ISeanAndAccount;
         } 
         catch (err) {
             throw new ConflictException(err!.message || "unknown error");
@@ -75,14 +76,6 @@ export class UsersService {
             username: { $regex: new RegExp(username, 'i') }, // 'i' flag - case-insensitive
         });
     }
-
-    // async searchUserEmail(email: string): Promise<IAccount[]> {
-    //     const accounts = await this.accountModel.find();
-    //     // return accounts.filter(acc => acc.email?.toLocaleLowerCase().startsWith(email.toLocaleLowerCase()));
-    //     return this.accountModel.find({
-    //         email: { $regex: new RegExp(email, 'i') }, // 'i' flag - case-insensitive
-    //     });
-    // }
 
     async editUsername(data: { id: string, username: string}) {
         const account = await this.accountModel.findById(data.id);

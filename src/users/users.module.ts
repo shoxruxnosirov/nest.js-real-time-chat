@@ -9,7 +9,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './google.strategy';
 import { HttpModule } from '@nestjs/axios';
-// import { AppModule } from 'src/app.module';
 import { forwardRef } from '@nestjs/common';
 import { AppService } from 'src/app.service';
 
@@ -20,23 +19,13 @@ import { AppService } from 'src/app.service';
     }),
     MongooseModule.forFeature([{ name: 'Account', schema: AccountsSchema }]),
     MongooseModule.forFeature([{ name: 'Sean', schema: SeansSchema }]),
-    // ChatsModule,
     forwardRef(() => ChatsModule),
-    // AppModule,
     PassportModule.register({ defaultStrategy: 'google' }),
-    // JwtModule.register({
-    //   secret: 'yourSecretKey',
-    //   // signOptions: { expiresIn: '1h' }, 
-    // }),
-    // JWT moduli dinamik konfiguratsiya bilan
     JwtModule.registerAsync({
-      imports: [ConfigModule], // ConfigModule ni import qilish
-      inject: [ConfigService], // ConfigService'ni inject qilish
+      imports: [ConfigModule],
+      inject: [ConfigService], 
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), // .env fayldan JWT_SECRET
-        // signOptions: {
-        //   expiresIn: configService.get<string>('JWT_EXPIRES_IN', '3600s'), // Amal qilish muddati
-        // },
+        secret: configService.get<string>('JWT_SECRET'),
       }),
     }),
     PassportModule,

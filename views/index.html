@@ -155,8 +155,7 @@
     }
     
     .message {
-        /* margin-bottom: 10px; */
-        margin-bottom: 10px; /* Pastdan masofa */
+        margin-bottom: 10px; 
         padding: 5px 10px;
         border-radius: 12px;
         max-width: 60%;
@@ -230,8 +229,6 @@
     .message-content-message {
       display: flex;
       flex-direction: column;
-      /* position: relative; */
-      /* display: block; */
     }
 
     .message-content-message p {
@@ -246,8 +243,6 @@
       align-self: flex-end;
       font-size: 12px;
       position: relative;
-      /* right: 0px;
-      bottom: 0px; */
       color: #888;
     }
     
@@ -273,17 +268,11 @@
         margin-left: 12px;
         outline: none;
       border: none;
-        /* border: 0px solid #17212B; */
-        /* border-radius: 5px; */
-        /* margin-right: 10px; */
         font-size: 15px;
     }
     
     .chat-input button {
         padding: 1vh 1vw;
-        /* margin-right: 7px; */
-        /* top: 10px;
-        right: 10px; */
         border: none;
         background-color: #4caf50;
         /* color: #26f10b; */
@@ -421,13 +410,12 @@
     .menu-list {
         list-style: none;
         display: flex;
-        flex-direction: column; /* Kompyuterda ustun shaklida */
+        flex-direction: column; 
         margin: 0;
         padding: 0;
     }
     
     .menu-list li {
-        /* border-bottom: 1px solid #354f60; */
         text-align: center;
         padding: 20px 4px;
     }
@@ -446,7 +434,6 @@
         border-radius: 12px;
     }
 
-    /* Modal window for input */
     .modal {
       position: fixed;
       align-items: center;
@@ -454,9 +441,8 @@
       border-radius: 10px;
       box-shadow: 6px 6px 8px rgba(0, 0, 0, 0.8);
       width: 0;
-      /* height: 160px; */
       padding: 20px;
-      top: 20%; /* Ekranning yuqori qismidan 50% pastga */
+      top: 20%; 
       left: 50%; 
       transform: translate(-50%) scaleX(0);
       transform-origin: top right;
@@ -465,18 +451,17 @@
       display: none; 
     }
 
-    /* Kengayish animatsiyasi */
     @keyframes expand {
         0% {
-          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          transform: translate(-50%) scaleX(0); 
           width: 0;
         }
         100% {
-          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          transform: translate(-50%) scaleX(1); 
           width: 400px;
         }
     }
-    /* Form kengaygan holati */
+
     .modal.open {
         display: flex;
         animation: expand 0.1s ease-out forwards;
@@ -590,16 +575,6 @@
       text-transform: uppercase;
     }
 
-    /* .addUserToGroupContainer {
-      display: flex;
-      position: absolute;
-      top: 100px;
-      left: 100px;
-      width: 40%;
-      height: auto;
-      background-color: #354f60;
-    } */
-
     .addUserToGroupList {
       display: flex;
     }
@@ -615,13 +590,10 @@
       width: 100%;
       background-color: #333333;
       position: absolute; 
-        /* top: 0;    
-        right: 0; */
     }
 
        
     
-    /* Panel (chap tomondan chiqadigan blok) */
     #settings-panel {
       background-color: white;
       width: 300px;
@@ -661,22 +633,19 @@
       cursor: pointer;
     }
     
-    /* Panelni ko'rinadigan holatga olib kelish */
     #dropdownMenu.visible {
       opacity: 1;
       visibility: visible;
     }
     
     #dropdownMenu.visible #sidebar-settings-panel {
-      transform: translateX(0); /* Panelni ko'rsatish */
+      transform: translateX(0); 
     }
     
     #overlay {
       position: fixed;
       top: 0;
       left: 0;
-      /* width: 100%;
-      height: 100%; */
       width: 100vw;
       height: 100vh;
       background-color: rgba(0, 0, 0, 0.5); /* Yarim shaffof qora fon */
@@ -695,7 +664,7 @@
       height: 100%;
       /* padding: 20px; */
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-      transform: translateX(-100%); /* Panelni chapga yashirish */
+      transform: translateX(-100%);
       transition: transform 0.3s ease;
       /* padding: 20px; */
     }
@@ -708,8 +677,6 @@
     #overlay.visible #userAccSettingsPanel {
       transform: translateX(0); /* Panelni ko'rsatish */
     }
-    
-    /* userAccSettingsPanel */
     
     .profile {
       display: flex;
@@ -740,12 +707,6 @@
       color: #E9E9E9;
       font-size: 18px;
     }
-    /* 
-    .name-status p {
-      margin: 0;
-      font-size: 14px;
-      color: #adb5bd;
-    } */
     
     .user-acc-settings-menu {
       list-style: none;
@@ -862,10 +823,6 @@
       border-radius: 4px; 
     }
     
-    /* .add-members-modal-member-list::-webkit-scrollbar-track {
-      background: transparent; 
-    } */
-    
     .add-members-modal-member {
       display: flex;
       align-items: center;
@@ -927,18 +884,14 @@
     .add-members-modal-actions .create {
       background-color: #17212B;
       color: #3476AB;
-      /* padding-right: 20px; */
     }
     
     .add-members-modal-actions .create:hover {
       background: #1D2A39;
     }
 
-    /* Yarim shaffof fon va Cropper modal */
     #cropOverlay {
       position: fixed;
-      /* top: 0;
-      left: 0; */
       inset: 0;
       width: 100vw;
       height: 100vh;
@@ -968,8 +921,6 @@
         display: flex;
         justify-content: center;
         gap: 30px;
-        /* z-index: 1; */
-        /* margin-top: 10px; */
     }   
 
     .crop-controls button {
@@ -1032,8 +983,6 @@
     }
     
     .back-menu-button:hover {
-      /* background-color: #007bff; */
-
       font-size: 30px;
       padding-top: 4px;
       padding-left: 6px;
@@ -1048,11 +997,6 @@
       cursor: pointer;
       font-size: 20px;
     }
-
-    /* .menu-button img {
-      width: 20px;
-      height: 20px;
-    } */
 
     .profile-container {
       display: flex;
@@ -1136,7 +1080,6 @@
       color: #D1D1D1;
     }
 
-    /* edit name */
     .edit-name-modal {
       position: fixed;
       background: #17212B;
@@ -1156,11 +1099,11 @@
     
     @keyframes expand3 {
         0% {
-          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          transform: translate(-50%) scaleX(0); 
           width: 0;
         }
         100% {
-          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          transform: translate(-50%) scaleX(1); 
           width: 300px;
         }
       }
@@ -1192,7 +1135,6 @@
         border-bottom: 2px solid #3476AB;
         outline: none;
         margin-bottom: 12px;
-        /* border-radius: 5px; */
         font-size: 16px; 
         font-family: 'Arial', sans-serif;
         line-height: 1.5;
@@ -1218,17 +1160,7 @@
         padding-right: 20px;
       }
 
-      /* .profile-Name-buttons .cancel:hover {
-        background: #1D2A39;
-      } */
-      
       .profile-Name-buttons .save {
-        /* background: #2b2d42;
-        color: #edf2f4;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer; */
         color: #3476AB;
       }
       
@@ -1236,7 +1168,6 @@
         background: #1D2A39;
       }
 
-    /* group info */
     
     .group-info {
       display: none;
@@ -1254,18 +1185,16 @@
       z-index: 2;
     }
 
-    /* Kengayish animatsiyasi */
     @keyframes expand5 {
         0% {
-          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          transform: translate(-50%) scaleX(0); 
           width: 0;
         }
         100% {
-          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          transform: translate(-50%) scaleX(1); 
           width: 350px;
         }
     }
-    /* Form kengaygan holati */
     .group-info.open {
         display: block;
         animation: expand5 0.1s ease-out forwards;
@@ -1276,7 +1205,6 @@
         align-items: center;
         justify-content: space-between;
         padding: 0;
-        /* background-color: #3a3a3a;  */
     }
 
     .header-title {
@@ -1305,10 +1233,6 @@
     }
 
     .group-photo {
-        /* width: 50px;
-        height: 50px; */
-        /* border-radius: 50%; */
-        /* background-color: #777; */
         margin-right: 15px;
     }
     
@@ -1316,7 +1240,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* margin-bottom: 15px; */
       position: relative;
     }
 
@@ -1333,7 +1256,6 @@
       position: absolute;
       bottom: 5px;
       right: 0px;
-      /* background-color: #3BA9EE; */
       background: none;
       opacity: 0.4;
       color: white;
@@ -1349,7 +1271,6 @@
     }
 
     .add-image-group:hover {
-      /* background-color: #3498DB; */
       opacity: 0.8;
     }
 
@@ -1403,7 +1324,6 @@
     }
 
     .group-members {
-        /* padding: 15px; */
         list-style: none;
         padding: 0;
         margin: 0;
@@ -1411,7 +1331,6 @@
         overflow-y: auto;
     }
     
-    /* Custom Scroll Bar Dizayni */
     .group-members::-webkit-scrollbar {
     width: 6px; 
     }
@@ -1424,8 +1343,7 @@
     /* .group-members::-webkit-scrollbar-track {
     background: transparent; 
     } */
-    
-    
+
     .member {
         display: flex;
         align-items: center;
@@ -1444,17 +1362,12 @@
         margin: 0;
         margin-left: 9px;
         cursor: pointer;
-        /* margin-right: 10px; */
     }
 
     .member-photo img {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        /* padding: 10px; */
-        /* margin: 10px, 15px; */
-        /* background-color: #555; */
-        /* margin-right: 10px; */
     }
 
     .member-info {
@@ -1479,7 +1392,6 @@
         font-size: 15px;
         font-weight: 600;
         color: #3476AB;
-        /* margin-Left: auto; */
       }
 
     .button:hover {
@@ -1493,26 +1405,26 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.8); /* Qoramtir fon */
+      background-color: rgba(0, 0, 0, 0.8); 
       justify-content: center;
       align-items: center; 
     }
 
     .show-message-content {
       position: relative;
-      max-width: 100vw; /* Maksimal kenglik */
-      max-height: 100vh; /* Maksimal bo'y */
+      max-width: 100vw; 
+      max-height: 100vh; 
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .show-message-file {
-      width: auto; /* Kenglik avtomatik bo'ladi */
-      height: auto; /* Bo'y avtomatik bo'ladi */
-      max-width: 100vw; /* Maksimal kenglik */
-      max-height: 100vh; /* Maksimal bo'y */
-      object-fit: contain; /* Proporsiyani saqlab, sig'dirish */
+      width: auto; 
+      height: auto; 
+      max-width: 100vw; 
+      max-height: 100vh; 
+      object-fit: contain; 
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
@@ -1534,8 +1446,8 @@
 
     .message-count {
       position: absolute;
-      bottom: 6px; /* Ekranning pastki qismida joylashadi */
-      right: 6px; /* Ekranning o'ng burchagida */
+      bottom: 6px;
+      right: 6px; 
       background-color: rgba(0, 0, 0, 0.6);
       color: white;
       padding: 10px;
@@ -1543,13 +1455,9 @@
     }
 
     .info {
-      /* background-color: #2c2c3e; */
-      /* border-radius: 8px; */
-      /* padding: 10px; */
       width: 100%;
       height: 52px;
       position: relative;
-      /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); */
     }
 
     .top-left {
@@ -1593,23 +1501,17 @@
       align-items: center;
     }
 
-    /* .back-button {
-      display: none;
-    } */
 
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
       }
 
-      /* .back-button {
-        display: none;
-      } */
       .sidebarChatType {
         width: 100%;
-        height: 8%; /* Telefon uchun balandlik */
+        height: 8%; 
         padding: 0 0;
-        flex-direction: row; /* Yonma-yon shaklda */
+        flex-direction: row;
         justify-content: space-around;
       }
     
@@ -1635,7 +1537,6 @@
     }
     
     .menu-list li {
-        /* border-bottom: 1px solid #354f60; */
         height: 100%;
         text-align: center;
         padding: 14px 20px;
@@ -1643,18 +1544,18 @@
     
       .sidebar {
         width: 100%;
-        height: 92%; /* Telefon uchun balandlik */
+        height: 92%; 
         display: block;
       }
     
       .chat-window {
-        display: none; /* Defaultda yashirin */
+        display: none;
         width: 100%;
-        height: 100%; /* Chat oynasi butun ekranni egallaydi */
+        height: 100%; 
       }
     
       .chat-window.active {
-        display: flex; /* Tanlanganda ko‘rinadi */
+        display: flex; 
       }
 
       .chat-header {
@@ -1662,25 +1563,16 @@
         width: 85vw;
         left: 12vw;
       }
-      
-      /* .chat-header-settings-button {
-        position: absolute; 
-        right: 2vw;
-        right: 2vw;
-      } */
     
       .back-button {
         position: absolute;
-        /* left: 2vw; */
         width: 15vw;
         height: 8%;
         font-size: 25px;
         background-color: #17212B;
-        /* padding-left: ; */
         color: #F5F5F5;
         font-weight: 500;
         border: none;
-        /* display: inline-block; */
         display: none;
       }
     }
@@ -1751,7 +1643,6 @@
       </div>
     </div>
 
-    <!-- Cropper Overlay -->
     <div id="cropOverlay">
       <div id="cropImageContainer">
           <img id="cropImage" src="" alt="Kesish uchun rasm" />
@@ -1768,17 +1659,8 @@
         <span>1 / 200000</span>
       </div>
       <div class="add-members-modal-selected-members">
-        <!-- <div class="add-members-modal-selected-member">Akbar_tatu<span class="remove">&times;</span></div> -->
       </div>
       <ul class="add-members-modal-member-list">
-        <!-- <li class="add-members-modal-member">
-          <div class="add-members-modal-avatar"></div>
-          <div class="add-members-modal-details">
-            <p>Akbar_tatu_bugalter</p>
-            <small>last seen yesterday at 2:39 PM</small>
-          </div>
-          <input type="checkbox" class="add-members-modal-select-member" />
-        </li> -->
       </ul>
       <div class="add-members-modal-actions">
         <button class="cancel" id="addUserToGroupCancel" onclick="addUserToGroupCancel()">Cancel</button>
@@ -1827,7 +1709,6 @@
 
     <div id="edit-groupName-modal" class="edit-name-modal">
       <h3>Edit group name</h3>
-        <!-- <label for="edit-groupName">Group name</label> -->
         <input type="text" id="edit-groupName" oninput="checkOnInput_InputEdit()" />
         
         <div class="profile-Name-buttons">
@@ -1871,9 +1752,7 @@
           <div class="group-photo-img">
             <img class="group-picture" src="" alt="Profile Picture">
           </div>
-          <!-- <input type="file" id="groupProfileSelectPicture" accept="image/*" style="display: none;"> -->
           <img class="add-image-group" src="http://localhost:3000/uploads/camera_icon.jpg" alt="Profile Picture" onclick="selectGroupProfilePicture()">
-            <!-- <img src="" alt=""> -->
         </div>
         <div class="group-text">
             <div class="group-name"></div>
@@ -1910,9 +1789,6 @@
         <li onclick="handleMessageAction('reply')">Reply</li>
         <li onclick="handleMessageAction('edit')" class="edit-option">Edit</li>
         <li onclick="handleMessageAction('copy')">Copy</li>
-        <!-- <li onclick="handleMessageAction('pin')">Pin</li> -->
-        <!-- <li onclick="handleMessageAction('forward')">Forward</li> -->
-        <!-- <li onclick="handleMessageAction('select')">Select</li> -->
         <li onclick="handleMessageAction('delete')" class="delete-option">Delete</li>
       </ul>
     </div>
@@ -1922,7 +1798,6 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
   <script>
 
-    // const jsonData = document.getElementById('data-script').textContent;
     const jsonData = localStorage.getItem('userData');
     const accountData = JSON.parse(jsonData);
     let allChats = null;
@@ -1967,24 +1842,17 @@
       document.getElementById('messageContainer').classList.remove('active');
     }
 
-  // Sozlamalar panelini yopish
-  // userAccSettingsCloseBtn.addEventListener('click', () => {
-  //   overlay.classList.remove('visible');
-  // });
-
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       overlay.classList.remove('visible');
     }
   });
 
-  // const fileInput = document.getElementById('groupModalSelectPicture');
   const cropOverlay = document.getElementById('cropOverlay');
   const cropImage = document.getElementById('cropImage');
   const cropImageContainer = document.getElementById('cropImageContainer');
   const setPhotoButton = document.getElementById('setPhoto');
   const cancelCropButton = document.getElementById('cancelCrop');
-  // const outputImage = document.getElementById('outputImage');
   const outputImage = createGroupModel.querySelector('#groupModal .image-section-group img')
   let cropper;
   let croppedBlob;
@@ -2013,15 +1881,6 @@
     let profilePicture = null;
     let addUserOrGroupFunc = null;
     let appendMessage = null;
-    // let openEditProfile;
-
-
-    
-    // document.getElementById('sidebarChatType-header').addEventListener('click', (event) => {
-    //   event.stopPropagation();
-    //   const dropdownMenu = document.getElementById("dropdownMenu");
-    //   dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
-    // });
 
     function checkOnInput_Input() {
       document.querySelector('.content-section-group h2').style.color = "#3476AB";
@@ -2071,16 +1930,16 @@
    
     cancelCropButton.addEventListener('click', () => {
       cropOverlay.style.display = 'none';
-      if (cropper) cropper.destroy(); // Cropperni tozalash
+      if (cropper) cropper.destroy(); 
     });
 
     setPhotoButton.addEventListener('click', () => {
       if (cropper) {
-        console.log("cropper: ", cropper);
+        // console.log("cropper: ", cropper);
           cropper.getCroppedCanvas().toBlob(async (blob) => {
             let [ext, type] = Object.entries(mimeTypes).find(([ext, type]) => type === blob.type);
             const newFileName = `cropped_image.${ext}`; 
-            console.log("newFile: ", newFileName);
+            // console.log("newFile: ", newFileName);
             const newFile = new File([blob], newFileName, { type: blob.type });
             if(isprofileSelectPhoto) {
               await uploadProfilePicture(newFile, isprofileSelectPhoto);
@@ -2092,7 +1951,7 @@
               const croppedUrl = URL.createObjectURL(newFile);
               outputImage.src = croppedUrl;
               outputImage.style.opacity = 1;
-              console.log("croppedUrl: ", croppedUrl);
+              // console.log("croppedUrl: ", croppedUrl);
               cropOverlay.style.display = 'none';
             }
           });
@@ -2109,32 +1968,24 @@
       addUserToGroupContainer.classList.remove('open');
       // cancelCreateGroup();
     }
-
     
-    // document.getElementById('addUserToGroupCancel').addEventListener('click', () => {
-      
-    // });
-
     function addMemberToGroup(members) {
-      console.log('members: ', members);
+      // console.log('members: ', members);
       document.getElementById('addUserToGroupButton').textContent = 'Add';
-      // addUserToGroupContainer.style.display = 'block';
       addUserToGroupContainer.classList.add('open');
 
-      // const usersList = document.getElementById('addUserToGroupList');
       const usersList = document.querySelector('.add-members-modal-member-list');
       const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
       const addingUserCount = document.querySelector('.add-members-modal-header').querySelector('span');
       chatIdAnd_ListAndMsDiv.forEach(([chatList, msDivList, {user, chat}], chatId) => {
         if(chat.type === 'lich' && !members.includes(user.account_id)) {
-          console.log('user: ', user);
+          // console.log('user: ', user);
 
           const listItem = document.createElement("li");
           listItem.classList.add('add-members-modal-member');
 
           const memberAvatar = createChatProfilePicture(user);
           
-          // memberAvatar.classList.add('member-photo');
           memberAvatar.classList.add('add-members-modal-avatar');
 
           listItem.appendChild(memberAvatar);
@@ -2149,12 +2000,7 @@
           selectMember.type = 'checkbox';
           selectMember.classList.add('add-members-modal-select-member');
           selectMember.id = `checkbox-${user.account_id}`;
-          // const addMemberToGroupFor = document.createElement('label');
-          // addMemberToGroupFor.setAttribute("for", `checkbox-${user._id}`);
-          // addMemberToGroupFor.textContent = 'Add';
           listItem.appendChild(selectMember);
-          // listItem.appendChild(addMemberToGroupFor);
-
           usersList.appendChild(listItem);
 
           selectMember.addEventListener("change", () => {
@@ -2162,8 +2008,6 @@
               addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] + ` / 200000`;
               const selectedMember = document.createElement("div");
               selectedMember.classList.add("add-members-modal-selected-member");
-              // selectedMember.innerHTML = `<p>${user.name}</p><span class="remove">&times;</span>`;
-              // const cancelSelectedMemeber = selectedMember.querySelector(".remove");
               const selectedUserName = document.createElement('p');
               selectedMember.appendChild(selectedUserName);
               selectedUserName.textContent = user.name + " " + (user.lastName || '');
@@ -2202,14 +2046,10 @@
         groupName.focus();
         return;
       }
-      // const groupName = document.getElementById("groupName").value.trim();
-      // document.getElementById("groupModal").style.display = "none";
-      // console.log("gruppa yaratishga harakat!");
+
       if(groupName) {
         document.getElementById('addUserToGroupButton').textContent = 'Create';
-        // addUserToGroupContainer.style.display = 'block';
         addUserToGroupContainer.classList.add('open');
-        // const usersList = document.getElementById('addUserToGroupList');
         const usersList = document.querySelector('.add-members-modal-member-list');
         const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
         const addingUserCount = document.querySelector('.add-members-modal-header').querySelector('span');
@@ -2221,7 +2061,6 @@
 
             const memberAvatar = createChatProfilePicture(user);
             
-            // memberAvatar.classList.add('member-photo');
             memberAvatar.classList.add('add-members-modal-avatar');
 
             listItem.appendChild(memberAvatar);
@@ -2236,11 +2075,7 @@
             selectMember.type = 'checkbox';
             selectMember.classList.add('add-members-modal-select-member');
             selectMember.id = `checkbox-${user.account_id}`;
-            // const addMemberToGroupFor = document.createElement('label');
-            // addMemberToGroupFor.setAttribute("for", `checkbox-${user._id}`);
-            // addMemberToGroupFor.textContent = 'Add';
             listItem.appendChild(selectMember);
-            // listItem.appendChild(addMemberToGroupFor);
 
             usersList.appendChild(listItem);
 
@@ -2249,8 +2084,6 @@
                 addingUserCount.textContent = +addingUserCount.textContent.split(`/`)[0] + 1 + ` / 200000`;
                 const selectedMember = document.createElement("div");
                 selectedMember.classList.add("add-members-modal-selected-member");
-                // selectedMember.innerHTML = `<p>${user.name}</p><span class="remove">&times;</span>`;
-                // const cancelSelectedMemeber = selectedMember.querySelector(".remove");
                 const selectedUserName = document.createElement('p');
                 selectedMember.appendChild(selectedUserName);
                 selectedUserName.textContent = user.name + " " + (user.lastName || '');
@@ -2282,64 +2115,11 @@
       }
     }
       
-
-    
     function cancelEditProfile() {
       document.getElementById("editProfileContainer").style.display = "none";
     }
 
-    // async function editProfileUsername() {
-    //   const username = document.getElementById("editProfileUsername").value.trim();
-    //   const response = await fetch('http://localhost:3000/auth/editusername', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${sean.jwtToken}`,
-    //     },
-    //     body: JSON.stringify({ id: accountData.account_id, username })
-    //   });
-        
-    //     // console.log(" new username data: ", response);
-    //   if(response.ok) {
-    //     const user = await response.json();
-    //     document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
-    //     console.log(" new username data: ", user);
-    //   }
-    // }
-
-    // async function editGroupUsername() {
-    //   const username = document.getElementById("editGroupUsername").value.trim();
-    //   const response = await fetch('http://localhost:3000/auth/editusername', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${sean.jwtToken}`,
-    //     },
-    //     body: JSON.stringify({ id: accountData.account_id, username })
-    //   });
-        
-    //     // console.log(" new username data: ", response);
-    //   if(response.ok) {
-    //     const user = await response.json();
-    //     document.getElementById('profileUsername').querySelector('span').textContent = "Username: " + user.username;
-    //     console.log(" new username data: ", user);
-    //   }
-    // }
-
-  // function editProfileNIkName() {
-  //   const nikNameBox = document.getElementById('profileNiknameBox');
-  //   const nikName = nikNameBox.children[1];
-  //   if(nikNameBox.children[1].value.trim() === "") {
-  //     nikNameBox.children[3].style.display = 'none';
-  //     nikNameBox.children[2].style.display = 'block';
-  //   } else {
-  //     nikNameBox.children[3].style.display = 'block';
-  //     nikNameBox.children[2].style.display = 'none';
-  //   }
-  // }
-
   function getChatsByUsername(userOrGroups) {
-    // console.log("search userOrGroup: ", userOrGroups);
     searchChatsList.style.display = 'inline';
     chatsList.style.display = 'none';
     
@@ -2358,7 +2138,6 @@
         const div1 = document.createElement('div');
         div1.classList.add("member-photo");
         const div1ProfileImg = createChatProfilePicture(item);
-        // div1ProfileImg.classList.add('member-photo');
         div1.appendChild(div1ProfileImg);
         const div2 = document.createElement('div');
         div2.classList.add('info');
@@ -2395,11 +2174,7 @@
 
   function openChatOpen(userOrGroup_id) {
       return function() {
-        // await socket.emit("addChatUser", {clientAccId: account_id, searchUserId: item._id});
-        // chatId = chatId_ChatData.get(userOrGroup_id);
-        // console.log('openChatOpen_accid: ', userOrGroup_id);
         chatId = userId_and_chatId.get(userOrGroup_id);
-        // chatId_ChatData
               if(divforMsTemp) {
                 divforMsTemp.style.display = 'none';
               }
@@ -2429,23 +2204,21 @@
             break;
           }
         } else {
-          console.log('mssQueue: ', msQueue);
           break;
         }
       }
-      console.log('msQueue: ', msQueue);
+      // console.log('msQueue: ', msQueue);
     }
     
     const lastId = messagesContainer.children[0]?.id;
     if(lastId) {
-      // Hozirgi scroll pozitsiyasini va konteyner balandligini saqlash
       const previousScrollHeight = messagesContainer.scrollHeight;
       const previousScrollTop = messagesContainer.scrollTop;
 
       const response = await fetch(`http://localhost:3000/messages/previous/${chatId}?lastId=${lastId}&limit=20`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${sean.jwtToken}`, // Bearer tokenni headerga qo'shish
+          'Authorization': `Bearer ${sean.jwtToken}`, 
         },
       });
       const data = await response.json();
@@ -2454,8 +2227,6 @@
         messages.push(await appendMessage(data[i]));
       }
       messagesContainer.prepend(...messages);
-  
-      // Scroll pozitsiyasini tiklash
       const newScrollHeight = messagesContainer.scrollHeight;
       messagesContainer.scrollTop = previousScrollTop + (newScrollHeight - previousScrollHeight);
       return data.length === 0;
@@ -2474,7 +2245,6 @@
 
   function selectGroupProfilePicture() {
     document.getElementById('profileSelectPicture').click();
-    // document.getElementById('groupProfileSelectPicture').click();
     isprofileSelectPhoto = 'group';
   } 
     
@@ -2497,25 +2267,6 @@
       }
     }
 
-    // document.getElementById('groupProfileSelectPicture').onchange = function(event) {
-    //   const file = event.target.files[0];
-    //   if (file) {
-    //     const reader = new FileReader();
-    //     reader.onload = () => {
-    //         cropImage.src = reader.result;
-    //         cropOverlay.style.display = 'flex';
-    //         if (cropper) cropper.destroy();
-    //         cropper = new Cropper(cropImage, {
-    //             aspectRatio: 1, 
-    //             viewMode: 2,
-    //             autoCropArea: 0.8, 
-    //             background: false 
-    //         });
-    //     };
-    //     reader.readAsDataURL(file);
-    //   }
-    // }
-
     function chatStatus({chatId, status}) {
       const span = chatIdAnd_ListAndMsDiv.get(chatId)[1].children[0].querySelector('span');
       if(status === 'online') {
@@ -2531,8 +2282,7 @@
     // URL parametrlarini olish
   window.onload = async function() {
       const urlParams = new URLSearchParams(window.location.search);
-      // sean = JSON.parse(urlParams.get('sean'));
-      console.log("sean: ", sean);
+      // console.log("sean: ", sean);
       
       const response = await fetch('http://localhost:3000/chats/getAllChat', {
           method: 'POST',
@@ -2544,14 +2294,13 @@
       });
 
       if(response.ok) {
-        // ownerOfAccFunc(accountData);
         allChats = await response.json(); // {allChats: IUserOrGroupChat, lastMessage:ISendMessage }[]
         allChats.sort((itm1, itm2) => {
           let itm1_time = itm1.lastMessages.length > 0 ? itm1.lastMessages.at(-1).message.timestamp : itm1.chatData.timestamp;
           let itm2_time = itm2.lastMessages.length > 0 ? itm2.lastMessages.at(-1).message.timestamp : itm2.chatData.timestamp;
           return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
         });
-        console.log("allchats: ", allChats);
+        // console.log("allchats: ", allChats);
         allChats.forEach(addChatUser);
       }
 
@@ -2566,16 +2315,13 @@
       });
 
       socket.on('connect', () => {
-        console.log("connect soket");
+        // console.log("connect soket");
         socket.emit('connectedSocket', {
           allChats
         });
       })
 
-
-      // socket.account_id = account_id;
-
-      console.log("socket: ", socket);
+      // console.log("socket: ", socket);
 
       document.addEventListener("click", (e) => {
         contextMenuMessage.style.display = "none";
@@ -2620,7 +2366,6 @@
           !document.getElementById('edit-groupName-modal').contains(e.target) &&
           !document.getElementById('editGroupUsernameBox').contains(e.target)
         ) {
-          // document.querySelector('.group-info').style.display = 'none';
           document.querySelector('.group-info').classList.remove('open');
         }
 
@@ -2634,8 +2379,6 @@
 
 
       document.getElementById('addUserToGroupButton').addEventListener('click', async () => {
-        // document.getElementById('addUserToGroupContainer').style.display = 'none';
-        // addUserToGroupContainer.classList.remove('open');
         const usersList = document.querySelector('.add-members-modal-member-list');
         const checkedCheckboxes = usersList.querySelectorAll('input[type="checkbox"]:checked');
         const usersId = [[accountData.account_id],[true],[true]];
@@ -2671,7 +2414,7 @@
   
           if(response.ok) {
             const data = await response.json();
-            console.log("chreate group data: ", data);
+            // console.log("chreate group data: ", data);
             await socket.emit('createGroup', data);
           }
 
@@ -2694,11 +2437,9 @@
     
             if(response.ok) {
               const data = await response.json();
-              console.log("chreate group data: ", data);
+              // console.log("chreate group data: ", data);
               await socket.emit('createGroup', data);
             }
-          } else {
-            console.log('hech qanday so\'rov bo\'lmadi qo\'shiladigan odam yo\'q');
           }
         }
         addUserToGroupCancel();
@@ -2729,12 +2470,6 @@
             return;
           }
           firstname.labels[0].style.color = '#3476AB';
-          // await socket.emit('editProfile', {
-          //   type: 'lich',
-          //   editedField: 'name',
-          //   accountId: accountData.account_id,
-          //   data: {name: firstname.value.trim(), lastName: lastName.value.trim()}
-          // });
 
           const response = await fetch('http://localhost:3000/chats/editProfile', {
             method: 'POST',
@@ -2766,10 +2501,8 @@
           document.querySelector('#edit-groupName-modal h3').style.color = 'red';
           groupName.style.borderBottom = '2px solid red';
           groupName.focus();
-          // groupName.labels[0].style.color = 'red';
             return;
         }
-          // groupName.labels[0].style.color = '#3476AB';
           
           const response = await fetch('http://localhost:3000/chats/editProfile', {
             method: 'POST',
@@ -2832,7 +2565,7 @@
           Object.assign(accountData, user);
           localStorage.setItem('userData', JSON.stringify(accountData));
           document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
-          console.log(" new username data: ", user);
+          // console.log(" new username data: ", user);
           document.getElementById('editUsernameBox').classList.remove('open');
         }
       });
@@ -2857,14 +2590,6 @@
         });
                 
         if(response.ok) {
-          // const editChat = await response.json();
-          // console.log('edited group username data: ', editChat);
-          // const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(chatId);
-          // Object.assign(user, editChat);
-          // Object.assign(chat, editChat);
-          // localStorage.setItem('userData', JSON.stringify(accountData));
-          // document.getElementById('profileUsername').querySelector('span').textContent = "@" + user.username;
-          // console.log(" new username data: ", user);
           document.querySelector('.group-info .group-username span').textContent = groupUsername;
           document.getElementById('editGroupUsernameBox').classList.remove('open');
         }
@@ -2872,8 +2597,6 @@
 
 
       document.querySelector('.info-card .back-menu-button').addEventListener('click', () => {
-        // console.log('shu qism ishlayabdi');
-        // document.querySelector('.info-card').style.display = 'none';
         document.querySelector('.info-card').classList.remove('open');
       });
 
@@ -2922,6 +2645,7 @@
       }
 
     addUserOrGroupFunc = async function (userOrGroupData, openChatButton, newContactAccId) {
+      openChatButton.onclick = null;
       const response = await fetch('http://localhost:3000/chats/createChat_or_joinToGroup', {
           method: 'POST',
           headers: {
@@ -2937,7 +2661,7 @@
 
       if(response.ok) {
         const {chatData, lastMessages} = await response.json();
-        console.log("chatData: ", chatData);
+        // console.log("chatData: ", chatData);
         await socket.emit("addChatUser", {
           chatDatas: [
             chatData,
@@ -2993,13 +2717,11 @@
           currentMessage = null;
         } 
         else if (action === "edit" && currentMessage) {
-          // console.log("edit uchun bosildi");
           chatId_editToMessage.set(chatId, currentMessage);
           const editBox = document.getElementById("editBox" + chatId);
           const editText = document.getElementById("editText" + chatId);
           divforMsTemp.children[2].style.display = "none";
           divforMsTemp.children[3].style.display = 'flex';
-          // currentMessage.querySelector('p').textContent.trim()
           const content = currentMessage.querySelector('.message-content-message p')?.textContent;//.trim();
           divforMsTemp.children[3].querySelector('input[type="text"]').value = content;//currentMessage.children[0].textContent;
           editText.textContent = content;
@@ -3011,7 +2733,7 @@
           const messageContent = currentMessage.querySelector('.message-content-message p').textContent.trim();//currentMessage.children[0].textContent.trim(); // Kontentni olish
           navigator.clipboard.writeText(messageContent) // Kontentni clipboardga nusxalash
           .then(() => {
-            console.log("Message copied:", messageContent);
+            // console.log("Message copied:", messageContent);
             currentMessage = null;
           })
           .catch((err) => {
@@ -3024,7 +2746,7 @@
           const replyBox = document.getElementById("replyBox" + chatId);
           const replyText = document.getElementById("replyText" + chatId);
           // const cancelReply = document.getElementById("cancelReply");
-          console.log("currentMessage for Reply: ", currentMessage);
+          // console.log("currentMessage for Reply: ", currentMessage);
             const user_name = messageId_sender.get(currentMessage.id).senderName;
             replyText.textContent = `${user_name}: "${currentMessage.querySelector('.message-content-message p').textContent.trim()}"`;
             replyBox.style.display = "block";
@@ -3057,7 +2779,7 @@
       }
 
       async function addChatUser({chatData, lastMessages}) {
-        console.log("addChatUser chatData: ", chatData);
+        // console.log("addChatUser chatData: ", chatData);
         // 
         if(!userId_and_chatId.has(chatData.account_id)) {
           // userId_and_chatId.set(newContactAccId, chatData.chatId);
@@ -3077,23 +2799,6 @@
         chatsList.insertBefore(chatUser_li_elem, chatsList.children[0]);
         chatIdAnd_ListAndMsDiv.set(chatData.chatId, [chatUser_li_elem, divMs, {user: chatData, chat: chatData}, new Queue(), false]);
       }
-      // async function addChatUser({chat, user, messages, status}) {
-      //   console.log("chat: ", chat," \n user: ", user);
-      //   userId_userData.set(user._id, user);
-      //   if(!userId_and_chatId.has(user._id)) {
-      //     userId_and_chatId.set(user._id, chat.chatId);
-      //   }
-      //   if(chatIdAnd_ListAndMsDiv.has(chat.chatId)) {
-      //     console.log("mavjud chatni hosil qilishga urunish bo'ldi va qaytarildi ");
-      //     return;
-      //   }
-      //   const chatUser_li_elem = createChatUserListElem({user, chat});
-      //   const divMs = await createChatUserMessagesContainer({chat, user, messages, status});
-      //   messageContainer.appendChild(divMs);
-      //   chatsList.insertBefore(chatUser_li_elem, chatsList.children[0]);
-      //   chatIdAnd_ListAndMsDiv.set(chat.chatId, [chatUser_li_elem, divMs, {user, chat}]);
-      // }
-
       
       const searchUser = document.getElementById('groupOrAccount_Name');
       searchUser.addEventListener('input', async function () {
@@ -3116,16 +2821,9 @@
       });
 
       socket.on("addChatUser", async (chatData, lastMessages, status) => {
-        // console.log('chatdata: socket: ', chatData);
         await addChatUser({chatData, lastMessages});
-        // console.log('{chatId: chatData.chatId, status}: ', {chatId: chatData.chatId, status});
         chatStatus({chatId: chatData.chatId, status});
       });
-
-      // socket.on('addMemberToGroup', ({chat}) => {
-      //   const span = chatIdAnd_ListAndMsDiv.get(chat.chatId)[1].children[0].querySelector('span');
-      //   span.textContent = chat.participant_length + ' ta a\'zo';
-      // })
 
       socket.on("chatStatus", chatStatus);
 
@@ -3133,8 +2831,6 @@
         // if(chatData.type === type) {
         const chatId = userId_and_chatId.get(chatData.account_id);
           const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(chatId);
-          // const chatUser_li_elem = createChatUserListElem({editedUser, editedChat});
-          // const editedchatType = chatData.type;
           delete chatData.type;
           delete chatData.chatId;
           delete chatData.account_id;
@@ -3174,7 +2870,7 @@
       });
 
       socket.on('editProfile', (profileData) => {
-        console.log('profileDAta: ', profileData);
+        // console.log('profileDAta: ', profileData);
         delete profileData.type;
         delete profileData.chatId;
         delete profileData.account_id;
@@ -3193,16 +2889,6 @@
         document.querySelector('#editNameModal #edit-name-last-name').value = accountData.lastName;
 
       });
-
-      // socket.on('takeAllData', async ({chats, ownerUser}) => {
-      //   ownerOfAccFunc(ownerUser);
-      //   chats.sort((itm1, itm2) => {
-      //     let itm1_time = itm1.messages.length > 0 ? itm1.messages.at(-1).timestamp : itm1.chat.timestamp;
-      //     let itm2_time = itm2.messages.length > 0 ? itm2.messages.at(-1).timestamp : itm2.chat.timestamp;
-      //     return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
-      //   });
-      //   chats.forEach(await addChatUser);
-      // });
 
       socket.on('message', async function({ message, replying_for_Ms,}) {
         const liListAndMsDiv = chatIdAnd_ListAndMsDiv.get(message.chatId);
@@ -3240,7 +2926,7 @@
         if(lastMsId === data.messageId) {
           if(chatBody.children.length > 1) {
 
-            console.log('lastMs2: ', chatBody);
+            // console.log('lastMs2: ', chatBody);
             const lastMs2 = chatBody.children[chatBody.children.length - 2];
             const sender = messageId_sender.get(lastMs2.id);
             liList.querySelector('.bottom-left').textContent = sender.senderName + ': ' + lastMs2.querySelector('.message-content-message p').textContent;
@@ -3256,31 +2942,13 @@
       
       socket.on('replyMessageDelete', function(data) {     // {chatId, messageId}
         const messageDiv = document.getElementById(data.messageId);
-        console.log("div: ", messageDiv);
+        // console.log("div: ", messageDiv);
         if(messageDiv) {
-          // const replyingForMs = messageDiv.querySelector('.reply-content');
           const replyingForMs = messageDiv.children[0];
-          console.log("replyingForMs: ", replyingForMs);
+          // console.log("replyingForMs: ", replyingForMs);
           replyingForMs?.remove();
         }
-        // messageDiv.innerHTML = `<p>${message.content}</p>
-        //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
       })
-      
-        // socket.on('replyMessageEdit', function(data) {     // {chatId, messageId}
-        //   const messageDiv = document.getElementById(data.messageId);
-        //   // const sender = messageId_sender.get(data.messageId);
-        //   // const sender = userId_userData(sender.sender_id);
-        //   // const replyText = messageDiv.querySelector('.reply-text');
-        //   console.log('replyMessageEdit');
-        //   messageDiv.querySelector('.reply-text').textContent = data.content;
-        //   messageDiv.querySelector('.replying-for-user').textContent = data.senderName;
-        //   // const [sender] =  replyText.textContent.split(": ");
-        //   // replyText.textContent = sender + ": \"" + data.content + "\"";
-          
-        //   // messageDiv.innerHTML = `<p>${message.content}</p>
-        //   //   <span>${getDateLikeHHMM(message.timestamp)}</span>`;
-        // });
 
       socket.on('editMessage', function(data) {
         document.getElementById(data.messageId).querySelector('p').textContent = data.content;
@@ -3291,23 +2959,6 @@
             }
         })
       });
-
-      socket.on('receiveFile', function(data) {
-        console.log('file data: ', data);
-        alert(data);
-      });
-
-      // socket.on('editUsername', function(data) {
-      //   const [chatList, msDivList, {user, chat}] = chatIdAnd_ListAndMsDiv.get(data.chatId);
-      //   // msDivList.children[0]
-      //   if(chat.type === 'group') {
-      //     chat.username = data.username;
-      //     const username = msDivList.querySelector('.group-setting-usersList')?.querySelector('p');
-      //     if(username) {
-      //       username.textContent = `@${data.username}`;
-      //     }
-      //   }
-      // });
 
       async function appendMessage ({ message, replying_for_Ms, isNewMs, liList}) {
         // console.log('message: ', message);
@@ -3395,37 +3046,6 @@
           msContentMs.querySelector('p').textContent = message.content;
           msContentMs.querySelector('span').textContent = getDateLikeHHMM(message.timestamp, true);
 
-        // if(userId_and_chatId.has(message.chatId)) {
-        //   const span = document.createElement('span');
-        //   span.textContent = message.senderName;
-        //   messageContent.appendChild(span);
-        // }
-
-        // if(message.fileUrl) {
-        //   const messageFile = await createMessageFile(message.fileUrl);
-        //   messageContent.appendChild(messageFile);
-        //   // messageDiv.append(messageFile);
-        // }
-
-
-        // if(userId_and_chatId.has(message.chatId)) {
-        //   messageContent.innerHTML = `<span>${message.sen}</span>`
-        // }
-        // const messageContentText = document.createElement('p');
-        // messageContentText.textContent = message.content ?? '';
-        // messageContent.appendChild(messageContentText);
-
-        // const messageTimeStamp = document.createElement('span');
-        // messageTimeStamp.textContent = getDateLikeHHMM(message.timestamp);
-        // messageContent.appendChild(messageTimeStamp);
-
-          // messageContent.innerHTML = `<p>${message.content ?? ''}</p>
-          // <span>${getDateLikeHHMM(message.timestamp)}</span>`;
-        
-
-          // messageDiv.appendChild(messageContent);
-        // }
-        // messageDiv.innerHTML = `<p>${messageObj.message.content}</p><span>${getDateLikeHHMM(messageObj.message.timestamp)}</span>`;
         if(sean.account_id === message.sender_id) {
           if(isNewMs) {
             liList.querySelector('.bottom-left').textContent = 'You: ' + message.content;
@@ -3458,7 +3078,7 @@
             const extension = url.substring(url.lastIndexOf('.')).toLowerCase();
 
             const mimetype = getFileMimetype(url);
-            console.log("getMimeType: ", mimetype);
+            // console.log("getMimeType: ", mimetype);
             if(!mimetype) {
               const link = document.createElement('a');
               // const fileName = fileUrl.split('\/').at(-1).slice(14);
@@ -3523,39 +3143,13 @@
                 video.style.marginLeft = '6px';
                 video.style.borderRadius = '3px';
               }
-  
-              // link.appendChild(video);
-              // video.onclick = () => window.open(file.path, '_blank');
-              // video.onclick = () => {
-              //   video.pause();
-              //   const showVideo = document.createElement('div');
-              //   showVideo.classList.add('show-message-content-modal');
-
-              //   showVideo.innerHTML = `
-              //   <div class="show-message-content">
-              //     <span class="show-message-close">&times;</span>
-              //     <video class='show-message-file' src="${url}" alt="Rasm">
-              //   </div>`;
-              //   showVideo.querySelector('video').controls = true;
-
-              //   showVideo.querySelector('.show-message-close').onclick = () => {
-              //     showVideo.remove();
-              //   }
-              //   document.body.appendChild(showVideo);
-              // };
               return video;
             }
             else if (mimetype.startsWith('audio/')) {
               const audio = document.createElement('audio');
               audio.controls = true;
-  
-              // link.appendChild(audio);
-              // audio.onclick = () => window.open(file.path, '_blank');
               return audio;
             } 
-            // else if (file.mimetype === 'application/pdf') {
-            //   link.innerText = `PDF: ${file.filename}`;
-            // } 
             else {
               const link = document.createElement('a');
               // const fileName = fileUrl.split('\/').at(-1).slice(14);
@@ -3568,7 +3162,6 @@
               link.innerText = `${fileName}`;
               return link;
             }
-        // messageDiv.appendChild(link);
       }
           
     
@@ -3582,15 +3175,6 @@
 
         const div2 = document.createElement('div');
         div2.classList.add('info');
-
-        if(chatData.type === 'group') {
-          // div2.style.display = "flex";
-          // const chatTypeIcon = document.createElement('img');
-          // div2.appendChild(chatTypeIcon);
-          // chatTypeIcon.style.maxWidth = '12px';
-          // chatTypeIcon.style.maxHeight = '12px';
-          // chatTypeIcon.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGWGNy4dAG-qrqHOOVjbVh9hT0OBkU8_ZaoA&s'
-        }
         
         const p = document.createElement('p');
         p.classList.add('top-left');
@@ -3611,8 +3195,6 @@
 
         const timestamp = document.createElement('span');
         timestamp.classList.add('top-right');
-
-        console.log('chatData: ', chatData);
         timestamp.textContent = getDateLikeHHMM(chatData.timestamp);
 
         if(messages && messages.length > 0){
@@ -3645,7 +3227,6 @@
           divforMsTemp.style.display = 'flex';
           divforMsTemp.children[2].querySelector('input[type="text"]').focus();
 
-          // const scrollTop = divforMsTemp.children[1].children
           if(!listAndMsDiv[4]) {
             listAndMsDiv[4] = true;
             getPreviousMessages(divforMsTemp.children[1], chatId, appendMessage , listAndMsDiv[3]);
@@ -3690,7 +3271,6 @@
 
 
       const divEdit = createChatUserEditMs(div_for_replyBox_inputBox, div_for_editBox, editBox, editText);
-      // divEdit.insertBefore(editBox, divEdit.children[0])
       div_for_editBox.appendChild(divEdit);
 
       divMs.classList.add('chat-container')
@@ -3700,13 +3280,8 @@
     }
     
     function createChatUserHeader ({user, status}) {
-      // console.log("user or group: ", user);
       const divHeader = document.createElement('div');
         divHeader.classList.add('chat-header');
-        // const backButton = document.createElement('button');
-        // backButton.classList.add('back-button');
-        // backButton.innerText = '⬅';
-        // divHeader.appendChild(backButton);
         const divChatHeader = document.createElement('div');
         divHeader.appendChild(divChatHeader);
         const p2 = document.createElement('p');
@@ -3720,19 +3295,15 @@
         else {
           span2.style.color = '#888'
         }
-        span2.textContent = status//? "online": "offline";
+        span2.textContent = status;
         const divSetting = document.createElement('div');
         divSetting.classList.add('chat-header-settings-button')
         divHeader.appendChild(divSetting);
         divSetting.innerHTML = `&#8942;`;
-        // const settingsList = document.createElement('div');
-        // settingsList.classList.add('group-setting-usersList');
-        // divHeader.appendChild(settingsList);
         divHeader.onclick = async function() {
 
           if(user.type === 'group') {
-            console.log("group open info: groupData: ", user);
-            
+            // console.log("group open info: groupData: ", user);
             const response = await fetch(`http://localhost:3000/chats/members`, {
               method: 'POST',
               headers: {
@@ -3748,16 +3319,13 @@
               // groupInfo.style.display = "block";
               groupInfo.classList.add('open');
               groupInfo.querySelector('.close-btn').onclick = function() {
-                // groupInfo.style.display = "none";
                 groupInfo.classList.remove('open');
-                // document.querySelector('.group-info .close-btn')
               }
               if(groupData.picture) {
                 groupInfo.querySelector('.group-photo .group-photo-img').innerHTML = `<img src="${groupData.picture}" class="group-picture" alt="">`
               } else {
                 const profileImage = groupInfo.querySelector('.group-photo .group-photo-img');
                 profileImage.innerHTML = `<div class="profile-div-for-img-for-group-detail">${groupData.name.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase()}</div>`;
-                // profileImage.textContent = groupData.name.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase();
               }
               groupInfo.querySelector('.group-name').textContent = (groupData.name || '') + ' ' + (groupData.lastName || '');
               groupInfo.querySelector('.group-members-count').textContent = groupData.participant_ids.length + " members";
@@ -3766,7 +3334,7 @@
               groupUsername.querySelector('span').textContent = groupData.username ? '@' + groupData.username : '';
 
               groupInfo.querySelector('.add-member-icon').onclick = () => {
-                console.log('members: ', members);
+                // console.log('members: ', members);
                 addMemberToGroup(members.map(itm => itm._id));
               }
   
@@ -3777,8 +3345,6 @@
                 editName.onclick = () => {
                   const editNikName = document.querySelector('#edit-groupName-modal');
                   editNikName.classList.add('open');
-          
-                  // editNikName.querySelector('input').textContent = (groupData.name);
                   const name = document.getElementById('edit-groupName');
                   name.value = groupData.name;
                 }
@@ -3840,8 +3406,6 @@
       replyBox.classList.add('reply-box');
       replyBox.id = 'replyBox' + chat.chatId;
       replyBox.style.display = 'none';
-        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
-
         const replyText = document.createElement('span');
         replyBox.appendChild(replyText);
         replyText.id = 'replyText' + chat.chatId;
@@ -3881,24 +3445,11 @@
         button.textContent = "Send";
         input.addEventListener('keypress', async function(event) {
           if (event.key === 'Enter' && !event.shiftKey) {
-            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
             sendMessage({input, divReplyBox, selectFileBox});
           }
         });
         button.addEventListener('click', function () {
           sendMessage({input, divReplyBox, selectFileBox});
-          // if (input.value.trim() !== '') {
-          //   socket.emit('message', {
-          //       content: input.value,
-          //       chatId,
-          //       sender_id: sean.account_id,
-          //       replying_for_Ms_Id: chatId_replyToMessage.get(chatId)?.id
-          //     });
-          //     input.value = '';
-          //     divReplyBox.style.display = "none";
-          //     spanReply.textContent = "";
-          //     chatId_replyToMessage.set(chatId, null);
-          // }
         });
       return divInput; 
     }
@@ -3909,9 +3460,9 @@
         let fileData = null;
         if(selectFile) {
           fileData = await uploadFile(selectFile);
-          console.log("fileData: ", fileData);
+          // console.log("fileData: ", fileData);
         }
-              // console.log("fileData: ", fileData);
+
         socket.emit('message', {
           content: input.value,
           fileUrl: fileData?.url,
@@ -3938,7 +3489,7 @@
       fileInput.style.display = 'none';
       fileInput.onchange = async function(event) {
         const file = event.target.files[0];
-        console.log("selected file: ", file)
+        // console.log("selected file: ", file)
         if (file) {
           chatId_selectedFile.set(chat.chatId, [file]);
 
@@ -3969,16 +3520,6 @@
             canvas.height = viewport.height;
             canvas.width = viewport.width;
             await page.render({ canvasContext: context, viewport }).promise;
-            // const pdfDoc = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
-            // const page = await pdfDoc.getPage(1);
-            // const canvas = document.createElement('canvas');
-            // const context = canvas.getContext('2d');
-
-            // const viewport = page.getViewport({ scale: 1 });
-            // canvas.height = viewport.height;
-            // canvas.width = viewport.width;
-            // page.render({ canvasContext: context, viewport: viewport });
-            // preview.appendChild(canvas);
             selectFile = canvas;
           } 
           else if (fileType.startsWith('video/')) {
@@ -3986,18 +3527,15 @@
             const videoIcon = document.createElement('div');
             const names = file.name.split('.');
             videoIcon.textContent = '🎥 ' + names[0].slice(0, 4) + "... ." + names.at(-1);
-            // videoIcon.textContent = '🎥 Video File';
             videoIcon.style.fontSize = '10px';
             videoIcon.style.color = '#333';
-            // preview.appendChild(videoIcon);
             selectFile = videoIcon;
           } 
           else {
             const otherFile = document.createElement('p');
             const names = file.name.split('.');
             otherFile.textContent = names[0].slice(0, 4) + "... ." + names.at(-1);
-            otherFile.style.fontSize = "10px"; // Masalan, 16 piksel
-            // otherFile.style.fontWeight = "bold";
+            otherFile.style.fontSize = "10px"; 
             selectFile = otherFile;
           }
           selectFileBox.innerHTML = '';
@@ -4025,12 +3563,6 @@
 
     uploadProfilePicture = async function (newFile, lich_or_group) {
       const uploadedData = await uploadFile([newFile]);
-      // await socket.emit('editProfile', {
-      //   type: 'lich',
-      //   editedField: 'picture',
-      //   accountId: accountData.account_id,
-      //   data: uploadedData.url
-      // });
       const response = await fetch('http://localhost:3000/chats/editProfile', {
         method: 'POST',
         headers: {
@@ -4082,8 +3614,6 @@
       const editBox = document.createElement('div');
       editBox.classList.add('reply-box');
       editBox.id = 'editBox' + chat.chatId;
-      // editBox.style.display = 'none';
-        // replyBox.innerHTML = `<span id="replyText"></span><button id="cancelReply">Cancel</button>`;
         const editText = document.createElement('span');
         editBox.appendChild(editText);
         editText.id = 'editText' + chat.chatId;
@@ -4091,7 +3621,7 @@
         editBox.appendChild(concelReply);
         concelReply.id = 'concelEdit' + chat.chatId;
         concelReply.innerHTML = "&times;";
-        concelReply.addEventListener('click', function () {
+        concelReply.addEventListener('click', function() {
           editBox.style.display = "none";
           editText.textContent = "";
           chatId_editToMessage.set(chatId, null);
@@ -4114,7 +3644,6 @@
         button2.textContent = "Edit";
         input2.addEventListener('keypress', function(event) {
           if (event.key === 'Enter' && !event.shiftKey) {
-            // event.preventDefault(); // Enter tugmasi bilan formani yuborishning oldini olish
             if (input2.value.trim() !== '') {
               socket.emit('editMessage', {
                 messageId: chatId_editToMessage.get(chatId).id,
@@ -4122,7 +3651,6 @@
                 content: divforMsTemp.children[3].querySelector('input').value,
               });
               input2.value = '';
-              // editBox.style.display = "none";
               editText.textContent = "";
               chatId_editToMessage.set(chatId, null);
               div_for_replyBox_inputBox.style.display = 'flex';
@@ -4149,18 +3677,6 @@
     }
 
     async function groupMembers(membersData) {
-      // const membersDataResponse = await fetch('http://localhost:3000/chats/members', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       'Authorization': `Bearer ${sean.jwtToken}`,
-      //     },
-      //   body: JSON.stringify({chatId})
-      // });
-
-      // const membersData = await membersDataResponse.json();
-      console.log('membersData: ', membersData)
-
       const _groupMembers = document.querySelector('.group-info .group-members');
       _groupMembers.innerHTML = '';
       membersData.forEach(user => {
@@ -4183,7 +3699,6 @@
             buttonAddOrOpen.textContent = "Open";
             memberContainer.onclick = () => {
                 openChatOpen(user._id)();
-                // document.querySelector('.group-info').style.display = 'none';
                 document.querySelector('.group-info').classList.remove('open');
               }
           } else {
@@ -4192,7 +3707,6 @@
               await addUserOrGroupFunc(user, buttonAddOrOpen, user._id);
               memberContainer.onclick = () => {
                 openChatOpen(user._id)();
-                // document.querySelector('.group-info').style.display = 'none';
                 document.querySelector('.group-info').classList.remove('open');
               }
               buttonAddOrOpen.onclick = null;
@@ -4253,7 +3767,7 @@
       if(dotIndex  !== -1){
         const ext = fileUrl.substring(dotIndex + 1).toLowerCase();
         // console.log("fileExt:", ext)
-        console.log("fileExt", mimeTypes[ext]);
+        // console.log("fileExt", mimeTypes[ext]);
         return mimeTypes[ext];
       }
     }
@@ -4351,9 +3865,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    
-<!-- <script src="https://cdn.jsdelivr.net/npm/mime-types@2.1.35/lib/index.js"></script> -->
-
 
 </body>
 </html>
