@@ -3021,6 +3021,19 @@
 
         const replayContent = messageDiv.querySelector('.reply-content');
         if(replying_for_Ms) {
+            replayContent.onclick = () => {
+              msDivContainer = chatIdAnd_ListAndMsDiv.get(replying_for_Ms.chatId)[1].querySelector('.chat-body');
+              ms = document.getElementById(replying_for_Ms._id);
+              if(ms) {
+                msDivContainer.scrollTo({
+                  top: ms.offsetTop - msDivContainer.offsetTop - msDivContainer.clientHeight / 2 + ms.clientHeight / 2,
+                  behavior: 'smooth' 
+                });
+                ms.style.opacity = "0.2";
+                setTimeout(() => ms.style.opacity = "1", 1500);
+              }
+            }
+            
             replayContent.style.borderLeft = `3px solid rgb(${replying_for_Ms.color})`;
             replayContent.style.backgroundColor = `rgba(${replying_for_Ms.color}, 0.2)`
             // replayContent.style.opacity = 0.2;
