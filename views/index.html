@@ -2408,7 +2408,7 @@
               picture: picture?.url,
               participant_ids: usersId[0],
               changeGroupData: usersId[1],
-              removeMessage: usersId[2]
+              // removeMessage: usersId[2]
             })
           });
   
@@ -2923,10 +2923,9 @@
         const [liList, msDiv, {user, chat}] = chatIdAnd_ListAndMsDiv.get(data.chatId);
         const chatBody = msDiv.querySelector('.chat-body');
         lastMsId = chatBody.children[chatBody.children.length - 1].id;
+
         if(lastMsId === data.messageId) {
           if(chatBody.children.length > 1) {
-
-            // console.log('lastMs2: ', chatBody);
             const lastMs2 = chatBody.children[chatBody.children.length - 2];
             const sender = messageId_sender.get(lastMs2.id);
             liList.querySelector('.bottom-left').textContent = sender.senderName + ': ' + lastMs2.querySelector('.message-content-message p').textContent;
@@ -2937,6 +2936,14 @@
             liList.querySelector('.top-right').textContent = getDateLikeHHMM(user.timestamp);
           }
         }
+
+        messageId_replyingMsId.forEach((respyingMsId, messageId) => {
+            if(respyingMsId === data.messageId) {
+              const messageDiv = document.getElementById(messageId);
+              messageDiv.querySelector('.reply-content').remove();
+            }
+        });
+
         document.getElementById(data.messageId).remove();
       });
       
@@ -3035,9 +3042,7 @@
             }
             
             replayContent.style.borderLeft = `3px solid rgb(${replying_for_Ms.color})`;
-            replayContent.style.backgroundColor = `rgba(${replying_for_Ms.color}, 0.2)`
-            // replayContent.style.opacity = 0.2;
-
+            replayContent.style.backgroundColor = `rgba(${replying_for_Ms.color}, 0.2)`;
           messageId_replyingMsId.set(message._id, replying_for_Ms._id);
           if(replying_for_Ms.fileUrl) {
             replayContent.insertBefore(await createMessageFile(replying_for_Ms.fileUrl, 'reply'), replayContent.children[0]);

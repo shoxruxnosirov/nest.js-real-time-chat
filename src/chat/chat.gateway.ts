@@ -127,8 +127,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('message') 
   async handleMessage(client: Socket, messageObj: {chatId: string, content: string, fileUrl?: string, sender_id: string, senderName: string, replying_for_Ms_Id?: string, color: string}) {
-    // console.log(`Received message from ${client.id}: ${messageObj.content}`);
-
+    
     let messageDto: MessageDto = {
       chatId: new Types.ObjectId(messageObj.chatId),
       sender_id: new Types.ObjectId(messageObj.sender_id),
@@ -153,21 +152,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         });
       }
     });
-  }
-
-  @SubscribeMessage('deleteMessage')
-  async handleDeleteMessage(client: Socket, data: {chatId: string, messageId: string}) {
-    await this.messagesService.deleteMessage(data.messageId);
-    const replyMessages = await this.messagesService.findAllReplyMessages(new Types.ObjectId(data.messageId));
-    const chat = await this.chatService.findOne(data.chatId);
-    chat.participant_ids.forEach(accountId => {
-      this.accountAndSocketArr.get(accountId.toString())?.forEach(socket => {
-        socket.emit("deleteMessage", data);
-        replyMessages.forEach(replyMessage => {
-          socket.emit("replyMessageDelete", {messageId: replyMessage._id, chatId: data.chatId})
-        });
-      });
-    })
   }
 
   @SubscribeMessage('createGroup')
@@ -219,16 +203,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('editMessage')
   async handleEditMessage(client: Socket, data: {chatId: string, messageId: string, content: string}) {
-    // console.log("edit messageId=",data.messageId,"  ", await this.messagesService.findOneByMessageId(data.messageId));
     await this.messagesService.updateMessage(data.messageId, data.content);
-    // const replyMessages = await this.messagesService.findAllReplyMessages(new Types.ObjectId(data.messageId));
     const chat = await this.chatService.findOne(data.chatId);
     chat.participant_ids.forEach(accountId => {
       this.accountAndSocketArr.get(accountId.toString())?.forEach(socket => {
         socket.emit("editMessage", data);
-        // replyMessages.forEach(replyMessage => {
-        //   socket.emit("replyMessageEdit", {messageId: replyMessage._id, chatId: data.chatId, content: data.content});
-        // });
+      });
+    })
+  }
+
+  @SubscribeMessage('deleteMessage')
+  async handleDeleteMessage(client: Socket, data: {chatId: string, messageId: string}) {
+    await this.messagesService.deleteMessage(data.messageId);
+    const chat = await this.chatService.findOne(data.chatId);
+    chat.participant_ids.forEach(accountId => {
+      this.accountAndSocketArr.get(accountId.toString())?.forEach(socket => {
+        socket.emit("deleteMessage", data);
       });
     })
   }

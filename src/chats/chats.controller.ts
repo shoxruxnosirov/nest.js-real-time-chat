@@ -3,14 +3,10 @@ import { ChatsService } from './chats.service';
 import { ChatDto } from './dto/chat.dto';
 import { IChat, IUserOrGroupChat } from './interfaces/chat.interface';
 import { UsersService } from 'src/users/users.service';
-import { group } from 'console';
 import { IAccount } from 'src/users/interfaces/account.interface';
 import { Types } from 'mongoose';
 import { ISendMessage } from 'src/chat/types.interface';
 import { MessagesService } from 'src/messages/messages.service';
-import { last } from 'rxjs';
-import { IMessage } from 'src/messages/interfaces/message.interface';
-import { use } from 'passport';
 
 @Controller('chats')
 export class ChatsController {

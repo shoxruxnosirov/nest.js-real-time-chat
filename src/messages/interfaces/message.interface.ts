@@ -6,7 +6,6 @@ export interface IMessage extends Document {
   readonly sender_id: Types.ObjectId;
   senderName: string;
   color?: string;
-  // readonly receiver_id: string;
   content?: string;
   fileUrl?: string;
   fileId?: Types.ObjectId;
