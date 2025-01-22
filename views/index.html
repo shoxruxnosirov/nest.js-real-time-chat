@@ -27,7 +27,7 @@
     /* Sidebar */
     .sidebar {
       width: 37%;
-      min-width: 260px;
+      /* min-width: 260px; */
       background-color: #17212B;
       color: white;
       overflow-y: auto;
@@ -84,12 +84,17 @@
     /* Chat oynasi */
     .chat-window {
       width: 60%;
-      min-width: 175px;
+      /* min-width: 175px; */
       /* flex: 1; */
       display: flex;
       flex-direction: column;
+      overflow: hidden;
       height: 100vh; /* Ekran balandligi */
       background-color: #0E1621;
+    }
+
+    .back-button {
+      display: none;
     }
 
     .chat-container {
@@ -294,8 +299,9 @@
     .context-menu-message {
         position: absolute;
         display: none;
-        background-color: white;
-        border: 1px solid #ccc;
+        background-color: #bbb;
+        border: 1px solid #333;
+        border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         z-index: 1;
     }
@@ -307,6 +313,7 @@
     }
     
     .context-menu-message li:hover {
+      border-radius: 8px;
         background-color: #f0f0f0;
     }
     
@@ -378,7 +385,7 @@
     
     .sidebarChatType {
       width: 3%; /* Ekranning 20 dan bir qismini egallaydi */
-      min-width: 75px; /* Kichik ekranlar uchun minimal kenglik */
+      min-width: 75px; 
       background-color: #0E1621; /* Telegram'ga o'xshash rang */
       color: #ffffff;
       display: flex;
@@ -413,6 +420,8 @@
     
     .menu-list {
         list-style: none;
+        display: flex;
+        flex-direction: column; /* Kompyuterda ustun shaklida */
         margin: 0;
         padding: 0;
     }
@@ -447,8 +456,8 @@
       width: 0;
       /* height: 160px; */
       padding: 20px;
-      top: 50%; /* Ekranning yuqori qismidan 50% pastga */
-      left: 60%; 
+      top: 20%; /* Ekranning yuqori qismidan 50% pastga */
+      left: 50%; 
       transform: translate(-50%) scaleX(0);
       transform-origin: top right;
       z-index: 2; 
@@ -581,7 +590,7 @@
       text-transform: uppercase;
     }
 
-    .addUserToGroupContainer {
+    /* .addUserToGroupContainer {
       display: flex;
       position: absolute;
       top: 100px;
@@ -589,7 +598,7 @@
       width: 40%;
       height: auto;
       background-color: #354f60;
-    }
+    } */
 
     .addUserToGroupList {
       display: flex;
@@ -761,14 +770,37 @@
     
     .add-members-modal {
       position: fixed;
-      width: 400px;
-      top: 30%;
+      align-items: center;
+      /* width: 400px; */
+      width: 0;
+      top: 20%;
       left: 50%;
       z-index: 3; 
+      transform: translate(-50%) scaleX(0);
+      transform-origin: top right;
+      overflow: hidden;
+      display: none; 
       background-color: #17212B;
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Kengayish animatsiyasi */
+    @keyframes expand4 {
+        0% {
+          transform: translate(-50%) scaleX(0); 
+          width: 0;
+        }
+        100% {
+          transform: translate(-50%) scaleX(1); 
+          width: 400px;
+        }
+    }
+    /* Form kengaygan holati */
+    .add-members-modal.open {
+        display: block;
+        animation: expand4 0.1s ease-out forwards;
     }
     
     .add-members-modal-header {
@@ -1208,16 +1240,35 @@
     
     .group-info {
       display: none;
-      width: 500px;
       top: 10%;
-      left: 42%;
+      left: 50%;
       padding: 20px;
       background-color: #17212B;
-      width: 320px;
+      width: 0;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       overflow: hidden;
       position: fixed;
+      transform: translate(-50%) scaleX(0);
+      transform-origin: top right;
+      z-index: 2;
+    }
+
+    /* Kengayish animatsiyasi */
+    @keyframes expand5 {
+        0% {
+          transform: translate(-50%) scaleX(0); /* Gorizontal o‘q bo‘yicha kichik */
+          width: 0;
+        }
+        100% {
+          transform: translate(-50%) scaleX(1); /* Gorizontal o‘q bo‘yicha kengayish */
+          width: 350px;
+        }
+    }
+    /* Form kengaygan holati */
+    .group-info.open {
+        display: block;
+        animation: expand5 0.1s ease-out forwards;
     }
     
     .group-info-header {
@@ -1542,7 +1593,97 @@
       align-items: center;
     }
 
+    /* .back-button {
+      display: none;
+    } */
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      /* .back-button {
+        display: none;
+      } */
+      .sidebarChatType {
+        width: 100%;
+        height: 8%; /* Telefon uchun balandlik */
+        padding: 0 0;
+        flex-direction: row; /* Yonma-yon shaklda */
+        justify-content: space-around;
+      }
     
+      .sidebarChatType-header {
+      border-bottom: 0;
+      width: 20%;
+      text-align: left;
+      padding: 10px 10px;
+    }
+    
+    .sidebarChatType-header button {
+        padding-bottom: 0;
+    }
+
+      .menu-list {
+        width: 80%;
+        height: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .menu-list li {
+        /* border-bottom: 1px solid #354f60; */
+        height: 100%;
+        text-align: center;
+        padding: 14px 20px;
+    }
+    
+      .sidebar {
+        width: 100%;
+        height: 92%; /* Telefon uchun balandlik */
+        display: block;
+      }
+    
+      .chat-window {
+        display: none; /* Defaultda yashirin */
+        width: 100%;
+        height: 100%; /* Chat oynasi butun ekranni egallaydi */
+      }
+    
+      .chat-window.active {
+        display: flex; /* Tanlanganda ko‘rinadi */
+      }
+
+      .chat-header {
+        position: relative;
+        width: 85vw;
+        left: 12vw;
+      }
+      
+      /* .chat-header-settings-button {
+        position: absolute; 
+        right: 2vw;
+        right: 2vw;
+      } */
+    
+      .back-button {
+        position: absolute;
+        /* left: 2vw; */
+        width: 15vw;
+        height: 8%;
+        font-size: 25px;
+        background-color: #17212B;
+        /* padding-left: ; */
+        color: #F5F5F5;
+        font-weight: 500;
+        border: none;
+        /* display: inline-block; */
+        display: none;
+      }
+    }
     
   </style>
 
@@ -1565,19 +1706,19 @@
     </div>  
 
     <div id="listContainer" class="sidebar">
-      <ul class="chat-list" id="owner-of-the-account"></ul>
+      <!-- <ul class="chat-list" id="owner-of-the-account"></ul> -->
       <div class="search-bar"><input type="text" id="groupOrAccount_Name" placeholder="Search" required /></div>
       <ul class="chat-list" id="search-chats-list"></ul>
       <ul class="chat-list" id="chats-list"></ul>
     </div>
 
+    <button class="back-button" onclick="showUsers()">⬅</button>
     <div id="messageContainer" class="chat-window">
     </div>
     
   </div>
 
   <div>
-    
     <div id="overlay" class="hidden">
       <div id="userAccSettingsPanel">
         <div class="profile">
@@ -1594,7 +1735,6 @@
         </ul>
       </div>
     </div>
-
 
     <div id="groupModal" class="modal">
       <div class="image-section-group">
@@ -1622,7 +1762,7 @@
       </div>
     </div>
 
-    <div class="add-members-modal" id="addUserToGroupContainer" style="display: none;">
+    <div class="add-members-modal" id="addUserToGroupContainer">
       <div class="add-members-modal-header">
         <h3>Add Members</h3>
         <span>1 / 200000</span>
@@ -1773,7 +1913,7 @@
         <!-- <li onclick="handleMessageAction('pin')">Pin</li> -->
         <!-- <li onclick="handleMessageAction('forward')">Forward</li> -->
         <!-- <li onclick="handleMessageAction('select')">Select</li> -->
-        <li onclick="handleMessageAction('delete')">Delete</li>
+        <li onclick="handleMessageAction('delete')" class="delete-option">Delete</li>
       </ul>
     </div>
 
@@ -1817,7 +1957,15 @@
       const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
       profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
       overlay.classList.add('visible');
-  });
+    });
+    
+    function showUsers() {
+      chatId = null;
+      document.querySelector('.back-button').style.display = 'none';
+      document.querySelector('.sidebarChatType').style.display = 'flex';
+      document.getElementById('listContainer').style.display = 'block';
+      document.getElementById('messageContainer').classList.remove('active');
+    }
 
   // Sozlamalar panelini yopish
   // userAccSettingsCloseBtn.addEventListener('click', () => {
@@ -1958,7 +2106,7 @@
       document.querySelector('.add-members-modal-selected-members').innerHTML = '';
       document.querySelector('.add-members-modal-member-list').innerHTML = '';
   
-      addUserToGroupContainer.style.display = 'none';
+      addUserToGroupContainer.classList.remove('open');
       // cancelCreateGroup();
     }
 
@@ -1970,7 +2118,9 @@
     function addMemberToGroup(members) {
       console.log('members: ', members);
       document.getElementById('addUserToGroupButton').textContent = 'Add';
-      addUserToGroupContainer.style.display = 'block';
+      // addUserToGroupContainer.style.display = 'block';
+      addUserToGroupContainer.classList.add('open');
+
       // const usersList = document.getElementById('addUserToGroupList');
       const usersList = document.querySelector('.add-members-modal-member-list');
       const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
@@ -2057,7 +2207,8 @@
       // console.log("gruppa yaratishga harakat!");
       if(groupName) {
         document.getElementById('addUserToGroupButton').textContent = 'Create';
-        addUserToGroupContainer.style.display = 'block';
+        // addUserToGroupContainer.style.display = 'block';
+        addUserToGroupContainer.classList.add('open');
         // const usersList = document.getElementById('addUserToGroupList');
         const usersList = document.querySelector('.add-members-modal-member-list');
         const selectedMembersContainer = document.querySelector('.add-members-modal-selected-members');
@@ -2393,7 +2544,7 @@
       });
 
       if(response.ok) {
-        ownerOfAccFunc(accountData);
+        // ownerOfAccFunc(accountData);
         allChats = await response.json(); // {allChats: IUserOrGroupChat, lastMessage:ISendMessage }[]
         allChats.sort((itm1, itm2) => {
           let itm1_time = itm1.lastMessages.length > 0 ? itm1.lastMessages.at(-1).message.timestamp : itm1.chatData.timestamp;
@@ -2469,7 +2620,8 @@
           !document.getElementById('edit-groupName-modal').contains(e.target) &&
           !document.getElementById('editGroupUsernameBox').contains(e.target)
         ) {
-          document.querySelector('.group-info').style.display = 'none';
+          // document.querySelector('.group-info').style.display = 'none';
+          document.querySelector('.group-info').classList.remove('open');
         }
 
         if(
@@ -2483,6 +2635,7 @@
 
       document.getElementById('addUserToGroupButton').addEventListener('click', async () => {
         // document.getElementById('addUserToGroupContainer').style.display = 'none';
+        // addUserToGroupContainer.classList.remove('open');
         const usersList = document.querySelector('.add-members-modal-member-list');
         const checkedCheckboxes = usersList.querySelectorAll('input[type="checkbox"]:checked');
         const usersId = [[accountData.account_id],[true],[true]];
@@ -3169,15 +3322,34 @@
               currentMessage = closestMessage;
               const isIncoming = closestMessage.classList.contains("incoming");
               const editOption = contextMenuMessage.querySelector(".edit-option");
+              const deleteOption = contextMenuMessage.querySelector('.delete-option')
               if (isIncoming) {
                 editOption.style.display = "none";
+                if(chatIdAnd_ListAndMsDiv.get(message.chatId)[2].user.type === 'group') {
+                  deleteOption.style.display = 'none';
+                }
+                else {
+                  deleteOption.style.display = 'block';
+                }
               } 
               else {
+                deleteOption.style.display = 'block';
                 editOption.style.display = "block";
               }
-              contextMenuMessage.style.top = `${event.clientY}px`;
-              contextMenuMessage.style.left = `${event.clientX}px`;
+
               contextMenuMessage.style.display = "block";
+              
+              if(window.innerWidth - 10 < event.clientX + contextMenuMessage.offsetWidth) {
+                contextMenuMessage.style.left = `${window.innerWidth - contextMenuMessage.offsetWidth - 10}px`;
+              } else {
+                contextMenuMessage.style.left = `${event.clientX}px`;
+              }
+              if(window.innerHeight * 0.92 < event.clientY + contextMenuMessage.offsetHeight) {
+                contextMenuMessage.style.top= `${window.innerHeight * 0.92 - contextMenuMessage.offsetHeight}px`;
+              }
+              else {
+                contextMenuMessage.style.top = `${event.clientY}px`;
+              }
             }
         });
         
@@ -3478,6 +3650,12 @@
             listAndMsDiv[4] = true;
             getPreviousMessages(divforMsTemp.children[1], chatId, appendMessage , listAndMsDiv[3]);
           }
+          if (window.innerWidth <= 768) {
+            document.querySelector('.back-button').style.display = 'inline-block';
+            document.querySelector('.sidebarChatType').style.display = 'none';
+            document.getElementById('listContainer').style.display = 'none';
+            document.getElementById('messageContainer').classList.add('active');
+          }
         };
         return li;
       }
@@ -3525,6 +3703,10 @@
       // console.log("user or group: ", user);
       const divHeader = document.createElement('div');
         divHeader.classList.add('chat-header');
+        // const backButton = document.createElement('button');
+        // backButton.classList.add('back-button');
+        // backButton.innerText = '⬅';
+        // divHeader.appendChild(backButton);
         const divChatHeader = document.createElement('div');
         divHeader.appendChild(divChatHeader);
         const p2 = document.createElement('p');
@@ -3563,9 +3745,11 @@
               const {chatData: groupData, members} = await response.json();
               const groupInfo = document.querySelector('.group-info');
               groupInfo.querySelector('.add-image-group').style.display = 'none';
-              groupInfo.style.display = "block";
+              // groupInfo.style.display = "block";
+              groupInfo.classList.add('open');
               groupInfo.querySelector('.close-btn').onclick = function() {
-                groupInfo.style.display = "none";
+                // groupInfo.style.display = "none";
+                groupInfo.classList.remove('open');
                 // document.querySelector('.group-info .close-btn')
               }
               if(groupData.picture) {
@@ -3999,7 +4183,8 @@
             buttonAddOrOpen.textContent = "Open";
             memberContainer.onclick = () => {
                 openChatOpen(user._id)();
-                document.querySelector('.group-info').style.display = 'none';
+                // document.querySelector('.group-info').style.display = 'none';
+                document.querySelector('.group-info').classList.remove('open');
               }
           } else {
             buttonAddOrOpen.textContent = "Add";
@@ -4007,7 +4192,8 @@
               await addUserOrGroupFunc(user, buttonAddOrOpen, user._id);
               memberContainer.onclick = () => {
                 openChatOpen(user._id)();
-                document.querySelector('.group-info').style.display = 'none';
+                // document.querySelector('.group-info').style.display = 'none';
+                document.querySelector('.group-info').classList.remove('open');
               }
               buttonAddOrOpen.onclick = null;
             }
@@ -4082,7 +4268,7 @@
         now.getMonth() === time.getMonth() &&
         now.getDate() === time.getDate();
       let returnDate = '';
-      if (isToday) {
+      if (isToday || forMs) {
         let hours = time.getHours();
         let minutes = time.getMinutes();
         hours = hours < 10 ? '0' + hours : hours;

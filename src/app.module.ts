@@ -42,7 +42,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         // },
       }),
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/nestauth'),
+    // MongooseModule.forRoot('mongodb://localhost:27017/nestauth'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule], // ConfigModule'ni import qilish
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'), // .env fayldan MongoDB URI
+      }),
+    }),
     UsersModule,
     FilesModule,
     MessagesModule,
@@ -64,7 +71,8 @@ export class AppModule {//implements NestModule {
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'auth/google', method: RequestMethod.GET },
         { path: 'auth/google/callback', method: RequestMethod.GET },
-        { path: 'chat', method: RequestMethod.GET } 
+        { path: 'chat', method: RequestMethod.GET },
+        { path: '', method: RequestMethod.GET } 
       )
       .forRoutes('*');
   }
