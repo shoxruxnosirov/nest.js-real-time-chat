@@ -248,23 +248,37 @@
     
     .reply-and-input-box {
         height: 7vh;
+        width: 100%;
         flex-direction: column;
         display: flex;
     }
     
     .chat-input {
-        position: fixed;  
-        width: 63%;     
+        position: relative;  
+        width: 100%;     
         display: flex;
         align-items: center;
-        padding: 8px;
+        padding: 1%;
         background-color: #17212B;
+    }
+
+    .select-file-box {
+      position: absolute;
+      left: 1vw;
+      bottom: 12vh;
+    }
+
+    .upload-button {
+      font-size: 17px;
+      padding: 1%;
     }
     
     .chat-input input {
+      position: relative;
       background-color: #17212B;
       color: #EFEFEF;
-        flex: 0.91;
+        /* flex: 0.91; */
+        width: 85%;
         margin-left: 12px;
         outline: none;
       border: none;
@@ -272,8 +286,10 @@
     }
     
     .chat-input button {
+      position: relative;
         padding: 1vh 1vw;
         border: none;
+        width: 10%;
         background-color: #4caf50;
         /* color: #26f10b; */
         color: white;
@@ -2309,11 +2325,17 @@
         allChats.forEach(addChatUser);
       }
 
-      const gatewayUrlArr = apiUrl.split(':');
-      const gatewayUrlPort = gatewayUrlArr.pop().split('/');
-      gatewayUrlPort[0] = +gatewayUrlPort[0] + 1;
-      const gatewayUrl = gatewayUrlArr.join(':') + ":" +gatewayUrlPort.join('/');
+      const gatewayUrlArr = apiUrl.split(`://`);
+
+      if(gatewayUrlArr[0].at(-1) === 's') {
+        gatewayUrlArr[0] = `wss`;
+      } 
+      else {
+        gatewayUrlArr[0] = `ws`;
+      }
+      const gatewayUrl = gatewayUrlArr.join(`://`);
       console.log("gatevayUrl: ", gatewayUrl);
+      console.log("apiUrl: ", apiUrl);
       
       const socket = io(gatewayUrl , {
         extraHeaders: {
@@ -3071,7 +3093,7 @@
         }
           const msContentMs = messageDiv.querySelector('.message-content-message');
           msContentMs.querySelector('p').textContent = message.content;
-          msContentMs.querySelector('span').textContent = getDateLikeHHMM(message.timestamp, true);
+          msContentMs.querySelector('span').textContent = getDateLikeHHMM(message.timestamp);
 
         if(sean.account_id === message.sender_id) {
           if(isNewMs) {
@@ -3120,7 +3142,7 @@
               fileDiv.innerHTML = `<img src="${apiUrl}/uploads/file-icon.png"> <p>${fileName}</p>`;
               const file_icon = fileDiv.querySelector('img');
               file_icon.style.maxWidth = '42px';
-              file.icon.style.borderRadius = '3px';
+              file_icon.style.borderRadius = '3px';
               fileDiv.onclick = () => link.click();
               return fileDiv;
             }
@@ -3452,6 +3474,7 @@
 
     function createChatUserSelectFile() {
       const selectFileBox = document.createElement('div');
+      selectFileBox.classList.add('select-file-box');
       return selectFileBox;
     }
 
@@ -3526,8 +3549,8 @@
             // Rasm uchun
             const img = document.createElement('img');
             img.src = URL.createObjectURL(file);
-            img.style.maxWidth = '30px';
-            img.style.maxHeight = '30px';
+            img.style.maxWidth = '45px';
+            img.style.maxHeight = '45px';
             // preview.appendChild(img);
             selectFile = img;
           }
@@ -3551,19 +3574,24 @@
           } 
           else if (fileType.startsWith('video/')) {
             // Video uchun
-            const videoIcon = document.createElement('div');
+            
+            const videodiv = document.createElement('div');
             const names = file.name.split('.');
-            videoIcon.textContent = '🎥 ' + names[0].slice(0, 4) + "... ." + names.at(-1);
-            videoIcon.style.fontSize = '10px';
-            videoIcon.style.color = '#333';
-            selectFile = videoIcon;
+            videodiv.innerHTML = `
+              <video src="${URL.createObjectURL(file)}" style="max-width: 45px; max-height: 45px; border-radius: 3px"></video>
+              ${names[0].slice(0, 4) + "... ." + names.at(-1)}`;
+            selectFile = videodiv;
           } 
           else {
+            const textDiv = document.createElement('div');
+            textDiv.style = "width: 45px; height: 45px;"
             const otherFile = document.createElement('p');
+            otherFile.style = 'position: absolute; left:0; bottom:0;';
             const names = file.name.split('.');
-            otherFile.textContent = names[0].slice(0, 4) + "... ." + names.at(-1);
-            otherFile.style.fontSize = "10px"; 
-            selectFile = otherFile;
+            otherFile.textContent = names[0].slice(0, 8) + "... ." + names.at(-1);
+            otherFile.style.fontSize = "15px"; 
+            textDiv.appendChild(otherFile);
+            selectFile = textDiv;
           }
           selectFileBox.innerHTML = '';
 
@@ -3799,32 +3827,19 @@
       }
     }
 
-    function getDateLikeHHMM(time, forMs) {
-      const now = new Date();
-      time = time ? new Date(time) : now;
+    function getDateLikeHHMM(time) {
+      time = time ? new Date(time) : new Date();
     
-      // Bugungi sana bilan solishtirish
-      const isToday = 
-        now.getFullYear() === time.getFullYear() &&
-        now.getMonth() === time.getMonth() &&
-        now.getDate() === time.getDate();
-      let returnDate = '';
-      if (isToday || forMs) {
         let hours = time.getHours();
         let minutes = time.getMinutes();
-        hours = hours < 10 ? '0' + hours : hours;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        returnDate = `${hours}:${minutes}`;
-      } 
-      if(!isToday || forMs){
         let day = time.getDate();
         let month = time.getMonth() + 1; 
         let year = time.getFullYear() % 100;
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
         day = day < 10 ? '0' + day : day;
         month = month < 10 ? '0' + month : month;
-        returnDate += ` ${day}/${month}/${year}`;
-      }
-      return returnDate;
+        return `${hours}:${minutes} ${day}/${month}/${year}`;
     }
 
     function createChatProfilePicture(user) {

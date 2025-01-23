@@ -11,13 +11,14 @@ async function bootstrap() {
   const webUrl = configService.get<string>('WEB_URL', 'http://localhost');
   const port = configService.get<string>('PORT', '3000')
  
-  app.enableCors({
-    origin: `${webUrl}:${port}`, 
-    credentials: true,
-  });
+  // app.enableCors({
+  //   origin: `${webUrl}:${port}`, 
+  //   credentials: true,
+  // });
+
+  app.useWebSocketAdapter(new IoAdapter(app)); 
 
   await app.listen(port, () => console.log(`HTTP server is running on ${webUrl}:${port}`));
 
-  app.useWebSocketAdapter(new IoAdapter(app)); 
 }
 bootstrap();

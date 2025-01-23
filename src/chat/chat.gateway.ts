@@ -10,15 +10,16 @@ import { IMessage } from 'src/messages/interfaces/message.interface';
 import { ISendMessage } from './types.interface';
 
 
-@WebSocketGateway(console.log('gatewayPort:', (parseInt(process.env.PORT, 10) + 1 ) + "da") === undefined ? (parseInt(process.env.PORT, 10) + 1) : 3001, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-})
+// console.log('gatewayPort:', (parseInt(process.env.PORT, 10) + 1 ) + "da") === undefined ? (parseInt(process.env.PORT, 10) + 1) : 3001, {
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST']
+//   }
+// }
+@WebSocketGateway()
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-  @WebSocketServer() server: Server;
+  // @WebSocketServer() server: Server;
 
   constructor(
     private readonly chatService: ChatsService,
@@ -32,6 +33,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(server: Server) {
     console.log('WebSocket server initialized');
+    console.log("socket server: ", server);
   }
 
   async handleConnection(client: Socket) {
@@ -84,7 +86,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           if(chat.type === 'lich') {
             const userId = chat.participant_ids.find(accId => accId.toString() !== accountId);
             this.accountAndSocketArr.get(userId.toString())?.forEach(socket => {
-             socket.emit("chatStatus", { chatId: chat.id, status: 'offline' });
+             socket.emit("chatStatus", { chatId: chat._id, status: 'offline' });
             });
           }
         });
