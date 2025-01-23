@@ -45,18 +45,18 @@
 
 </body>
 <script>
+    const apiUrl = window.location.origin;
     const jsonData = localStorage.getItem('userData');
     const accountData = JSON.parse(jsonData);
     console.log(accountData);
 
     if(accountData?.email) {
-        // window.location.href = "http://localhost:3000/chat";
-        const token = encodeURIComponent(accountData.token); // Tokenni xavfsiz qilish uchun kodlash
-        window.location.href = `http://localhost:3000/chat`;
+        const token = encodeURIComponent(accountData.token); 
+        window.location.href = `${apiUrl}/chat`;
     }
     
     function withGoogle() {
-        window.location.href = "http://localhost:3000/auth/google";
+        window.location.href = `${apiUrl}/auth/google`;
     }
 </script>
 </html>

@@ -1797,14 +1797,19 @@
 
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
   <script>
+    const apiUrl = window.location.origin;
+    document.querySelector('#groupModal .image-section-group img').src = `${apiUrl}/uploads/camera_icon.jpg`;
+    document.querySelector('.info-card .profile-container .add-image').src = `${apiUrl}/uploads/camera_icon.jpg`;
+    document.querySelector('.group-info .group-details .group-photo .add-image-group').src = `${apiUrl}/uploads/camera_icon.jpg`;
 
     const jsonData = localStorage.getItem('userData');
     const accountData = JSON.parse(jsonData);
     let allChats = null;
     console.log(accountData);
     let sean = accountData;
+
     if(!accountData?.email) {
-      window.location.href = "http://localhost:3000/auth/google";
+      window.location.href = `${apiUrl}/auth/google`;
     } else {
       document.getElementById('container').classList.remove('hidden');
       container.style.display= "flex";
@@ -1900,7 +1905,7 @@
     function cancelCreateGroup() {
       createGroupModel.classList.remove('open');
       croppedBlob = null;
-      outputImage.src = 'http://localhost:3000/uploads/camera_icon.jpg';
+      outputImage.src = `${apiUrl}/uploads/camera_icon.jpg`;
       outputImage.style.opacity = 0.2;
       document.getElementById('groupName').value = '';
     }
@@ -2215,7 +2220,7 @@
       const previousScrollHeight = messagesContainer.scrollHeight;
       const previousScrollTop = messagesContainer.scrollTop;
 
-      const response = await fetch(`http://localhost:3000/messages/previous/${chatId}?lastId=${lastId}&limit=20`, {
+      const response = await fetch(`${apiUrl}/messages/previous/${chatId}?lastId=${lastId}&limit=20`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${sean.jwtToken}`, 
@@ -2284,7 +2289,7 @@
       const urlParams = new URLSearchParams(window.location.search);
       // console.log("sean: ", sean);
       
-      const response = await fetch('http://localhost:3000/chats/getAllChat', {
+      const response = await fetch(`${apiUrl}/chats/getAllChat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2304,9 +2309,13 @@
         allChats.forEach(addChatUser);
       }
 
+      const gatewayUrlArr = apiUrl.split(':');
+      const gatewayUrlPort = gatewayUrlArr.pop().split('/');
+      gatewayUrlPort[0] = +gatewayUrlPort[0] + 1;
+      const gatewayUrl = gatewayUrlArr.join(':') + ":" +gatewayUrlPort.join('/');
+      console.log("gatevayUrl: ", gatewayUrl);
       
-      
-      const socket = io('http://localhost:3001' , {
+      const socket = io(gatewayUrl , {
         extraHeaders: {
           transports: ['websocket'],
           Authorization: `Bearer ${sean.jwtToken}`,
@@ -2396,7 +2405,7 @@
           
           const groupName = document.getElementById("groupName").value.trim();
   
-          const response = await fetch('http://localhost:3000/chats/createGroup', {
+          const response = await fetch(`${apiUrl}/chats/createGroup`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -2423,7 +2432,7 @@
         }
         else {
           if(usersId[0].length > 1) {
-            const response = await fetch('http://localhost:3000/chats/addMembersToGroup', {
+            const response = await fetch(`${apiUrl}/chats/addMembersToGroup`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -2471,7 +2480,7 @@
           }
           firstname.labels[0].style.color = '#3476AB';
 
-          const response = await fetch('http://localhost:3000/chats/editProfile', {
+          const response = await fetch(`${apiUrl}/chats/editProfile`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -2504,7 +2513,7 @@
             return;
         }
           
-          const response = await fetch('http://localhost:3000/chats/editProfile', {
+          const response = await fetch(`${apiUrl}/chats/editProfile`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -2551,7 +2560,7 @@
           return;
         }
         const username = document.getElementById("editProfileUsername").value.trim();
-        const response = await fetch('http://localhost:3000/auth/editusername', {
+        const response = await fetch(`${apiUrl}/auth/editusername`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2580,7 +2589,7 @@
           return;
         }
         const groupUsername = document.getElementById("editGroupUsername").value.trim();
-        const response = await fetch('http://localhost:3000/chats/editProfile', {
+        const response = await fetch(`${apiUrl}/chats/editProfile`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2646,7 +2655,7 @@
 
     addUserOrGroupFunc = async function (userOrGroupData, openChatButton, newContactAccId) {
       openChatButton.onclick = null;
-      const response = await fetch('http://localhost:3000/chats/createChat_or_joinToGroup', {
+      const response = await fetch(`${apiUrl}/chats/createChat_or_joinToGroup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2804,7 +2813,7 @@
       searchUser.addEventListener('input', async function () {
         searchChatsList.innerHTML = "";
         if(searchUser.value.trim().length > 2) {
-          const response = await fetch('http://localhost:3000/chats/getUserNames', {
+          const response = await fetch(`${apiUrl}/chats/getUserNames`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -3108,7 +3117,7 @@
               const fileDiv = document.createElement('div');
               fileDiv.style.display = 'flex';
 
-              fileDiv.innerHTML = `<img src="http://localhost:3000/uploads/file-icon.png"> <p>${fileName}</p>`;
+              fileDiv.innerHTML = `<img src="${apiUrl}/uploads/file-icon.png"> <p>${fileName}</p>`;
               const file_icon = fileDiv.querySelector('img');
               file_icon.style.maxWidth = '42px';
               file.icon.style.borderRadius = '3px';
@@ -3322,7 +3331,7 @@
 
           if(user.type === 'group') {
             // console.log("group open info: groupData: ", user);
-            const response = await fetch(`http://localhost:3000/chats/members`, {
+            const response = await fetch(`${apiUrl}/chats/members`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -3581,7 +3590,7 @@
 
     uploadProfilePicture = async function (newFile, lich_or_group) {
       const uploadedData = await uploadFile([newFile]);
-      const response = await fetch('http://localhost:3000/chats/editProfile', {
+      const response = await fetch(`${apiUrl}/chats/editProfile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -3604,7 +3613,7 @@
     const formData = new FormData();
           formData.append('file', files[0]);
 
-          const response = await fetch('http://localhost:3000/files/upload', {
+          const response = await fetch(`${apiUrl}/files/upload`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${sean.jwtToken}`,
@@ -3617,7 +3626,7 @@
   }
 
     async function checkUsernameIsUnique(username) {
-                const response = await fetch('http://localhost:3000/chats/isUnique', {
+                const response = await fetch(`${apiUrl}/chats/isUnique`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',

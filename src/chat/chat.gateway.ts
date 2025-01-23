@@ -10,7 +10,7 @@ import { IMessage } from 'src/messages/interfaces/message.interface';
 import { ISendMessage } from './types.interface';
 
 
-@WebSocketGateway(3001, {
+@WebSocketGateway(console.log('gatewayPort:', (parseInt(process.env.PORT, 10) + 1 ) + "da") === undefined ? (parseInt(process.env.PORT, 10) + 1) : 3001, {
   cors: {
     origin: '*',
     methods: ['GET', 'POST']

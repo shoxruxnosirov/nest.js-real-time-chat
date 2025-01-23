@@ -9,13 +9,16 @@
     <script type="application/json" id="data-script">
         <!-- Bu joyga JSON ma'lumot keladi -->
     </script>
+    <p>Agar yo'naltirish amalga oshmasa, <a href="http://localhost:3000/chat">shu yerni bosing</a>.</p>
   <script>
+    const apiUrl = window.location.origin;
 
     const jsonData = document.getElementById('data-script').textContent;
     localStorage.setItem('userData', jsonData);
     // Yo'naltirishni darhol amalga oshirish
-    window.location.href = "http://localhost:3000/chat";
+    window.location.href = `${apiUrl}/chat`;
+    document.querySelector('a').href = `${apiUrl}/chat`;
   </script>
-  <p>Agar yo'naltirish amalga oshmasa, <a href="http://localhost:3000/chat">shu yerni bosing</a>.</p>
+  
 </body>
 </html>

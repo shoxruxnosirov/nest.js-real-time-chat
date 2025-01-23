@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        for(let i = 0; i < 20; i++ ) {
+            const colorr = `rgb(${getRandomNonGrayColor()})`;
+
+            let color = document.createElement('div');
+            color.style.background = "#2B5278"
+            color.style.color = colorr;
+            color.textContent = colorr + '  color';
+            color.style.width = "200px";
+            color.style.height = "14px";
+            document.body.appendChild(color);
+
+            color = document.createElement('div');
+            color.style.background = "#182533";
+            color.style.color = colorr;
+            color.textContent = colorr + '  color';
+            color.style.width = "200px";
+            color.style.height = "14px";
+            document.body.appendChild(color);
+        }
+        function getRandomNonGrayColor() {
+        let r, g, b;
+        do {
+            r = Math.floor(Math.random() * 256);
+            g = Math.floor(Math.random() * 256);
+            b = Math.floor(Math.random() * 256);
+        } while (this.isGray(r, g, b));
+    
+        return `${r},${g},${b}`;
+    }
+    
+    function isGray(r, g, b) {
+        return !( (200 < b && ( (100 < g || 100 < r ) && Math.abs(r - g) > 80 )) ||
+            (200 < r && ( (100 < g || 100 < b ) && Math.abs(g - b) > 80 )) || 
+            (200 < g && ( (100 < b || 100 < r ) && Math.abs(r - b) > 80 ))  );
+    }
+
+    </script>
+</body>
+</html>
