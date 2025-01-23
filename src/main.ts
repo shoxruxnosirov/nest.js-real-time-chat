@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   
   const configService = app.get(ConfigService);
-  const webUrl = configService.get<string>('WEB_URL', 'http://localhost');
+  const webUrl = configService.get<string>('WEB_URL', 'http://localhost:3000');
   const port = configService.get<string>('PORT', '3000')
  
   // app.enableCors({
@@ -18,7 +18,7 @@ async function bootstrap() {
 
   app.useWebSocketAdapter(new IoAdapter(app)); 
 
-  await app.listen(port, () => console.log(`HTTP server is running on ${webUrl}:${port}`));
+  await app.listen(port, () => console.log(`HTTP server is running on ${webUrl}`));
 
 }
 bootstrap();

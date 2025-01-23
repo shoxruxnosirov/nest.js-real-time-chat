@@ -33,7 +33,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(server: Server) {
     console.log('WebSocket server initialized');
-    console.log("socket server: ", server);
+    // console.log("socket server: ", server);
   }
 
   async handleConnection(client: Socket) {
