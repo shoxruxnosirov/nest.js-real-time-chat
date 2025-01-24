@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { join } from 'path';
 import { AppService } from 'src/app.service';
 
 
@@ -13,7 +14,8 @@ export class FilesController {
     @UseInterceptors(
         FileInterceptor('file', {
           storage: diskStorage({
-            destination: './uploads',
+            // destination: './uploads',
+            destination: join(__dirname, '..', 'uploads'),
             filename: (req, file, callback) => {
               const uniqueName = `${Date.now()}-${file.originalname}`;
               callback(null, uniqueName);
@@ -25,6 +27,7 @@ export class FilesController {
         console.log("file: ", file);
         return {
             url: `${this.appService.getWebUrl()}:${this.appService.getPort()}/uploads/${file.filename}`,
+            // url: `${this.appService.getWebUrl()}:${this.appService.getPort()}/${file.filename}`,
         }
     }
 }
