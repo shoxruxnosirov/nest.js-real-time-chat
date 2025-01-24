@@ -2280,7 +2280,7 @@
             cropper = new Cropper(cropImage, {
                 aspectRatio: 1, 
                 viewMode: 2,
-                autoCropArea: 0.8, 
+                autoCropArea: 1, 
                 background: false 
             });
         };
@@ -3130,8 +3130,8 @@
             // console.log("getMimeType: ", mimetype);
             if(!mimetype) {
               const link = document.createElement('a');
-              // const fileName = fileUrl.split('\/').at(-1).slice(14);
-              const fileName = fileUrl.slice(44);
+              const fileName = fileUrl.split('\/').at(-1).slice(25);
+              // const fileName = fileUrl.slice(44);
               link.href = url;
               link.target = '_blank';
               link.download = fileName;
@@ -3196,7 +3196,10 @@
             }
             else if (mimetype.startsWith('audio/')) {
               const audio = document.createElement('audio');
+              audio.style.maxWidth = "240px";
+              audio.style.height = "32px"
               audio.controls = true;
+              audio.src = url;
               return audio;
             } 
             else {
@@ -3625,9 +3628,10 @@
 
     uploadProfilePicture = async function (newFile, lich_or_group) {
       const uploadedData = await uploadFile([newFile]);
-      if(uploadedData?.url) {
+      if(!uploadedData?.url) {
         return null;
       }
+      console.log("profileImg: ", uploadedData);
       const response = await fetch(`${apiUrl}/chats/editProfile`, {
         method: 'POST',
         headers: {
@@ -3650,16 +3654,16 @@
   async function uploadFile(files) {
     if(files[0].size <= 10 * 1024 * 1024) {
       const formData = new FormData();
-            formData.append('file', files[0]);
-            formData.append('customName', accountData.account_id);
-  
-            const response = await fetch(`${apiUrl}/files/upload`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${sean.jwtToken}`,
-              },
-              body: formData,
-            });
+      formData.append('file', files[0]);
+      formData.append('customName', accountData.account_id);
+
+      const response = await fetch(`${apiUrl}/files/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sean.jwtToken}`,
+        },
+        body: formData,
+      });
   
       const fileData = await response.json();
       console.log('file: ', fileData);  
