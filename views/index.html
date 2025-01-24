@@ -3196,10 +3196,18 @@
             }
             else if (mimetype.startsWith('audio/')) {
               const audio = document.createElement('audio');
-              audio.style.maxWidth = "240px";
-              audio.style.height = "32px"
-              audio.controls = true;
               audio.src = url;
+              if(boxType === 'message') {
+                audio.style.height = "30px"
+                audio.style.maxWidth = '200px';
+                audio.controls = true;
+                // img.style.borderRadius = '5px';
+              } 
+              else {
+                audio.style.maxWidth = '100px';
+                audio.style.height = "20px"
+                // audio.style.marginLeft = '6px';
+              }
               return audio;
             } 
             else {
