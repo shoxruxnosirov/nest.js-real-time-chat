@@ -12,49 +12,40 @@ import { ChatGateway } from './chat/chat.gateway'
 import { MessagesModule } from './messages/messages.module';
 import { ChatsModule } from './chats/chats.module';
 import { ChatModule } from './chat/chat.module';
-// import { ConfigModule } from '@nestjs/config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [  
     ConfigModule.forRoot({
-      isGlobal: true, // Konfiguratsiyani global qilish
+      isGlobal: true, 
     }),
-    // ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'), // 'public' papkasidan fayllar uzatiladi
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
       serveStaticOptions: {
-        index: false, // index.html faylini qidirmasin
+        index: false, 
       },
     }),
-    // JwtModule.register({
-    //   secret: 'yourSecretKey', // Sizning maxfiy kalitingiz
-    //   // signOptions: { expiresIn: '1h' }, // Token muddati
-    // }),
     JwtModule.registerAsync({
-      imports: [ConfigModule], // ConfigModule ni import qilish
-      inject: [ConfigService], // ConfigService'ni inject qilish
+      imports: [ConfigModule],
+      inject: [ConfigService], 
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), // .env fayldan JWT_SECRET
-        // signOptions: {
-        //   expiresIn: configService.get<string>('JWT_EXPIRES_IN', '3600s'), // Amal qilish muddati
-        // },
+        secret: configService.get<string>('JWT_SECRET'),
       }),
     }),
-    // MongooseModule.forRoot('mongodb://localhost:27017/nestauth'),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule], // ConfigModule'ni import qilish
+      imports: [ConfigModule], 
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'), // .env fayldan MongoDB URI
+        uri: configService.get<string>('MONGODB_URI'), 
       }),
     }),
     UsersModule,
     FilesModule,
     MessagesModule,
     ChatsModule,
-    ChatModule
+    ChatModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway,],// JwtService,],

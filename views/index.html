@@ -1646,7 +1646,7 @@
 
     <div id="groupModal" class="modal">
       <div class="image-section-group">
-          <img src="http://localhost:3000/uploads/camera_icon.jpg" alt="Select Image", onclick="selectGroupPicture()">
+          <img src="camera_icon.jpg" alt="Select Image", onclick="selectGroupPicture()">
           <input type="file" id="groupModalSelectPicture" accept="image/*" style="display: none;">
       </div>
       <div class="content-section-group">
@@ -1690,7 +1690,7 @@
       <div class="profile-container">
         <img class="profile-picture" src="" alt="Profile Picture">
         <input type="file" id="profileSelectPicture" accept="image/*" style="display: none;">
-        <img class="add-image" src="http://localhost:3000/uploads/camera_icon.jpg" alt="Profile Picture" onclick="selectProfilePicture()">
+        <img class="add-image" src="camera_icon.jpg" alt="Profile Picture" onclick="selectProfilePicture()">
       </div>
       <div class="name">Shoxrux</div>
       <ul class="info-list">
@@ -1768,7 +1768,7 @@
           <div class="group-photo-img">
             <img class="group-picture" src="" alt="Profile Picture">
           </div>
-          <img class="add-image-group" src="http://localhost:3000/uploads/camera_icon.jpg" alt="Profile Picture" onclick="selectGroupProfilePicture()">
+          <img class="add-image-group" src="camera_icon.jpg" alt="Profile Picture" onclick="selectGroupProfilePicture()">
         </div>
         <div class="group-text">
             <div class="group-name"></div>
@@ -1848,7 +1848,7 @@
 
     userAccSettingsButton.addEventListener('click', () => {
       const profileImage = document.querySelector('#userAccSettingsPanel .profile img');
-      profileImage.src = accountData.picture;
+      profileImage.src = `${accountData.picture}`;
 
       const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
       profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
@@ -2480,7 +2480,7 @@
         document.querySelector('.info-card').classList.add('open');
 
         const profilePicture = document.querySelector('.profile-picture');
-        profilePicture.src = accountData.picture;
+        profilePicture.src = `${accountData.picture}`;
         const nameElement = document.querySelector('.info-card .name');
         nameElement.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
 
@@ -2913,8 +2913,8 @@
         document.querySelector('#editNameModal h3').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
         userData[0].querySelector('span').textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
         userData[1].querySelector('span').textContent = accountData.username;
-        document.querySelector('#userAccSettingsPanel .profile .avatar img').src = accountData.picture;
-        document.querySelector('.info-card .profile-container .profile-picture').src = accountData.picture;
+        document.querySelector('#userAccSettingsPanel .profile .avatar img').src = `${accountData.picture}`;
+        document.querySelector('.info-card .profile-container .profile-picture').src = `${accountData.picture}`;
         // userData[2].querySelector('span').textContent = accountData.email;
         document.querySelector('#editNameModal #edit-name-first-name').value = accountData.name;
         document.querySelector('#editNameModal #edit-name-last-name').value = accountData.lastName;
@@ -3123,7 +3123,7 @@
       }
 
       async function createMessageFile(fileUrl, boxType) {
-            const url = fileUrl;
+            const url = `${fileUrl}`;
             const extension = url.substring(url.lastIndexOf('.')).toLowerCase();
 
             const mimetype = getFileMimetype(url);
@@ -3202,7 +3202,7 @@
             else {
               const link = document.createElement('a');
               // const fileName = fileUrl.split('\/').at(-1).slice(14);
-              const fileName = fileUrl.slice(44);
+              const fileName = fileUrl.slice(14);
 
               link.href = url;
               link.target = '_blank';
@@ -3509,7 +3509,14 @@
       if (input.value.trim() !== '' || selectFile) {
         let fileData = null;
         if(selectFile) {
-          fileData = await uploadFile(selectFile);
+          if(!(fileData = await uploadFile(selectFile))){
+            selectFileBox.innerHTML = '';
+            chatId_selectedFile.set(chatId, null);
+            // divReplyBox.style.display = "none";
+            // divReplyBox.querySelector('span').textContent = '';
+            chatId_replyToMessage.set(chatId, null);
+            return null;
+          }
           // console.log("fileData: ", fileData);
         }
 
@@ -3618,6 +3625,9 @@
 
     uploadProfilePicture = async function (newFile, lich_or_group) {
       const uploadedData = await uploadFile([newFile]);
+      if(uploadedData?.url) {
+        return null;
+      }
       const response = await fetch(`${apiUrl}/chats/editProfile`, {
         method: 'POST',
         headers: {
@@ -3638,19 +3648,26 @@
     }
 
   async function uploadFile(files) {
-    const formData = new FormData();
-          formData.append('file', files[0]);
-
-          const response = await fetch(`${apiUrl}/files/upload`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${sean.jwtToken}`,
-            },
-            body: formData,
-          });
-
-    const fileData = await response.json();
-    return fileData;
+    if(files[0].size <= 10 * 1024 * 1024) {
+      const formData = new FormData();
+            formData.append('file', files[0]);
+            formData.append('customName', accountData.account_id);
+  
+            const response = await fetch(`${apiUrl}/files/upload`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${sean.jwtToken}`,
+              },
+              body: formData,
+            });
+  
+      const fileData = await response.json();
+      console.log('file: ', fileData);  
+      return fileData;
+    } else {
+      alert('You cannot send files larger than 10MB');
+      return null;
+    }
   }
 
     async function checkUsernameIsUnique(username) {
@@ -3848,7 +3865,7 @@
           // div1.classList.add('icon', 'deleted');
           if(user.picture) {
             const profileImage = document.createElement('img');
-            profileImage.src = user.picture;
+            profileImage.src = `${user.picture}`;
             div1.appendChild(profileImage);
             profileImage.classList.add('profile-img'); 
           } 

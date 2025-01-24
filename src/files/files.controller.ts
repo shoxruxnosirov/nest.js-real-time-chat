@@ -1,34 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { join } from 'path';
-import { AppService } from 'src/app.service';
+import { FileUploadService } from './fileUploadService'
 
 
 
 @Controller('files')
 export class FilesController {
-    constructor(private readonly appService: AppService) {}
+    constructor(
+      private readonly fileUploadService: FileUploadService,
+    ) {}
 
     @Post('upload')
-    @UseInterceptors(
-        FileInterceptor('file', {
-          storage: diskStorage({
-            // destination: './uploads',
-            destination: join(__dirname, '..', 'uploads'),
-            filename: (req, file, callback) => {
-              const uniqueName = `${Date.now()}-${file.originalname}`;
-              callback(null, uniqueName);
-            },
-          }),
-        }),
-      )
-    async uploadFile(@UploadedFile() file: Express.Multer.File) {
-        console.log("file: ", file);
-        return {
-            url: `${this.appService.getWebUrl()}:${this.appService.getPort()}/uploads/${file.filename}`,
-            // url: `${this.appService.getWebUrl()}:${this.appService.getPort()}/${file.filename}`,
-        }
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadFile(
+      @UploadedFile() file: Express.Multer.File,
+      @Body('customName') customName: string, 
+    ) {
+      const fileUrl = await this.fileUploadService.uploadFile(file, customName);
+      return {
+        url:  fileUrl?.url || fileUrl?.secure_url
+      }
+        
     }
 }
 

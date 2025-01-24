@@ -16,6 +16,13 @@ async function bootstrap() {
   //   credentials: true,
   // });
 
+  // CORS-ni to‘liq yoqish
+  // app.enableCors({
+  //   origin: '*', // Hammasiga ruxsat berish
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Ruxsat etilgan metodlar
+  //   allowedHeaders: 'Content-Type, Authorization', // Ruxsat etilgan headerlar
+  // });
+
   app.useWebSocketAdapter(new IoAdapter(app)); 
 
   await app.listen(port, () => console.log(`HTTP server is running on ${webUrl}`));

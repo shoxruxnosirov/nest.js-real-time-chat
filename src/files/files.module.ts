@@ -1,14 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { FilesController } from './files.controller';
-import { AppModule } from 'src/app.module';
+import { AppModule } from 'src/app.module'; 
+import { FileUploadService } from './fileUploadService'
 @Module({
   imports: [
-    // MulterModule.registerAsync({
-    //   useClass: FileUploadService,
-    // }),
-    // AppModule
     forwardRef(() => AppModule),
   ],
-  controllers: [FilesController]
+  controllers: [FilesController],
+  providers: [FileUploadService],
+  exports: [FileUploadService],
 })
 export class FilesModule {}
