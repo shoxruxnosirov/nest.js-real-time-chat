@@ -19,7 +19,11 @@ export class FileUploadService {
         console.log('uniquename: ', uniqueFilename);
 
       cloudinary.uploader.upload_stream(
-        { folder: 'nest-app', public_id: uniqueFilename, resource_type: 'auto' }, 
+        { 
+          folder: 'nest-app',
+          public_id: uniqueFilename,
+          resource_type: 'auto'
+        }, 
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
