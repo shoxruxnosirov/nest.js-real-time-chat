@@ -18,7 +18,7 @@ export class FilesController {
     ) {
       const fileUrl = await this.fileUploadService.uploadFile(file, customName);
       return {
-        url:  fileUrl?.url || fileUrl?.secure_url
+        url:  fileUrl?.secure_url || fileUrl?.url
       }
         
     }
