@@ -3349,11 +3349,11 @@
         divChatHeader.appendChild(chatHeaderPhoto)
         divHeader.appendChild(divChatHeader);
         const p2 = document.createElement('p');
-        p2.classList.add('top-right');
+        p2.classList.add('top-left');
         divChatHeader.appendChild(p2);
         p2.textContent = user.name + " " + (user.lastName || '');
         const span2 = document.createElement('span');
-        span2.classList.add('bottom-right');
+        span2.classList.add('bottom-left');
         divChatHeader.appendChild(span2);
         if(status === "online") {
           span2.style.color = '#5EB5F7'
