@@ -63,11 +63,25 @@
       background-color: #1f1f1f;
     }
     
-    .sidebar .chat-list {
+    .chat-list {
       list-style: none;
       padding: 10px 0;
+      overflow-y: auto;
+    }
+
+    .chat-list::-webkit-scrollbar {
+      width: 6px; 
     }
     
+    .chat-list::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.4); 
+      border-radius: 4px; 
+    }
+    
+    .chat-list::-webkit-scrollbar-track {
+      background: transparent; 
+    }
+
     .chat-item {
       display: flex;
       align-items: center;
@@ -109,7 +123,7 @@
       padding: 0 7px;
       background-color: #17212B;
       justify-content: space-between;
-      cursor: pointer;
+      /* cursor: pointer; */
     }
     
     .chat-header p {
