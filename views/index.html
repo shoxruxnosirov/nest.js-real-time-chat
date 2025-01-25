@@ -3344,6 +3344,7 @@
       const divHeader = document.createElement('div');
         divHeader.classList.add('chat-header');
         const divChatHeader = document.createElement('div');
+        divChatHeader.style.position = 'relative';
         const chatHeaderPhoto = createChatProfilePicture(user);
         chatHeaderPhoto.classList.add('member-photo');
         divChatHeader.appendChild(chatHeaderPhoto)
