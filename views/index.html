@@ -11,8 +11,13 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        user-select: none;
     }
-    
+
+    input[type="text"] {
+      user-select: auto;
+    }
+      
     body {
       font-family: Arial, sans-serif;
       background-color: #242F3D;
@@ -1465,16 +1470,18 @@
 
     .show-message-close {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      color: #aaa;
-      font-size: 28px;
+      top: 18px;
+      right: 28px;
+      color: #900;
+      text-align: center;
+      padding: 20px 40px;
+      font-size: 32px;
       font-weight: bold;
       cursor: pointer;
     }
     .show-message-close:hover,
     .show-message-close:focus {
-      color: red;
+      color: #f00;
       text-decoration: none;
     }
 
@@ -3461,6 +3468,9 @@
     async function createChatUserChatBody({messages, chatId}) {
       const divChatBody = document.createElement('div');
         divChatBody.classList.add('chat-body');
+        divChatBody.onclick = () => {
+          chatIdAnd_ListAndMsDiv.get(chatId)[1].querySelector('.reply-and-input-box:not([style*="display: none"]) input[type="text"]')?.focus();
+        }
 
         if(messages && messages.length && messages.length > 0)
         for(let i = 0; i < messages.length; i++) {
