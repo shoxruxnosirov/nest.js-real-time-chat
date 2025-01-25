@@ -3353,7 +3353,7 @@
         divChatHeader.appendChild(p2);
         p2.textContent = user.name + " " + (user.lastName || '');
         const span2 = document.createElement('span');
-        span2.classList('bottom-right');
+        span2.classList.add('bottom-right');
         divChatHeader.appendChild(span2);
         if(status === "online") {
           span2.style.color = '#5EB5F7'
