@@ -109,7 +109,7 @@
       padding: 1vh 2vh;
       background-color: #17212B;
       border-bottom: 1px solid #17212B;
-      /* justify-content: space-between; */
+      justify-content: space-between;
     }
     
     .chat-header p {
@@ -1584,7 +1584,7 @@
       .back-button {
         position: absolute;
         width: 10vw;
-        height: 8%;
+        height: 54px;
         font-size: 22px;
         background-color: #17212B;
         color: #F5F5F5;
@@ -3294,7 +3294,7 @@
             getPreviousMessages(divforMsTemp.children[1], chatId, appendMessage , listAndMsDiv[3]);
           }
           if (window.innerWidth <= 768) {
-            document.querySelector('.back-button').style.display = 'inline-block';
+            document.querySelector('.back-button').style.display = 'block';
             document.querySelector('.sidebarChatType').style.display = 'none';
             document.getElementById('listContainer').style.display = 'none';
             document.getElementById('messageContainer').classList.add('active');
@@ -3528,18 +3528,13 @@
     
     async function sendMessage({input, divReplyBox, selectFileBox}) {
       const selectFile = chatId_selectedFile.get(chatId);
+      chatId_selectedFile.set(chatId, null);
       if (input.value.trim() !== '' || selectFile) {
         let fileData = null;
         if(selectFile) {
           if(!(fileData = await uploadFile(selectFile))){
-            selectFileBox.innerHTML = '';
-            chatId_selectedFile.set(chatId, null);
-            // divReplyBox.style.display = "none";
-            // divReplyBox.querySelector('span').textContent = '';
-            chatId_replyToMessage.set(chatId, null);
             return null;
           }
-          // console.log("fileData: ", fileData);
         }
 
         socket.emit('message', {
@@ -3553,7 +3548,7 @@
         });
         input.value = ''; 
         selectFileBox.innerHTML = '';
-        chatId_selectedFile.set(chatId, null);
+        // chatId_selectedFile.set(chatId, null);
         divReplyBox.style.display = "none";
         divReplyBox.querySelector('span').textContent = '';
         chatId_replyToMessage.set(chatId, null);
