@@ -3564,7 +3564,8 @@
       if (input.value.trim() !== '' || selectFile) {
         let fileData = null;
         if(selectFile) {
-          if(!(fileData = await uploadFile(selectFile))){
+          if(!(fileData = await uploadFile(selectFile))) {
+            selectFileBox.innerHTML = '';
             return null;
           }
         }
