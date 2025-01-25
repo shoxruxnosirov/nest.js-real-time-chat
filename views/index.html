@@ -1989,7 +1989,7 @@
         // console.log("cropper: ", cropper);
           cropper.getCroppedCanvas().toBlob(async (blob) => {
             let [ext, type] = Object.entries(mimeTypes).find(([ext, type]) => type === blob.type);
-            const newFileName = `cropped_image.${ext}`; 
+            const newFileName = `cropped_image_${Date.now()}.${ext}`; 
             // console.log("newFile: ", newFileName);
             const newFile = new File([blob], newFileName, { type: blob.type });
             if(isprofileSelectPhoto) {
@@ -3353,9 +3353,9 @@
         
       const divInput = createChatUserInputMs(replyBox, chat, selectFileBox);
       div_for_replyBox_inputBox.appendChild(divInput);
-      div_for_replyBox_inputBox.onclick = () => {
-        divInput.querySelector('input[type="text"]').focus();
-      }
+      // div_for_replyBox_inputBox.onclick = () => {
+      //   divInput.querySelector('input[type="text"]').focus();
+      // }
 
       const div_for_editBox = document.createElement('div');
       div_for_editBox.style.display = "none";
