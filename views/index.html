@@ -3344,18 +3344,21 @@
       const divHeader = document.createElement('div');
         divHeader.classList.add('chat-header');
         const divChatHeader = document.createElement('div');
-        divChatHeader.style.position = 'relative';
+        divChatHeader.classList.add('chat-item');
         const chatHeaderPhoto = createChatProfilePicture(user);
         chatHeaderPhoto.classList.add('member-photo');
         divChatHeader.appendChild(chatHeaderPhoto)
         divHeader.appendChild(divChatHeader);
+        const userData = document.createElement('div');
+        userData.classList.add('info');
+        divChatHeader.appendChild(userData);
         const p2 = document.createElement('p');
         p2.classList.add('top-left');
-        divChatHeader.appendChild(p2);
+        userData.appendChild(p2);
         p2.textContent = user.name + " " + (user.lastName || '');
         const span2 = document.createElement('span');
         span2.classList.add('bottom-left');
-        divChatHeader.appendChild(span2);
+        userData.appendChild(span2);
         if(status === "online") {
           span2.style.color = '#5EB5F7'
         }
