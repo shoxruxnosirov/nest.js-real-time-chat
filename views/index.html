@@ -1993,9 +1993,10 @@
             // console.log("newFile: ", newFileName);
             const newFile = new File([blob], newFileName, { type: blob.type });
             if(isprofileSelectPhoto) {
-              await uploadProfilePicture(newFile, isprofileSelectPhoto);
+              const tempPhoto = isprofileSelectPhoto;
               isprofileSelectPhoto = false;
               cropOverlay.style.display = 'none';
+              await uploadProfilePicture(newFile, tempPhoto);
             } 
             else {
               croppedBlob = newFile;
