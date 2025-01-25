@@ -1618,7 +1618,7 @@
       <div class="search-bar"><input type="text" id="groupOrAccount_Name" placeholder="Search" required /></div>
       <ul class="chat-list" id="search-chats-list"></ul>
       <ul class="chat-list" id="chats-list"></ul>
-    </div>
+    </div> 
 
     <button class="back-button" onclick="showUsers()">⬅</button>
     <div id="messageContainer" class="chat-window">
@@ -3344,11 +3344,16 @@
       const divHeader = document.createElement('div');
         divHeader.classList.add('chat-header');
         const divChatHeader = document.createElement('div');
+        const chatHeaderPhoto = createChatProfilePicture(chatData);
+        chatHeaderPhoto.classList.add('member-photo');
+        divChatHeader.appendChild(chatHeaderPhoto)
         divHeader.appendChild(divChatHeader);
         const p2 = document.createElement('p');
+        p2.classList.add('top-right');
         divChatHeader.appendChild(p2);
         p2.textContent = user.name + " " + (user.lastName || '');
         const span2 = document.createElement('span');
+        span2.classList('bottom-right');
         divChatHeader.appendChild(span2);
         if(status === "online") {
           span2.style.color = '#5EB5F7'
