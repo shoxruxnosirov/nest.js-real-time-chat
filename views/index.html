@@ -1447,6 +1447,7 @@
       background-color: rgba(0, 0, 0, 0.8); 
       justify-content: center;
       align-items: center; 
+      display: none;
     }
 
     .show-message-content {
@@ -1651,8 +1652,8 @@
     </div> 
 
     <button class="back-button" onclick="showUsers()">&#8592;</button>
-    <div id="messageContainer" class="chat-window">
-    </div>
+
+    <div id="messageContainer" class="chat-window"></div>
     
   </div>
 
@@ -1773,7 +1774,7 @@
               <button class="create">Save</button>
           </div>
       </div>
-  </div>
+    </div>
 
   <div id="editGroupUsernameBox" class="modal" >
     <div class="content-section-group">
@@ -1785,7 +1786,7 @@
             <button class="create">Save</button>
         </div>
     </div>
-</div>
+  </div>
 
   <div class="group-info">
     <div class="group-info-header">
@@ -1837,6 +1838,13 @@
         <li onclick="handleMessageAction('copy')">Copy</li>
         <li onclick="handleMessageAction('delete')" class="delete-option">Delete</li>
       </ul>
+    </div>
+
+    <div id="showMessageContentModal" class="show-message-content-modal">
+      <div class="show-message-content">
+        <span class="show-message-close">&times;</span>
+        <img class='show-message-file' src="${url}" alt="Rasm">
+      </div>
     </div>
 
   </div>
@@ -2331,19 +2339,14 @@
     }
 
     function showImage(url) {
-      const showImage = document.createElement('div');
-      showImage.classList.add('show-message-content-modal');
+      const showImage = document.getElementById('showMessageContentModal');
+      showImage.style.display = 'block';
+      showImage.querySelector('img').src = url;
   
-      showImage.innerHTML = `
-      <div class="show-message-content">
-        <span class="show-message-close">&times;</span>
-        <img class='show-message-file' src="${url}" alt="Rasm">
-      </div>`;
-  
-      showImage.querySelector('.show-message-close').onclick = () => {
-        showImage.remove();
+      showImage.querySelector('.show-message-close').onclick = (event) => {
+        event.stopPropagation();
+        showImage.style.display = 'none';
       }
-      document.body.appendChild(showImage);
     };
     
 
@@ -3409,7 +3412,7 @@
         divSetting.classList.add('chat-header-settings-button')
         divHeader.appendChild(divSetting);
         divSetting.innerHTML = `&#8942;`;
-        divHeader.onclick = async function() {
+        userData.onclick = async function() {
 
           if(user.type === 'group') {
             // console.log("group open info: groupData: ", user);
