@@ -25,7 +25,7 @@ export class UsersController {
                 return res.send("google auth err");
             } 
             const data = await this.userService.createAccount(user);
-            console.log('user data: ', data);
+            // console.log('user data: ', data);
             const filePath = join(process.cwd(), 'views', 'redirect_to_chat.html');
             const htmlContent = await import('fs/promises').then(fs =>
                 fs.readFile(filePath, 'utf8'),

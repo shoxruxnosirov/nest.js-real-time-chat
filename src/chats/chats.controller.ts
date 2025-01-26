@@ -69,7 +69,7 @@ export class ChatsController {
             allChatsAndlastMs[i].lastMessages = await this.messagesService.getPreviousMessagesWithAggregation(chats[i]._id.toString(), null, 1);
           
         }
-        console.log("allChatsAndlastMs", allChatsAndlastMs);
+        // console.log("allChatsAndlastMs", allChatsAndlastMs);
         return allChatsAndlastMs;
     }
 
@@ -122,7 +122,7 @@ export class ChatsController {
 
     @Post('createGroup')
     async createGroup(@Body() chatDTo: ChatDto) : Promise<any> {
-        console.log("create Group chatDto: ", chatDTo);
+        // console.log("create Group chatDto: ", chatDTo);
         const newGroup = await this.chatsService.create(chatDTo);
         return {
             participant_ids: newGroup.participant_ids,
@@ -178,7 +178,7 @@ export class ChatsController {
             }
             const {lichChatAccIds: chatAccIds, allChatAccIds} = await this.chatsService.getChatAccIds(data.accountId, data.editedField);
             if(data.editedField === 'name') {
-              console.log('editName: ', await this.messagesService.editName({sender_id: data.accountId, data: data.data}));
+                await this.messagesService.editName({sender_id: data.accountId, data: data.data});
             }
             return {chatData, chatAccIds, allChatAccIds}
         } else {

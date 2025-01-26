@@ -19,7 +19,7 @@ export class UsersService {
 
     generateToken(user: any) {
         const payload = { email: user.email, sub: user.googleId };
-        console.log('jwt_secret: ', this.appService.getJwtSecret());
+        // console.log('jwt_secret: ', this.appService.getJwtSecret());
         return this.jwtService.sign(
             payload, 
             { 
@@ -65,7 +65,7 @@ export class UsersService {
     };
 
     async getGroupMembers(groupMemberIds: string[] | Types.ObjectId[]) {
-        console.log('groupMembersId: ', groupMemberIds);
+        // console.log('groupMembersId: ', groupMemberIds);
         const objectIds = groupMemberIds.map(id => new Types.ObjectId(id));
         return this.accountModel.find({ '_id': { $in: objectIds } }).exec();
     }

@@ -96,7 +96,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('addChatUser')
   async addChatUser(client: Socket, data: {chatDatas: IUserOrGroupChat[], lastMessages: ISendMessage}) {
     const clientSockets = this.accountAndSocketArr.get(data.chatDatas[1].account_id.toString());
-    console.log('addChatUser:', data);
+    // console.log('addChatUser:', data);
     
     if(data.chatDatas[0].type === 'lich') {
       const searchChatsockets = this.accountAndSocketArr.get(data.chatDatas[0].account_id.toString());

@@ -126,7 +126,7 @@ export class ChatsService {
         // if(data.editedField === 'name') {
         //     chat.name = data.data.name;
         // } else {
-        console.log("chat: ", chat);
+        // console.log("chat: ", chat);
           chat[data.editedField] = data.data;
         // }
         return chat.save();
