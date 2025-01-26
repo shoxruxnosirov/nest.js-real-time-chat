@@ -1879,6 +1879,7 @@
     userAccSettingsButton.addEventListener('click', () => {
       const profileImage = document.querySelector('#userAccSettingsPanel .profile img');
       profileImage.src = `${accountData.picture}`;
+      profileImage.onclick = () => showImage(accountData.picture);
 
       const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
       profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
@@ -3208,7 +3209,7 @@
               img.style.cursor = 'pointer';
   
               // link.appendChild(img);
-              img.onclick = showImage(url);
+              img.onclick = () => showImage(url);
               return img;
             }
             else if(mimetype.startsWith('video/')) {
@@ -3823,6 +3824,7 @@
               <div class='bottom-left'>${user.username ? '@'+user.username : "no username"}</div>
               <button class="top-right button"></button>
           </div>`;
+          memberContainer.querySelector('img').onclick = () => showImage(user.picture);
         const buttonAddOrOpen = memberContainer.querySelector('.info button');
         buttonAddOrOpen.style.marginLeft = 'auto';
         if(user._id !== accountData.account_id) {
@@ -3925,6 +3927,7 @@
           if(user.picture) {
             const profileImage = document.createElement('img');
             profileImage.src = `${user.picture}`;
+            profileImage.onclick = () => showImage(user.picture);
             div1.appendChild(profileImage);
             profileImage.classList.add('profile-img'); 
           } 
