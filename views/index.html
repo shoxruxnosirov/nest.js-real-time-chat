@@ -1879,6 +1879,7 @@
     userAccSettingsButton.addEventListener('click', () => {
       const profileImage = document.querySelector('#userAccSettingsPanel .profile img');
       profileImage.src = `${accountData.picture}`;
+      profileImage.onclick = showImage(accountData.picture);
 
       const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
       profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
@@ -2305,15 +2306,15 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = () => {
-            cropImage.src = reader.result;
-            cropOverlay.style.display = 'flex';
-            if (cropper) cropper.destroy();
-            cropper = new Cropper(cropImage, {
-                aspectRatio: 1, 
-                viewMode: 2,
-                autoCropArea: 1, 
-                background: false 
-            });
+          cropImage.src = reader.result;
+          cropOverlay.style.display = 'flex';
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropImage, {
+            aspectRatio: 1, 
+            viewMode: 2,
+            autoCropArea: 1, 
+            background: false 
+          });
         };
         reader.readAsDataURL(file);
       }
@@ -2328,8 +2329,23 @@
       }
       span.textContent = status;
     }
-    
 
+    function showImage(url) {
+      const showImage = document.createElement('div');
+      showImage.classList.add('show-message-content-modal');
+  
+      showImage.innerHTML = `
+      <div class="show-message-content">
+        <span class="show-message-close">&times;</span>
+        <img class='show-message-file' src="${url}" alt="Rasm">
+      </div>`;
+  
+      showImage.querySelector('.show-message-close').onclick = () => {
+        showImage.remove();
+      }
+      document.body.appendChild(showImage);
+    };
+    
 
     // URL parametrlarini olish
   window.onload = async function() {
@@ -3193,21 +3209,7 @@
               img.style.cursor = 'pointer';
   
               // link.appendChild(img);
-              img.onclick = () => {
-                const showImage = document.createElement('div');
-                showImage.classList.add('show-message-content-modal');
-
-                showImage.innerHTML = `
-                <div class="show-message-content">
-                  <span class="show-message-close">&times;</span>
-                  <img class='show-message-file' src="${url}" alt="Rasm">
-                </div>`;
-
-                showImage.querySelector('.show-message-close').onclick = () => {
-                  showImage.remove();
-                }
-                document.body.appendChild(showImage);
-              };
+              img.onclick = showImage(url);
               return img;
             }
             else if(mimetype.startsWith('video/')) {
@@ -3815,7 +3817,7 @@
         memberContainer.classList.add('chat-item');
         memberContainer.innerHTML = `
           <div class="member-photo" style="background-color: #9c9c9c;">
-              <img src="${user.picture}" alt="">
+              <img src="${user.picture}" onclick="showImage(${user.picture})" alt="">
           </div>
           <div class="info">
               <div class="top-left">${user.name + ' ' + (user.lastName || '')}</div>
@@ -3924,6 +3926,7 @@
           if(user.picture) {
             const profileImage = document.createElement('img');
             profileImage.src = `${user.picture}`;
+            profileImage.onclick = showImage(user.picture);
             div1.appendChild(profileImage);
             profileImage.classList.add('profile-img'); 
           } 
