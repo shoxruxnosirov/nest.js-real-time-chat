@@ -1879,7 +1879,6 @@
     userAccSettingsButton.addEventListener('click', () => {
       const profileImage = document.querySelector('#userAccSettingsPanel .profile img');
       profileImage.src = `${accountData.picture}`;
-      profileImage.onclick = showImage(accountData.picture);
 
       const profileName = document.querySelector('#userAccSettingsPanel .profile h2');
       profileName.textContent = (accountData.name || '') + ' ' + (accountData.lastName || '');
@@ -3817,7 +3816,7 @@
         memberContainer.classList.add('chat-item');
         memberContainer.innerHTML = `
           <div class="member-photo" style="background-color: #9c9c9c;">
-              <img src="${user.picture}" onclick="showImage(${user.picture})" alt="">
+              <img src="${user.picture}" alt="">
           </div>
           <div class="info">
               <div class="top-left">${user.name + ' ' + (user.lastName || '')}</div>
@@ -3926,7 +3925,6 @@
           if(user.picture) {
             const profileImage = document.createElement('img');
             profileImage.src = `${user.picture}`;
-            profileImage.onclick = showImage(user.picture);
             div1.appendChild(profileImage);
             profileImage.classList.add('profile-img'); 
           } 
