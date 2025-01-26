@@ -2351,8 +2351,44 @@
         showImage.style.display = 'none';
       }
     };
-    
 
+    function messageContextmenu(event, message) {
+      const closestMessage = event.target.closest(".message");
+      if (closestMessage) {
+        currentMessage = closestMessage;
+        const isIncoming = closestMessage.classList.contains("incoming");
+        const editOption = contextMenuMessage.querySelector(".edit-option");
+        const deleteOption = contextMenuMessage.querySelector('.delete-option')
+        if (isIncoming) {
+          editOption.style.display = "none";
+          if(chatIdAnd_ListAndMsDiv.get(message.chatId)[2].user.type === 'group') {
+            deleteOption.style.display = 'none';
+          }
+          else {
+            deleteOption.style.display = 'block';
+          }
+        } 
+        else {
+          deleteOption.style.display = 'block';
+          editOption.style.display = "block";
+        }
+  
+        contextMenuMessage.style.display = "block";
+        
+        if(window.innerWidth - 10 < event.clientX + contextMenuMessage.offsetWidth) {
+          contextMenuMessage.style.left = `${window.innerWidth - contextMenuMessage.offsetWidth - 10}px`;
+        } else {
+          contextMenuMessage.style.left = `${event.clientX}px`;
+        }
+        if(window.innerHeight * 0.92 < event.clientY + contextMenuMessage.offsetHeight) {
+          contextMenuMessage.style.top= `${window.innerHeight * 0.92 - contextMenuMessage.offsetHeight}px`;
+        }
+        else {
+          contextMenuMessage.style.top = `${event.clientY}px`;
+        }
+      }
+    }
+    
     // URL parametrlarini olish
   window.onload = async function() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -3059,41 +3095,10 @@
 
         messageDiv.addEventListener("contextmenu", (event) => {
           event.preventDefault();
-          const closestMessage = event.target.closest(".message");
-            if (closestMessage) {
-              currentMessage = closestMessage;
-              const isIncoming = closestMessage.classList.contains("incoming");
-              const editOption = contextMenuMessage.querySelector(".edit-option");
-              const deleteOption = contextMenuMessage.querySelector('.delete-option')
-              if (isIncoming) {
-                editOption.style.display = "none";
-                if(chatIdAnd_ListAndMsDiv.get(message.chatId)[2].user.type === 'group') {
-                  deleteOption.style.display = 'none';
-                }
-                else {
-                  deleteOption.style.display = 'block';
-                }
-              } 
-              else {
-                deleteOption.style.display = 'block';
-                editOption.style.display = "block";
-              }
-
-              contextMenuMessage.style.display = "block";
-              
-              if(window.innerWidth - 10 < event.clientX + contextMenuMessage.offsetWidth) {
-                contextMenuMessage.style.left = `${window.innerWidth - contextMenuMessage.offsetWidth - 10}px`;
-              } else {
-                contextMenuMessage.style.left = `${event.clientX}px`;
-              }
-              if(window.innerHeight * 0.92 < event.clientY + contextMenuMessage.offsetHeight) {
-                contextMenuMessage.style.top= `${window.innerHeight * 0.92 - contextMenuMessage.offsetHeight}px`;
-              }
-              else {
-                contextMenuMessage.style.top = `${event.clientY}px`;
-              }
-            }
+          messageContextmenu(event, message);
         });
+
+
         
         messageDiv.innerHTML = `
             <span class='ms-sender-name'></span>
@@ -3127,14 +3132,15 @@
             
             replayContent.style.borderLeft = `3px solid rgb(${replying_for_Ms.color})`;
             replayContent.style.backgroundColor = `rgba(${replying_for_Ms.color}, 0.2)`;
-          messageId_replyingMsId.set(message._id, replying_for_Ms._id);
-          if(replying_for_Ms.fileUrl) {
-            replayContent.insertBefore(await createMessageFile(replying_for_Ms.fileUrl, 'reply'), replayContent.children[0]);
-          }
-          const replayingMsUser = messageDiv.querySelector('.replying-for-user');
-          replayingMsUser.textContent = replying_for_Ms.senderName;
-          replayingMsUser.style.color = `rgb(${replying_for_Ms.color})`;
-          messageDiv.querySelector('.reply-text').textContent = replying_for_Ms.content;
+            messageId_replyingMsId.set(message._id, replying_for_Ms._id);
+            if(replying_for_Ms.fileUrl) {
+              // const messageFile = await createMessageFile()
+              replayContent.insertBefore(await createMessageFile(replying_for_Ms.fileUrl, 'reply'), replayContent.children[0]);
+            }
+            const replayingMsUser = messageDiv.querySelector('.replying-for-user');
+            replayingMsUser.textContent = replying_for_Ms.senderName;
+            replayingMsUser.style.color = `rgb(${replying_for_Ms.color})`;
+            messageDiv.querySelector('.reply-text').textContent = replying_for_Ms.content;
         }
         else {
           replayContent.remove();
@@ -3142,7 +3148,12 @@
 
         if(message.fileUrl) {
           const msContent = messageDiv.querySelector('.message-content-file');
-          msContent.insertBefore(await createMessageFile(message.fileUrl, 'message'), msContent.children[0]);
+          const messageFile = await createMessageFile(message.fileUrl, 'message');
+          msContent.insertBefore(messageFile, msContent.children[0]);
+          messageFile.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            messageContextmenu(event, message);
+          });
         }
           const msContentMs = messageDiv.querySelector('.message-content-message');
           msContentMs.querySelector('p').textContent = message.content;
@@ -3206,6 +3217,7 @@
               if(boxType === 'message') {
                 img.style.maxWidth = '200px';
                 img.style.borderRadius = '5px';
+                img.onclick = () => showImage(url);
               } 
               else {
                 img.style.maxWidth = '42px';
@@ -3213,9 +3225,7 @@
                 img.style.borderRadius = '3px';
               }
               img.style.cursor = 'pointer';
-  
               // link.appendChild(img);
-              img.onclick = () => showImage(url);
               return img;
             }
             else if(mimetype.startsWith('video/')) {
