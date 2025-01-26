@@ -3311,7 +3311,7 @@
 
         li.appendChild(div1);
         li.appendChild(div2);
-        li.onclick = function() {
+        div2.onclick = function() {
           chatId = chatData.chatId;
           if(divforMsTemp) {
             divforMsTemp.style.display = 'none';
@@ -3430,10 +3430,11 @@
               groupInfo.querySelector('.close-btn').onclick = function() {
                 groupInfo.classList.remove('open');
               }
+              const profileImage = groupInfo.querySelector('.group-photo .group-photo-img');
               if(groupData.picture) {
-                groupInfo.querySelector('.group-photo .group-photo-img').innerHTML = `<img src="${groupData.picture}" class="group-picture" alt="">`
+                profileImage.innerHTML = `<img src="${groupData.picture}" class="group-picture" alt="">`
+                profileImage.onclick = () => showImage(groupData.picture);
               } else {
-                const profileImage = groupInfo.querySelector('.group-photo .group-photo-img');
                 profileImage.innerHTML = `<div class="profile-div-for-img-for-group-detail">${groupData.name.split(" ").slice(0, 2).map(word => word[0]).join('').toUpperCase()}</div>`;
               }
               groupInfo.querySelector('.group-name').textContent = (groupData.name || '') + ' ' + (groupData.lastName || '');
@@ -3825,20 +3826,21 @@
               <button class="top-right button"></button>
           </div>`;
           memberContainer.querySelector('img').onclick = () => showImage(user.picture);
+          const memberInfo = memberContainer.querySelector('.info');
         const buttonAddOrOpen = memberContainer.querySelector('.info button');
         buttonAddOrOpen.style.marginLeft = 'auto';
         if(user._id !== accountData.account_id) {
           if(userId_and_chatId.has(user._id)) {
             buttonAddOrOpen.textContent = "Open";
-            memberContainer.onclick = () => {
+            memberInfo.onclick = () => {
                 openChatOpen(user._id)();
                 document.querySelector('.group-info').classList.remove('open');
               }
           } else {
             buttonAddOrOpen.textContent = "Add";
-            memberContainer.onclick = async function () {
+            memberInfo.onclick = async function () {
               await addUserOrGroupFunc(user, buttonAddOrOpen, user._id);
-              memberContainer.onclick = () => {
+              memberInfo.onclick = () => {
                 openChatOpen(user._id)();
                 document.querySelector('.group-info').classList.remove('open');
               }
