@@ -3353,9 +3353,9 @@
         
       const divInput = createChatUserInputMs(replyBox, chat, selectFileBox);
       div_for_replyBox_inputBox.appendChild(divInput);
-      // div_for_replyBox_inputBox.onclick = () => {
-      //   divInput.querySelector('input[type="text"]').focus();
-      // }
+      div_for_replyBox_inputBox.onclick = () => {
+        divInput.querySelector('input[type="text"]').focus();
+      }
 
       const div_for_editBox = document.createElement('div');
       div_for_editBox.style.display = "none";
@@ -3475,9 +3475,9 @@
     async function createChatUserChatBody({messages, chatId}) {
       const divChatBody = document.createElement('div');
         divChatBody.classList.add('chat-body');
-        divChatBody.onclick = () => {
-          chatIdAnd_ListAndMsDiv.get(chatId)[1].querySelector('.reply-and-input-box:not([style*="display: none"]) input[type="text"]')?.focus();
-        }
+        // divChatBody.onclick = () => {
+        //   chatIdAnd_ListAndMsDiv.get(chatId)[1].querySelector('.reply-and-input-box:not([style*="display: none"]) input[type="text"]')?.focus();
+        // }
 
         if(messages && messages.length && messages.length > 0)
         for(let i = 0; i < messages.length; i++) {
