@@ -13,7 +13,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ChatsModule } from './chats/chats.module';
 import { ChatModule } from './chat/chat.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { FirebaseModule } from './firebase/firebase.module';
+// import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [  
@@ -46,7 +46,7 @@ import { FirebaseModule } from './firebase/firebase.module';
     MessagesModule,
     ChatsModule,
     ChatModule,
-    FirebaseModule,
+    // FirebaseModule,
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway,],// JwtService,],
