@@ -13,6 +13,7 @@ import { MessagesModule } from './messages/messages.module';
 import { ChatsModule } from './chats/chats.module';
 import { ChatModule } from './chat/chat.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [  
@@ -45,7 +46,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     MessagesModule,
     ChatsModule,
     ChatModule,
-    
+    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway,],// JwtService,],
@@ -57,6 +58,7 @@ export class AppModule {//implements NestModule {
       .apply(JwtMiddleware) 
       .exclude(
         { path: 'uploads/(.*)', method: RequestMethod.GET },
+        // { path: 'view/firebase-messaging-sw.js', method: RequestMethod.GET },
         // { path: 'uploads/*', method: RequestMethod.POST },
         { path: 'auth/signup', method: RequestMethod.POST }, 
         { path: 'auth/login', method: RequestMethod.POST },

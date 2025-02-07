@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+
+import * as express from 'express';
+import { join } from 'path';
+
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -11,12 +15,7 @@ async function bootstrap() {
   const webUrl = configService.get<string>('WEB_URL', 'http://localhost:3000');
   const port = configService.get<string>('PORT', '3000')
  
-  // app.enableCors({
-  //   origin: `${webUrl}:${port}`, 
-  //   credentials: true,
-  // });
-
-  // CORS-ni to‘liq yoqish
+  // app.use('/views', express.static(join(__dirname, '..', 'views')));
   // app.enableCors({
   //   origin: '*', // Hammasiga ruxsat berish
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Ruxsat etilgan metodlar
