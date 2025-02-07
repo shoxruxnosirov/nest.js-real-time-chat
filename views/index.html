@@ -2443,8 +2443,11 @@
           let itm2_time = itm2.lastMessages.length > 0 ? itm2.lastMessages.at(-1).message.timestamp : itm2.chatData.timestamp;
           return new Date(itm1_time).getTime() - new Date(itm2_time).getTime();
         });
-        // console.log("allchats: ", allChats);
-        allChats.forEach(addChatUser);
+        console.log("allchats: ", allChats);
+
+        for(let i = 0; i < allChats.length; i++) {
+          await addChatUser(allChats[i]);
+        }
       }
 
       const gatewayUrlArr = apiUrl.split(`://`);
